@@ -42,22 +42,19 @@ public class Main {
                 }
             }
 
-            String newDate = sdf.format(new Date(file.lastModified())) + "L" + prodLength + "E";
+            String newDate = sdf.format(new Date(file.lastModified())) + "L" + prodLength + "E" + prodName + System.lineSeparator();
 
-            try (
-                    FileWriter writer = new FileWriter("sys", true)) {
+            try (FileWriter writer = new FileWriter("sys", true)) {
                 if (!date.toString().contains(newDate)) {
                     writer.write(newDate);
                 }
             }
 
-            String[] nextData = date.toString().split("E");
-            /*for (
-                    int i = 0;
-                    i < nextData.length; ++i) {
-                System.out.println(nextData[i].substring(0, nextData[i].indexOf("L")));
-                System.out.println(nextData[i].substring(nextData[i].indexOf("L") + 1));
-            }*/
+            String[] nextData = date.toString().split(System.lineSeparator());
+            int prodCounter = 0;
+            while (prodCounter < nextData.length) {
+                ++ prodCounter;
+                }
 
             JFrame frame = new JFrame("Счетчик умных слов и мыслей");
             frame.pack();
@@ -66,52 +63,47 @@ public class Main {
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLayout(new BorderLayout());
-            final JPanel mainPanel = new JPanel();
-            final JScrollPane scrollPane = new JScrollPane(mainPanel);
-            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+            JPanel mainPanel = new JPanel();
+            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
             frame.add(mainPanel, BorderLayout.NORTH);
-            scrollPane.revalidate();
 
             JLabel dateLabel = new JLabel("Дата");
-            JPanel datePanel = new JPanel();
-            datePanel.setPreferredSize(new Dimension(100, 5));
-            datePanel.add(dateLabel);
-
-            JLabel charactersLabel = new JLabel("Знаки");
-            JPanel charactersPanel = new JPanel();
-            charactersPanel.setPreferredSize(new Dimension(100, 5));
-            charactersPanel.add(charactersLabel);
-
-            JLabel prodLabel = new JLabel("Прода");
-            JPanel prodPanel = new JPanel();
-            prodPanel.setPreferredSize(new Dimension(100, 5));
-            prodPanel.add(prodLabel);
+            dateLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 
             JTextField dateField = new JTextField(nextData[0].substring(0, nextData[0].indexOf("L")));
             dateField.setEditable(false);
-            JPanel dateFieldPanel = new JPanel();
-            dateFieldPanel.setPreferredSize(new Dimension(100, 20));
-            dateFieldPanel.add(dateField);
+            
+            JPanel datePanel = new JPanel();
+            datePanel.setLayout(new BoxLayout(datePanel, BoxLayout.Y_AXIS));
+            datePanel.add(dateLabel);
+            datePanel.add(dateField);
 
-            JTextField charactersField = new JTextField(nextData[0].substring(nextData[0].indexOf("L") + 1));
+            JLabel charactersLabel = new JLabel("Знаки");
+            charactersLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+
+            JTextField charactersField = new JTextField(nextData[0].substring(nextData[0].indexOf("L") + 1, nextData[0].indexOf("E")));
             charactersField.setEditable(false);
-            JPanel charactersFieldPanel = new JPanel();
-            charactersFieldPanel.setPreferredSize(new Dimension(100, 20));
-            charactersFieldPanel.add(charactersField);
+
+            JPanel charactersPanel = new JPanel();
+            charactersPanel.setLayout(new BoxLayout(charactersPanel, BoxLayout.Y_AXIS));
+            charactersPanel.add(charactersLabel);
+            charactersPanel.add(charactersField);
+
+            JLabel prodLabel = new JLabel("Прода");
+            prodLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 
             JTextField prodField = new JTextField(prodName.toString());
             prodField.setEditable(false);
-            JPanel prodFieldPanel = new JPanel();
-            prodFieldPanel.setPreferredSize(new Dimension(100, 20));
-            prodFieldPanel.add(prodField);
+            
+            JPanel prodPanel = new JPanel();
+            prodPanel.setLayout(new BoxLayout(prodPanel, BoxLayout.Y_AXIS));
+            prodPanel.add(prodLabel);
+            prodPanel.add(prodField);
 
             mainPanel.add(datePanel);
             mainPanel.add(charactersPanel);
             mainPanel.add(prodPanel);
-
-            mainPanel.add(dateFieldPanel);
-            mainPanel.add(charactersFieldPanel);
-            mainPanel.add(prodFieldPanel);
 
             frame.setVisible(true);
         }

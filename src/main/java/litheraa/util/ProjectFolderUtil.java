@@ -1,8 +1,12 @@
 package litheraa.util;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileSystemView;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -10,72 +14,66 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class ProjectFolderUtil {
-    @lombok.Getter(lombok.AccessLevel.PROTECTED)
-    private static final String PROJECT_FOLDER = FileSystemView.getFileSystemView().getDefaultDirectory().
-            toString() + "/ProdMaster";
-    private static final String SETTINGS = PROJECT_FOLDER + "/settings";
-    @lombok.Getter(lombok.AccessLevel.PROTECTED)
-    private static File settingsFile = new File(SETTINGS);
-    private static final String PATHS = PROJECT_FOLDER + "/directories";
-    @lombok.Getter(lombok.AccessLevel.PROTECTED)
-    private static File pathsFile = new File(PATHS);
-    private static final String IMAGE = PROJECT_FOLDER + "/writer.png";
-    @lombok.Getter
-    private static File imageFile = new File(IMAGE);
-    private static final String MESSAGE = PROJECT_FOLDER + "/messages";
-    @lombok.Getter
-    private static File messageFile = new File(MESSAGE);
-    @lombok.Getter
-    private static final URL DEFAULT = ProjectFolderUtil.class.getClassLoader().getResource("settings");
+	@Getter(AccessLevel.PROTECTED)
+	private static final String PROJECT_FOLDER = FileSystemView.getFileSystemView().getDefaultDirectory().
+			toString() + "/ProdMaster";
+	@Getter(AccessLevel.PROTECTED)
+	private static File settingsFile = new File(PROJECT_FOLDER + "/settings");
+	@Getter(AccessLevel.PROTECTED)
+	private static File pathsFile = new File(PROJECT_FOLDER + "/directories");
+	@Getter(AccessLevel.PROTECTED)
+	private static File messageFile = new File(PROJECT_FOLDER + "/messages");
+	@Getter(AccessLevel.PROTECTED)
+	private static final File DEFAULT_SETTINGS = new File(PROJECT_FOLDER + "/settings");
+	private static final String IMAGE_FOLDER = PROJECT_FOLDER + "/images";
 
-    static {
-        Path dir = Path.of(PROJECT_FOLDER);
-        Path settings = Path.of(SETTINGS);
-        Path paths = Path.of(PATHS);
-        Path image = Path.of(IMAGE);
-        Path message = Path.of(MESSAGE);
-        if (Files.notExists(dir)) {
-            try {
-                Files.createDirectory(dir);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+	static {
+		Path dir = Path.of(PROJECT_FOLDER);
+		Path images = Path.of(IMAGE_FOLDER);
 
-        }
-        if (Files.notExists(settings)) {
-            try {
-                URL from = ProjectFolderUtil.class.getClassLoader().getResource("settings");
-	            FileUtils.copyURLToFile(DEFAULT, settings.toFile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (Files.notExists(paths)) {
-            try {
-                URL from = ProjectFolderUtil.class.getClassLoader().getResource("directories");
-                assert from != null;
-                FileUtils.copyURLToFile(from, paths.toFile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (Files.notExists(image)) {
-            try {
-                URL from = ProjectFolderUtil.class.getClassLoader().getResource("writer.png");
-                assert from != null;
-                FileUtils.copyURLToFile(from, image.toFile());
-            } catch (IOException e) {
-	            throw new RuntimeException(e);
-            }
-        }
-        if (Files.notExists(message)) {
-            try {
-                URL from = ProjectFolderUtil.class.getClassLoader().getResource("messages");
-                assert from != null;
-                FileUtils.copyURLToFile(from, message.toFile());
-            } catch (IOException e) {
-	            throw new RuntimeException(e);
-            }
-        }
-    }
+		createFolder(dir);
+		createFolder(images);
+		createFile("settings", PROJECT_FOLDER);
+		createFile("directories", PROJECT_FOLDER);
+		createFile("messages", PROJECT_FOLDER);
+	}
+
+	private static void createFolder(Path folder) {
+		if (Files.notExists(folder)) {
+			try {
+				Files.createDirectory(folder);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	private static void createFile(String file, String path) {
+		final String PATHS = path + "/" + file;
+		Path filePath = Path.of(PATHS);
+		if (Files.notExists(filePath)) {
+			try {
+				URL from = ProjectFolderUtil.class.getClassLoader().getResource(file);
+				FileUtils.copyURLToFile(from, filePath.toFile());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	public static File getImage(String image) {
+		final String IMAGE = image + ".png";
+		createFile(IMAGE, IMAGE_FOLDER);
+		return new File(IMAGE_FOLDER + "/" + IMAGE);
+	}
+
+	public static BufferedImage getBufferedImage(String image) {
+		BufferedImage bI;
+		try {
+			bI = ImageIO.read(getImage(image));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return bI;
+	}
 }

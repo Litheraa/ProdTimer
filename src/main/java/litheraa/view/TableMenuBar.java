@@ -119,14 +119,14 @@ public class TableMenuBar extends JMenuBar {
 		}
 
 		RadioButtonsMenu colorThemeMenu = new RadioButtonsMenu("Цветовая тема",
-				Themes.getThemes().length,
+				Themes.getThemesLength(),
 				Themes.getThemeNames(),
 				SettingsController.getThemeNo());
-		for (int i = 0; i < Themes.getThemes().length; i++) {
+		for (int i = 0; i < Themes.getThemesLength(); i++) {
 			int finalI = i;
 			colorThemeMenu.getButton(i).addActionListener(e -> {
 				SettingsController.setTheme(finalI);
-				LafManager.installTheme(Themes.getThemes()[finalI]);
+				LafManager.installTheme(Themes.getTheme(finalI));
 			});
 		}
 

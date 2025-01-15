@@ -7,16 +7,18 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class ProdCalendar extends JPanel {
-	private final GregorianCalendar calendar = new GregorianCalendar();
-	private final JPanel daysPanel;
+	private final GregorianCalendar calendar;
+	private final DaysPanel daysPanel;
 	private ArrayList<ProgressContainer> days = new ArrayList<>();
+	private final litheraa.data.calendar.Calendar data;
 
-	public ProdCalendar(MainFrame mainFrame) {
+	public ProdCalendar(MainFrame mainFrame, litheraa.data.calendar.Calendar data) {
+		this.data = data;
+		this.calendar = new GregorianCalendar(data.getYear(), data.getMonth() - 1, 1);
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
 
-		String[] monthName = new String[]{"ЯНВАРЬ", "ФЕВРАЛЬ", "МАРТ", "АПРЕЛЬ", "МАЙ", "ИЮНЬ", "ИЮЛЬ", "АВГУСТ", "СЕНТЯБРЬ", "ОКТЯБРЬ", "НОЯБРЬ", "ДЕКАБРЬ"};
-		JLabel monthLabel = new JLabel(monthName[calendar.get(Calendar.MONTH)] + " " + calendar.get(Calendar.YEAR));
+		JLabel monthLabel = new JLabel(data.getMonthName() + " " + data.getYear());
 		monthLabel.setOpaque(true);
 		monthLabel.setBackground(Color.ORANGE);
 		add(monthLabel);
@@ -32,12 +34,12 @@ public class ProdCalendar extends JPanel {
 		dayNamesPanel.setSize(0, 10);
 		add(dayNamesPanel);
 
-		daysPanel = new JPanel(new GridLayout(6, 7, 5, 5));
-		for (int i = 0; i < 42; i++) {
-			JPanel tempPanel = new JPanel();
-			tempPanel.setVisible(false);
-			daysPanel.add(tempPanel);
+		int weeks = calendar.getActualMaximum(Calendar.WEEK_OF_MONTH);
+		//there is some strange bug in util.Calendar getActualMaximum(week_of_month) for November and December months. So, quick solution
+		if (data.getMonth() >= 11) {
+			weeks = weeks + 1;
 		}
+		daysPanel = new DaysPanel(weeks, 7, 5, 5);
 		add(daysPanel);
 
 		layout.putConstraint(SpringLayout.WIDTH, monthLabel, 0, SpringLayout.WIDTH, this);
@@ -51,13 +53,25 @@ public class ProdCalendar extends JPanel {
 		layout.putConstraint(SpringLayout.SOUTH, daysPanel, 0, SpringLayout.SOUTH, this);
 	}
 
+	private void createEmptyDays() {
+		int firsDay = (calendar.get(Calendar.DAY_OF_WEEK) + 6) % 7;
+		if (firsDay == 0) {
+			firsDay = 7;
+		}
+		for (int i = 1; i < firsDay; i++) {
+			JPanel emptyDay = new JPanel();
+			emptyDay.setVisible(false);
+			daysPanel.add(emptyDay);
+		}
+	}
+
 	private void createDays() {
-		for (int i = 1; i <= calendar.getActualMaximum(Calendar.DATE); i++) {
-			ProgressContainer container = new ProgressContainer(i, 100);
+		for (int day = 1; day <= calendar.getActualMaximum(Calendar.DATE); day++) {
+			ProgressContainer container = new ProgressContainer(data.getProgress(day), data.getDayGoal(day));
 			container.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-			container.createVerticalProgress(i);
+			container.createVerticalProgress(day);
 			days.add(container);
-//			daysPanel.add(container);
+			daysPanel.add(days.get(day - 1));
 		}
 	}
 
@@ -69,26 +83,11 @@ public class ProdCalendar extends JPanel {
 		return days;
 	}
 
-	public void adjustDayNoSize() {
-		double height = (int) daysPanel.getComponent(0).getSize().getHeight();
-		Font font = new Font("Aerial", Font.BOLD, (int) (height * 0.45));
+	public void adjustDaySize() {
+		createEmptyDays();
 		createDays();
 		for (ProgressContainer container : days) {
-			container.setFont(font);
-		}
-		int firstMonthDay = (new GregorianCalendar(calendar.get(Calendar.YEAR),
-				calendar.get(Calendar.MONTH),
-				1).
-				get(Calendar.DAY_OF_WEEK) + 6) % 7;
-		if (firstMonthDay == 0) {
-			firstMonthDay = 7;
-		}
-		for (int i = 0, j = 0; i < calendar.getActualMaximum(Calendar.DATE) + firstMonthDay - 1; i++) {
-			if (i < firstMonthDay) {
-				continue;
-			}
-			daysPanel.remove(i);
-			daysPanel.add(days.get(j), i);
+			container.adjustInnerComponentsSize(daysPanel.getDaySize());
 		}
 	}
 }

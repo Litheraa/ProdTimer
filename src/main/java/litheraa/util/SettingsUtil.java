@@ -1,7 +1,6 @@
 package litheraa.util;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -9,7 +8,6 @@ public class SettingsUtil {
 	@lombok.Getter
 	private static final File PATHS_FILE = new File(String.valueOf(ProjectFolderUtil.getPathsFile()));
 	private static final File SETTINGS_FILE = new File(String.valueOf(ProjectFolderUtil.getSettingsFile()));
-	private static final File DEFAULT_FILE;
 	private static final String SEPARATOR = "=";
 	private static final String PATH_KEY = "directory";
 	private static final Map<String, String> SETTINGS = new HashMap<>();
@@ -17,12 +15,7 @@ public class SettingsUtil {
 	private static final LinkedList<Path> PATHS = new LinkedList<>();
 
 	static {
-		try {
-			DEFAULT_FILE = new File(ProjectFolderUtil.getDEFAULT().toURI());
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
-		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(DEFAULT_FILE))) {
+		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(ProjectFolderUtil.getDEFAULT_SETTINGS()))) {
 			String s;
 			while ((s = bufferedReader.readLine()) != null) {
 				if (s.isBlank() || s.endsWith(SEPARATOR)) continue;
@@ -70,7 +63,8 @@ public class SettingsUtil {
 		if (PATHS.stream().noneMatch(path::startsWith)) {
 			ArrayList<Path> temp = new ArrayList<>(PATHS.stream().filter(p -> !p.startsWith(path)).toList());
 			temp.add(path);
-			PATHS.retainAll(temp);
+			PATHS.clear();
+			PATHS.addAll(temp);
 		}
 	}
 

@@ -5,7 +5,6 @@ import litheraa.util.ViewType;
 import litheraa.view.util.ColumnKeysRecord;
 import litheraa.util.KeysRecord;
 import litheraa.util.SettingsUtil;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;

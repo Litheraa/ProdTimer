@@ -1,5 +1,6 @@
 package litheraa;
 
+import litheraa.data.calendar.Calendar;
 import litheraa.data_base.HSQLDBWorker;
 import litheraa.data.Routine;
 import litheraa.data.Text;
@@ -72,6 +73,10 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	@Override
 	public ArrayList<Routine> getRoutineData() {
 		return HSQLDBWorker.selectRoutine();
+	}
+
+	public Calendar getCalendarData() {
+		return HSQLDBWorker.selectCalendar(2024, 11);
 	}
 
 	@Override

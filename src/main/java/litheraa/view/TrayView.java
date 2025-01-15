@@ -5,13 +5,10 @@ import litheraa.util.MeasureUnit;
 import litheraa.util.ProjectFolderUtil;
 import lombok.AccessLevel;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-public class TrayView extends ProjectFolderUtil{
+public class TrayView {
 	@lombok.Getter(AccessLevel.PRIVATE)
 	private BufferedImage bI;
 	private TrayIcon trayIcon;
@@ -21,13 +18,7 @@ public class TrayView extends ProjectFolderUtil{
 		if (!SystemTray.isSupported()) {
 			throw new RuntimeException("SystemTray is not supported");
 		} else {
-			File imageFile;
-			imageFile = new File(String.valueOf(ProjectFolderUtil.getImageFile()));
-			try {
-				bI = ImageIO.read(imageFile);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			bI = ProjectFolderUtil.getBufferedImage("writer");
 		}
 	}
 

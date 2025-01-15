@@ -9,7 +9,6 @@ import java.util.GregorianCalendar;
 
 @Getter
 public class Routine {
-
     private Calendar lastModified;
     @Setter
     private double prodChars;

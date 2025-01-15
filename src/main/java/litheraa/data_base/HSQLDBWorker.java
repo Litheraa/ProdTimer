@@ -1,6 +1,7 @@
 package litheraa.data_base;
 
 import litheraa.SettingsController;
+import litheraa.data.calendar.Calendar;
 import litheraa.data.Routine;
 import litheraa.data.Text;
 import litheraa.util.CalendarWrapper;
@@ -10,6 +11,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
 import static litheraa.data_base.HSQLDBConnector.*;
@@ -39,7 +41,7 @@ public class HSQLDBWorker {
 
 	private static final String UPDATE_TEXT_NAME = "UPDATE Texts SET name = ? WHERE textPath = ?";
 
-	private static final String SELECT_FROM_TEXTS = "SELECT prodName, created, lastModified, " +
+	private static final String SELECT_TEXTS = "SELECT prodName, created, lastModified, " +
 			"charsOnDate, charsSoFar, charsTotal, name, textPath FROM Texts WHERE created >= ?";
 
 	private static final String SELECT_PROD_CHARS = "SELECT charsSoFar FROM Texts " +
@@ -57,7 +59,9 @@ public class HSQLDBWorker {
 			"WHEN MATCHED THEN UPDATE SET chars = t.chars, textNames = t.names " +
 			"WHEN NOT MATCHED THEN INSERT (date, chars, textNames) VALUES (t.lastModified, t.chars, t.names)";
 
-	private static final String SELECT_FROM_ROUTINE = "SELECT date, chars, textNames FROM Routine WHERE date >= ?";
+	private static final String SELECT_ROUTINE = "SELECT date, chars, textNames FROM Routine WHERE date >= ?";
+
+	private static final String SELECT_CALENDAR =  "SELECT date, chars, textNames FROM Routine WHERE date LIKE ?";
 
 	private static final String SELECT_CHARS = "SELECT chars FROM Routine WHERE date = CURRENT_DATE ORDER BY date DESC LIMIT 1";
 
@@ -96,7 +100,7 @@ public class HSQLDBWorker {
 
 	public static ArrayList<Text> selectTexts() {
 		ArrayList<Text> data = new ArrayList<>();
-		try (PreparedStatement pS = getPreparedStatement(SELECT_FROM_TEXTS)) {
+		try (PreparedStatement pS = getPreparedStatement(SELECT_TEXTS)) {
 			pS.setDate(1, CalendarWrapper.wrapToSQLDate(SettingsController.getCutDate()));
 			var result = pS.executeQuery();
 			while (result.next()) {
@@ -172,7 +176,7 @@ public class HSQLDBWorker {
 
 	public static ArrayList<Routine> selectRoutine() {
 		ArrayList<Routine> data = new ArrayList<>();
-		try (PreparedStatement pS = getPreparedStatement(SELECT_FROM_ROUTINE)) {
+		try (PreparedStatement pS = getPreparedStatement(SELECT_ROUTINE)) {
 			pS.setDate(1, CalendarWrapper.wrapToSQLDate(SettingsController.getCutDate()));
 			var result = pS.executeQuery();
 			while (result.next()) {
@@ -186,6 +190,32 @@ public class HSQLDBWorker {
 			throw new RuntimeException(e);
 		}
 		return data;
+	}
+
+	public static Calendar selectCalendar(int year, int month) {
+		String date = year + "-" + month + "-%";
+		return selectCalendar(date);
+	}
+
+	public static Calendar selectCalendar(String date) {
+		String[] dateArray = date.split("-");
+		Calendar calendar = new Calendar(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]));
+		try (PreparedStatement pS = getPreparedStatement(SELECT_CALENDAR)) {
+			pS.setString(1, date);
+			var result = pS.executeQuery();
+			while (result.next()) {
+				GregorianCalendar temp = new GregorianCalendar();
+				java.util.Date resultDate = result.getDate("date");
+				temp.setTime(resultDate);
+				int day = temp.get(java.util.Calendar.DATE);
+//				calendar.setDayGoal(day, result.getInt("goal"));
+				calendar.setDayProgress(day, result.getDouble("chars"));
+				calendar.setTextNames(day, result.getString("textNames"));
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return calendar;
 	}
 
 	public static double selectTodayChars() {

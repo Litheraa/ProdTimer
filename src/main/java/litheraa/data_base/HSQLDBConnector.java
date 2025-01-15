@@ -9,11 +9,19 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
 public class HSQLDBConnector extends ProjectFolderUtil {
-    private static final String URL_KEY = "jdbc:hsqldb:file:" + getPROJECT_FOLDER() + "/DB/base";
+    private static final String URL_KEY = "jdbc:hsqldb:file:" + getPROJECT_FOLDER() + "\\DB\\base";
     private static final String USER_KEY = "HSQLDBUser";
     private static final String PASSWORD_KEY = "HSQLDBPassword";
     @lombok.Getter
     private static Connection connection;
+
+    static {
+	    try {
+		    Class.forName("org.hsqldb.jdbc.JDBCDriver");
+	    } catch (ClassNotFoundException e) {
+		    throw new RuntimeException(e);
+	    }
+    }
 
     @SneakyThrows
     public static PreparedStatement getPreparedStatement(String query) {

@@ -10,7 +10,6 @@ import java.util.GregorianCalendar;
 
 @Getter
 public class Text extends Routine {
-
     @Setter
     private String prodName;
     private Calendar created;
@@ -25,7 +24,6 @@ public class Text extends Routine {
     private String textName;
     @Setter
     private Path path;
-
 
     public void setCreated(Date created) {
         this.created = new GregorianCalendar();

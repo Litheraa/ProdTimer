@@ -54,12 +54,12 @@ public class ViewController {
 			case ViewType.CALENDAR:
 				menu = new TableMenuBar(controller).createSmallWindowMenu();
 				mainFrame.setJMenuBar(menu);
-				ProdCalendar calendar = new ProdCalendar(mainFrame);
+				ProdCalendar calendar = new ProdCalendar(mainFrame, controller.getCalendarData());
 				mainFrame.setMainComponent(calendar);
 				getWindowSize(ViewType.CALENDAR.ordinal());
 				mainFrame.setResizable(true);
 				mainFrame.setVisible(true);
-				calendar.adjustDayNoSize();
+				calendar.adjustDaySize();
 				mainFrame.setVisible(false);
 				mainFrame.setVisible(true);
 				break;

@@ -30,8 +30,9 @@ public class FilterTextField extends JTextField {
 	}
 
 	public void setFilter(String value) {
-		int column = popup.getColumnNo();
-		sorter.setFilter(column, value);
-		popup.setFilterStorageElement(value, column);
+		int columnFilter = popup.getColumnNo();
+		int column = popup.getTable().convertColumnIndexToModel(columnFilter);
+		sorter.setFilter(columnFilter, value);
+		popup.setFilterStorage(value, column);
 	}
 }

@@ -42,8 +42,8 @@ public class DateChooseDialog extends JXMonthView {
 	}
 
 	public void setInContainer(Container parent, FilterTextField dateField) {
-		//Images are parts of <uicons> icons pack, downloaded from www.flaticon.com
-		//calendar icons is tCreated by Amazona Adorada & downloaded from www.flaticon.com
+///		Images are parts of <uicons> icons pack, downloaded from www.flaticon.com
+///		calendar icons is tCreated by Amazona Adorada & downloaded from www.flaticon.com
 
 		backwardYear = new JButton(doubleLeft);
 		backwardYear.addActionListener(new DateMover(DateMover.DateEnum.BACKWARD_YEAR));
@@ -171,7 +171,15 @@ public class DateChooseDialog extends JXMonthView {
 
 	public void setColors(Theme theme) {
 		try {ThemeColors themeColors = (ThemeColors) theme;
-			themeColors.getColors(this);
+			setDayForeground(1, themeColors.getAccentBackground());
+			setDayForeground(7, themeColors.getAccentBackground());
+			setMonthStringForeground(themeColors.getForeground());
+			setDaysOfTheWeekForeground(themeColors.getForeground());
+			setForeground(themeColors.getForeground());
+			setMonthStringBackground(themeColors.getBackgroundLight());
+			setBackground(themeColors.getBackgroundDark());
+			setSelectionBackground(themeColors.getSelectionBackground());
+			setSelectionForeground(themeColors.getSelectionForeground());
 		} catch (ClassCastException e) {
 			System.out.println("Тема " + theme.getName() + " не реализует интерфейс ThemeColors");
 		}

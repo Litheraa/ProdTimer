@@ -1,5 +1,6 @@
 package litheraa.view.table;
 
+import com.github.weisj.darklaf.listener.PopupMenuAdapter;
 import litheraa.ViewController;
 import litheraa.data.ColumnDataTypeEnum;
 import litheraa.view.DateChooseDialog;
@@ -8,7 +9,6 @@ import org.jdesktop.swingx.JXLabel;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 
@@ -48,22 +48,23 @@ public class HeaderPopup extends JPopupMenu {
 		panel.add(filterField);
 		panel.add(dateChooseDialog);
 
-		addPopupMenuListener(new PopupMenuListener() {
+		addPopupMenuListener(new PopupMenuAdapter() {
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-				columnNo = table.convertColumnIndexToModel(table.getActiveColumn());
+				columnNo = table.getActiveColumn();
+				int filterStorageNo = table.convertColumnIndexToView(columnNo);
 				changePopupLocation();
 				if (table.getColumnType(columnNo) == ColumnDataTypeEnum.DATE) {
 					setPopupSize(460, 240);
 					dateChooseDialog.setColors(ViewController.getTheme());
-					dateChooseDialog.setText(table.getFilterStorage()[columnNo]);
+					dateChooseDialog.setText(table.getFilterStorage(filterStorageNo));
 					dateChooseDialog.setVisible(true);
 					filterField.setFocusable(false);
 				} else {
 					dateChooseDialog.setVisible(false);
 					filterField.setColumns(8);
 					filterField.setFocusable(true);
-					filterField.setText(table.getFilterStorage()[columnNo]);
+					filterField.setText(table.getFilterStorage(filterStorageNo));
 				}
 				table.setFilter(true);
 			}
@@ -73,28 +74,19 @@ public class HeaderPopup extends JPopupMenu {
 				setPopupSize(100, 54);
 				table.setFilter(!filterField.getText().isEmpty());
 			}
-
-			@Override
-			public void popupMenuCanceled(PopupMenuEvent e) {
-			}
 		});
-
-
 	}
 
 	private void changePopupLocation() {
-		int coordinateX = 0;
-		int i = 0;
 		JTableHeader header = table.getTableHeader();
-		while (i < columnNo + 1) {
+		for (int i = 0, coordinateX = 0; i < columnNo + 1; i++) {
 			coordinateX += (int) header.getHeaderRect(i).getWidth();
 			Point p = header.getLocationOnScreen();
 			setLocation(coordinateX + (int) p.getX(), (int) p.getY());
-			i++;
 		}
 	}
 
-	public void setFilterStorageElement(String value, int column) {
-		table.getFilterStorage()[column] = value;
+	public void setFilterStorage(String value, int column) {
+		table.setFilterStorage(value, column);
 	}
 }

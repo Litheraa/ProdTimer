@@ -4,6 +4,9 @@ import litheraa.data.ColumnDataTypeEnum;
 import litheraa.data.RoutineEnum;
 import litheraa.view.MainFrame;
 import litheraa.data.TextEnum;
+import litheraa.view.table.renderers.HeaderRenderer;
+import litheraa.view.table.renderers.ProgressRenderer;
+import litheraa.view.table.renderers.TextAreaRenderer;
 import litheraa.view.util.DoubleFilter;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +20,6 @@ import java.awt.event.MouseEvent;
 
 public class ProdTimerTable extends JTable {
 	@Setter
-	@Getter
 	private String[] filterStorage;
 	@Getter
 	private final MainFrame mainFrame;
@@ -90,6 +92,14 @@ public class ProdTimerTable extends JTable {
 			document.setDocumentFilter(new DoubleFilter());
 			column.setCellEditor(new DefaultCellEditor(charsTotalValue));
 		}
+	}
+
+	public void setFilterStorage(String value, int storageNo) {
+		filterStorage[storageNo] = value;
+	}
+
+	public String getFilterStorage(int storageNo) {
+		return filterStorage[storageNo];
 	}
 
 	public void setFilter(boolean filtered) {

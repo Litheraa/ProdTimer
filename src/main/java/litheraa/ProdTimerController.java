@@ -86,7 +86,7 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	}
 
 	public void notFilesFound() {
-		int result = MainFrame.getErrorMessage("Не найдено файлов с расширением \"docx\". Проверьте настройки" + SettingsController.getPathToDirectories());
+		int result = MainFrame.getErrorMessage("Не найдено файлов с расширением \"docx\". Проверьте настройки " + SettingsController.getPathToDirectories());
 		if (result == JOptionPane.YES_OPTION) {
 			chooseFile();
 		}

@@ -1,7 +1,13 @@
 package litheraa.view.themes;
 
-import litheraa.view.DateChooseDialog;
+import java.awt.*;
 
 public interface ThemeColors {
-	void getColors(DateChooseDialog dateChooseDialog);
+	Color getBackgroundLight();
+	Color getForeground();
+	Color getSelectionForeground();
+	Color getSelectionBackground();
+	Color getBackgroundDark();
+	Color getAccentForeground();
+	Color getAccentBackground();
 }

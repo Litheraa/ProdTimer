@@ -34,11 +34,12 @@ public class TableMenuBar extends JMenuBar {
 	}
 
 	private JMenu createFileMenu() {
-		JMenu fileMenu = new JMenu("Файл");
+///		Spaces after menu names are added to make gap between right edges of menu item and its containers
+		JMenu fileMenu = new JMenu("Файл ");
 
-		JMenuItem newProdMenuItem = new JMenuItem("Добавить проду");
-		JMenuItem refresh = new JMenuItem("Обновить");
-		JMenuItem exitMenuItem = new JMenuItem("Выход");
+		JMenuItem newProdMenuItem = new JMenuItem("Добавить проду ");
+		JMenuItem refresh = new JMenuItem("Обновить ");
+		JMenuItem exitMenuItem = new JMenuItem("Выход ");
 
 		fileMenu.add(newProdMenuItem);
 		fileMenu.add(refresh);
@@ -303,7 +304,6 @@ public class TableMenuBar extends JMenuBar {
 		add(createViewMenu());
 		add(createSmallWindowBehaviourMenu());
 		add(createHelpMenu());
-
 		return this;
 	}
 }

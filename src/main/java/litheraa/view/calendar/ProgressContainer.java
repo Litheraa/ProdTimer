@@ -98,7 +98,7 @@ public class ProgressContainer extends JPanel {
 		setLayout(layout);
 
 		if (measuredValue >= maxValue) {
-			String measure = SettingsController.isChars() ? "знак" : "Алка";
+			String measure = SettingsController.isChars() ? "знак" : "АЛка";
 			progressBar.setString("Готово! " + value + " " +
 					NumberDeclensionRu.decline(measure.concat(" написан"), measuredValue));
 		} else {

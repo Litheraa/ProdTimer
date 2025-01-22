@@ -63,6 +63,8 @@ public class HSQLDBWorker {
 
 	private static final String SELECT_CALENDAR =  "SELECT date, chars, textNames FROM Routine WHERE date LIKE ?";
 
+	private static final String SELECT_AVAILABLE_YEARS = "SELECT EXTRACT (YEAR FROM date) AS UniqueYear FROM ROUTINE GROUP BY UniqueYear";
+
 	private static final String SELECT_CHARS = "SELECT chars FROM Routine WHERE date = CURRENT_DATE ORDER BY date DESC LIMIT 1";
 
 	public static void createTexts() {
@@ -216,6 +218,19 @@ public class HSQLDBWorker {
 			throw new RuntimeException(e);
 		}
 		return calendar;
+	}
+
+	public static ArrayList<Integer> selectYears() {
+		ArrayList<Integer> years = new ArrayList<>();
+		try (PreparedStatement pS = getPreparedStatement(SELECT_AVAILABLE_YEARS)) {
+			var result = pS.executeQuery();
+			while (result.next()) {
+				years.add(result.getInt("UniqueYear"));
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return years;
 	}
 
 	public static double selectTodayChars() {

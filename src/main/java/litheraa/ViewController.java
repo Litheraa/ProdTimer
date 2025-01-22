@@ -2,6 +2,7 @@ package litheraa;
 
 import com.github.weisj.darklaf.LafManager;
 import com.github.weisj.darklaf.theme.Theme;
+import litheraa.data.calendar.Calendar;
 import litheraa.data_base.HSQLDBWorker;
 import litheraa.util.ViewType;
 import litheraa.view.*;
@@ -13,6 +14,9 @@ import litheraa.view.table.ProdTimerTable;
 import litheraa.view.table.RoutineModel;
 import litheraa.view.table.TextModel;
 import litheraa.view.util.Themes;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 public class ViewController {
 	@lombok.Getter
@@ -39,7 +43,7 @@ public class ViewController {
 				mainFrame.setMainComponent(table);
 				mainFrame.setJMenuBar(menu);
 				columnController.reallignColumns();
-				getWindowSize(ViewType.TEXTS.ordinal());
+				mainFrame.setSize(getWindowSize(ViewType.TEXTS.ordinal()));
 				mainFrame.setVisible(true);
 				mainFrame.setResizable(true);
 				break;
@@ -51,20 +55,17 @@ public class ViewController {
 				mainFrame.setMainComponent(table);
 				mainFrame.setJMenuBar(menu);
 				columnController.reallignColumns();
-				getWindowSize(ViewType.ROUTINE.ordinal());
+				mainFrame.setSize(getWindowSize(ViewType.ROUTINE.ordinal()));
 				mainFrame.setResizable(true);
 				mainFrame.setVisible(true);
 				break;
 			case ViewType.CALENDAR:
 				menu = new TableMenuBar(controller).createSmallWindowMenu();
 				mainFrame.setJMenuBar(menu);
-				ProdCalendar calendar = new ProdCalendar(mainFrame, controller.getCalendarData());
-				mainFrame.setMainComponent(calendar);
-				getWindowSize(ViewType.CALENDAR.ordinal());
+				mainFrame.setSize(getWindowSize(ViewType.CALENDAR.ordinal()));
 				mainFrame.setResizable(true);
-				mainFrame.setVisible(true);
-				calendar.adjustDaySize();
-				mainFrame.setVisible(false);
+				ProdCalendar calendar = new ProdCalendar(this, controller.getCalendarData());
+				mainFrame.setMainComponent(calendar);
 				mainFrame.setVisible(true);
 				break;
 			case ViewType.SMALL_WINDOW:
@@ -76,13 +77,17 @@ public class ViewController {
 		}
 	}
 
+	public void repaint() {
+		mainFrame.setVisible(false);
+		mainFrame.setVisible(true);
+	}
+
 	public void refresh() {
 		getView();
 		if (SettingsController.getViewType().ordinal() <= 1) {
 			columnController.reallignColumns();
 		}
-		mainFrame.setVisible(false);
-		mainFrame.setVisible(true);
+		repaint();
 	}
 
 	public static Theme getTheme() {
@@ -97,12 +102,20 @@ public class ViewController {
 		columnController.saveColumnPositions();
 	}
 
-	public void getWindowSize(int viewNo) {
-		mainFrame.setSize(SettingsController.getSize(viewNo));
+	public Dimension getWindowSize(int viewNo) {
+		return SettingsController.getSize(viewNo);
 	}
 
 	public void saveWindowSize() {
 		SettingsController.setSize(SettingsController.getViewType().ordinal(), mainFrame.getWidth(), mainFrame.getHeight());
+	}
+
+	public Calendar getCalendarData(int year, int month) {
+		return controller.getCalendarData(year, month);
+	}
+
+	public ArrayList<Integer> getCalendarYears() {
+		return controller.getCalendarYears();
 	}
 
 	public void reset() {

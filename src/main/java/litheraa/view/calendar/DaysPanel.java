@@ -1,24 +1,44 @@
 package litheraa.view.calendar;
 
+import lombok.Setter;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 public class DaysPanel extends JPanel {
-	private final int rows;
+	private int rows;
 	private final int columns;
-	private final int hgap;
-	private final int vgap;
+	private final int hGap;
+	private final int vGap;
 
-	public DaysPanel(int rows, int columns, int hgap, int vgap) {
-		super(new GridLayout(rows, columns, hgap, vgap));
+	public DaysPanel(int rows, int columns, int hGap, int vGap) {
+		super(new GridLayout(rows, columns, hGap, vGap));
 		this.rows = rows;
 		this.columns = columns;
-		this.hgap = hgap;
-		this.vgap = vgap;
+		this.hGap = hGap;
+		this.vGap = vGap;
 	}
 
-	public Dimension getDaySize() {
-		return new Dimension((getWidth() / columns) - hgap * (Integer.max(columns - 2, 0)),
-				(getHeight() / rows) - vgap * (Integer.max(rows - 2, 0)));
+	public Dimension getDaySize(Dimension containerSize) {
+		return new Dimension((containerSize.width / columns) - hGap * (Integer.max(columns - 2, 0)),
+				(containerSize.height / rows) - vGap * (Integer.max(rows - 2, 0)));
+	}
+
+	public void setRows(int rows) {
+		this.rows = rows;
+		setLayout(new GridLayout(rows, columns, hGap, vGap));
+	}
+
+	public boolean isEmpty() {
+		return Arrays.stream(getComponents()).noneMatch(comp -> comp instanceof JPanel);
+	}
+
+	public void clear() {
+		for (Component comp : getComponents()) {
+			if (comp instanceof JPanel) {
+				remove(comp);
+			}
+		}
 	}
 }

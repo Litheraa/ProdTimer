@@ -75,8 +75,16 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 		return HSQLDBWorker.selectRoutine();
 	}
 
+	public Calendar getCalendarData(int year, int month) {
+		return HSQLDBWorker.selectCalendar(year, month);
+	}
+
 	public Calendar getCalendarData() {
-		return HSQLDBWorker.selectCalendar(2024, 11);
+		return HSQLDBWorker.selectCalendar(Calendar.getTodayYear(), Calendar.getTodayMonth());
+	}
+
+	public ArrayList<Integer> getCalendarYears() {
+		return HSQLDBWorker.selectYears();
 	}
 
 	@Override

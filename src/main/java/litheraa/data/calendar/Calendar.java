@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,17 +15,45 @@ public class Calendar {
 	private final int month;
 	@Getter
 	private final int year;
-	private Map<Integer, CalendarDay> dayMap = new HashMap<>();
-	private final String[] monthName = new String[]
+	@Getter
+	private final int weeks;
+	@Getter
+	private final int firstDay;
+	@Getter
+	private final int days;
+	private final GregorianCalendar calendar;
+	private final Map<Integer, CalendarDay> dayMap = new HashMap<>();
+	public static final String[] MONTH_NAME = new String[]
 			{"ЯНВАРЬ", "ФЕВРАЛЬ", "МАРТ", "АПРЕЛЬ", "МАЙ", "ИЮНЬ", "ИЮЛЬ", "АВГУСТ", "СЕНТЯБРЬ", "ОКТЯБРЬ", "НОЯБРЬ", "ДЕКАБРЬ"};
 
 	public Calendar(int year, int month) {
 		this.year = year;
 		this.month = month;
+		//noinspection MagicConstant
+		calendar = new GregorianCalendar(year, month - 1, 1);
+		firstDay = calculateFirstDay();
+		days = calculateDays();
+		weeks = calculateWeeks();
 	}
 
-	public String getMonthName() {
-		return monthName[month - 1];
+	private int calculateFirstDay() {
+		int tempFirsDay = (calendar.get(java.util.Calendar.DAY_OF_WEEK) + 6) % 7;
+		if (tempFirsDay == 0) {
+			tempFirsDay = 7;
+		}
+		return tempFirsDay;
+	}
+
+	private int calculateDays() {
+		return calendar.getActualMaximum(java.util.Calendar.DATE);
+	}
+
+	private int calculateWeeks() {
+		return (int) Math.ceil((days - (8 - firstDay)) / 7.0) + 1;
+	}
+
+	public String getMONTH_NAME() {
+		return MONTH_NAME[month - 1];
 	}
 
 	public void setDayMap(int day, int dayGoal, double dayProgress, String textNames) {
@@ -58,6 +88,14 @@ public class Calendar {
 
 	public String getTextNames(int day) {
 		return dayMap.getOrDefault(day, CalendarDay.getDefault()).getTextNames();
+	}
+
+	public static int getTodayMonth() {
+		return LocalDate.now().getMonthValue();
+	}
+
+	public static int getTodayYear() {
+		return LocalDate.now().getYear();
 	}
 
 	@Getter(AccessLevel.PRIVATE)

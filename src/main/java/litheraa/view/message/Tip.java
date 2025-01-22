@@ -53,7 +53,7 @@ public class Tip extends JDialog {
 
 		tipCounter = new JLabel();
 
-		//Do not change this lines relative position. Otherwise, it will screw all messages numeration
+///		Do not change this lines relative position. Otherwise, it will screw all messages numeration
 		{
 			tipText.setText(MessageUtil.getTip(tipNo).getFirst());
 			tipIcon.setIcon(MessageUtil.getTip(tipNo).getSecond());

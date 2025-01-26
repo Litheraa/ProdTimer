@@ -140,7 +140,7 @@ public class Calendar {
 		}
 
 		private static CalendarDay getDefault() {
-			return new CalendarDay(defaultGoal, 0.0, "");
+			return new CalendarDay(defaultGoal, 0.0, "Вы не работали!");
 		}
 	}
 }

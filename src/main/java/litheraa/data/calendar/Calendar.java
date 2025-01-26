@@ -119,6 +119,15 @@ public class Calendar {
 		return LocalDate.now().getMonthValue();
 	}
 
+	public static int getMonthNo(String month) {
+		for (int i = 0; i < MONTH_NAME.length; i++) {
+			if (MONTH_NAME[i].contentEquals(month)) {
+				return i + 1;
+			}
+		}
+		return getTodayMonth();
+	}
+
 	public static int getTodayYear() {
 		return LocalDate.now().getYear();
 	}

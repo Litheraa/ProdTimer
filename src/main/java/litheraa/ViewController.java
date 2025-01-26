@@ -110,8 +110,8 @@ public class ViewController {
 		SettingsController.setSize(SettingsController.getViewType().ordinal(), mainFrame.getWidth(), mainFrame.getHeight());
 	}
 
-	public Calendar getCalendarData(int year, int month) {
-		return controller.getCalendarData(year, month);
+	public Calendar getCalendarData(int year, String month) {
+		return controller.getCalendarData(year, Calendar.getMonthNo(month));
 	}
 
 	public void setCalendarGoal(Calendar calendar, int day) {

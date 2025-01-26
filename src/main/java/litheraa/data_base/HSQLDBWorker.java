@@ -197,7 +197,8 @@ public class HSQLDBWorker {
 	}
 
 	public static Calendar selectCalendar(int year, int month) {
-		String date = year + "-" + month + "-%";
+		String monthString = month < 10 ? "0" + month : String.valueOf(month);
+		String date = year + "-" + monthString + "-%";
 		return selectCalendar(date);
 	}
 

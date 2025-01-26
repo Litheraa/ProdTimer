@@ -10,18 +10,17 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class ProdCalendar extends JPanel {
 	private DaysPanel daysPanel;
 	private final ArrayList<ProgressContainer> days = new ArrayList<>();
-	private litheraa.data.calendar.Calendar data;
+	private litheraa.data.calendar.Calendar calendar;
 	private final SmoothComboBox<String> monthLabel;
 	private final SmoothComboBox<Integer> yearLabel;
 	private final ViewController controller;
 
 	public ProdCalendar(ViewController controller, litheraa.data.calendar.Calendar calendar) {
-		this.data = calendar;
+		this.calendar = calendar;
 		this.controller = controller;
 
 		monthLabel = new SmoothComboBox<>(litheraa.data.calendar.Calendar.MONTH_NAME, Calendar.getTodayMonth() - 1);
@@ -73,7 +72,7 @@ public class ProdCalendar extends JPanel {
 	}
 
 	private void createDaysPanel() {
-		daysPanel = new DaysPanel(data.getWeeks(), 7, 5, 5);
+		daysPanel = new DaysPanel(calendar.getWeeks(), 7, 5, 5);
 		daysPanel.setSize(getDaysPanelSize(controller.getWindowSize(ViewType.CALENDAR.ordinal())));
 		add(daysPanel);
 	}
@@ -87,8 +86,8 @@ public class ProdCalendar extends JPanel {
 	}
 
 	private void createDays() {
-		for (int day = 1; day <= data.getDays(); day++) {
-			ProgressContainer container = new ProgressContainer(data, day);
+		for (int day = 1; day <= calendar.getDays(); day++) {
+			ProgressContainer container = new ProgressContainer(calendar, day);
 			container.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 			container.createVerticalProgress(controller);
 			days.add(container);
@@ -96,8 +95,8 @@ public class ProdCalendar extends JPanel {
 		}
 	}
 
-	private void setData(litheraa.data.calendar.Calendar data) {
-		this.data = data;
+	private void setCalendar(litheraa.data.calendar.Calendar calendar) {
+		this.calendar = calendar;
 	}
 
 	private void clearView() {
@@ -110,11 +109,11 @@ public class ProdCalendar extends JPanel {
 	}
 
 	public void build() {
-		createEmptyDays(data.getFirstDay());
+		createEmptyDays(calendar.getFirstDay());
 		createDays();
 /// GritLayout in which days located ignores number of columns (days in week) if rows are set.
 /// To prevent weeks with 6 days im forced to add some empty days in the end of the month
-		createEmptyDays(7 - data.getLastDay());
+		createEmptyDays(7 - calendar.getLastDay());
 		for (ProgressContainer container : days) {
 			container.adjustInnerComponentsSize(daysPanel.getDaySize(getDaysPanelSize(controller.getWindowSize(ViewType.CALENDAR.ordinal()))));
 		}
@@ -129,9 +128,10 @@ public class ProdCalendar extends JPanel {
 		@Override
 		public void itemStateChanged(ItemEvent e) {
 			clearView();
-			setData(controller.getCalendarData(Objects.requireNonNull((Integer) yearLabel.getSelectedItem()),
-					monthLabel.getSelectedIndex() + 1));
-			daysPanel.setRows(data.getWeeks());
+			//noinspection DataFlowIssue
+			setCalendar(controller.getCalendarData((Integer) yearLabel.getSelectedItem(),
+					monthLabel.getSelectedItem().toString()));
+			daysPanel.setRows(calendar.getWeeks());
 			build();
 			controller.repaint();
 		}

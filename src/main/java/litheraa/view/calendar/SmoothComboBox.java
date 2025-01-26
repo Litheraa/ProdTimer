@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class SmoothComboBox<E> extends JComboBox<E> {
-
 	public SmoothComboBox(ArrayList<E> context, int showItem) {
 		//noinspection unchecked
 		super((E[]) context.toArray());
@@ -47,5 +46,4 @@ public class SmoothComboBox<E> extends JComboBox<E> {
 		});
 		setEnabled(false);
 	}
-
 }

@@ -114,6 +114,10 @@ public class ViewController {
 		return controller.getCalendarData(year, month);
 	}
 
+	public void setCalendarGoal(Calendar calendar, int day) {
+		controller.setCalendarGoal(calendar, day);
+	}
+
 	public ArrayList<Integer> getCalendarYears() {
 		return controller.getCalendarYears();
 	}

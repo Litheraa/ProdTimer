@@ -2,6 +2,7 @@ package litheraa.view.message;
 
 import litheraa.view.MainFrame;
 import org.jdesktop.swingx.JXLabel;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,20 +39,7 @@ public class About extends JDialog {
 		startingLabel.setTextAlignment(JXLabel.TextAlignment.CENTER);
 		startingLabel.setSize(300, 50);
 		startingLabel.setLineWrap(true);
-		JXLabel hyperLinkLabel = new JXLabel(hyperLink);
-		hyperLinkLabel.setTextAlignment(JXLabel.TextAlignment.CENTER);
-		hyperLinkLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		hyperLinkLabel.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				String uri = hyperLink.substring(hyperLink.indexOf("http"), hyperLink.indexOf("title") - 2);
-				try {
-					Desktop.getDesktop().browse(new URI(uri));
-				} catch (URISyntaxException | IOException ex) {
-					JOptionPane.showMessageDialog(aboutDialog, "Ошибка при попытке открыть сайт " + uri);
-				}
-			}
-		});
+		JXLabel hyperLinkLabel = getHyperLinkLabel(hyperLink);
 
 		JXLabel endingLabel = new JXLabel(endingText);
 		endingLabel.setTextAlignment(JXLabel.TextAlignment.CENTER);
@@ -87,6 +75,24 @@ public class About extends JDialog {
 		container.add(ok);
 
 		setVisible(true);
+	}
+
+	private static @NotNull JXLabel getHyperLinkLabel(String hyperLink) {
+		JXLabel hyperLinkLabel = new JXLabel(hyperLink);
+		hyperLinkLabel.setTextAlignment(JXLabel.TextAlignment.CENTER);
+		hyperLinkLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		hyperLinkLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String uri = hyperLink.substring(hyperLink.indexOf("http"), hyperLink.indexOf("title") - 2);
+				try {
+					Desktop.getDesktop().browse(new URI(uri));
+				} catch (URISyntaxException | IOException ex) {
+					JOptionPane.showMessageDialog(aboutDialog, "Ошибка при попытке открыть сайт " + uri);
+				}
+			}
+		});
+		return hyperLinkLabel;
 	}
 
 	public static void showAbout(MainFrame mainFrame) {

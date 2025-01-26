@@ -1,6 +1,7 @@
 package litheraa.data.calendar;
 
 import litheraa.SettingsController;
+import litheraa.util.CalendarWrapper;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,8 @@ public class Calendar {
 	@Getter
 	private final int firstDay;
 	@Getter
+	private final int lastDay;
+	@Getter
 	private final int days;
 	private final GregorianCalendar calendar;
 	private final Map<Integer, CalendarDay> dayMap = new HashMap<>();
@@ -31,17 +34,39 @@ public class Calendar {
 		this.month = month;
 		//noinspection MagicConstant
 		calendar = new GregorianCalendar(year, month - 1, 1);
-		firstDay = calculateFirstDay();
 		days = calculateDays();
+		firstDay = calculateFirstDay();
+		lastDay = calculateLastDay();
 		weeks = calculateWeeks();
+	}
+
+	public Calendar(String date) {
+		this(CalendarWrapper.getYear(date), CalendarWrapper.getMonth(date));
 	}
 
 	private int calculateFirstDay() {
 		int tempFirsDay = (calendar.get(java.util.Calendar.DAY_OF_WEEK) + 6) % 7;
-		if (tempFirsDay == 0) {
-			tempFirsDay = 7;
+		return tempFirsDay == 0 ? 7 : tempFirsDay;
+	}
+
+	private int calculateLastDay() {
+		int tempLastDay;
+		boolean isSmallMonth = days % 2 == 0;
+		if (month != 2) {
+			if (isSmallMonth) {
+				tempLastDay = firstDay + 1;
+			} else {
+				tempLastDay = firstDay + 2;
+			}
+		} else {
+			if (isSmallMonth) {
+				tempLastDay = firstDay - 1;
+			} else {
+				tempLastDay = firstDay;
+			}
 		}
-		return tempFirsDay;
+		tempLastDay = tempLastDay % 7;
+		return tempLastDay == 0 ? 7 : tempLastDay;
 	}
 
 	private int calculateDays() {
@@ -56,8 +81,8 @@ public class Calendar {
 		return MONTH_NAME[month - 1];
 	}
 
-	public void setDayMap(int day, int dayGoal, double dayProgress, String textNames) {
-		dayMap.put(day, new CalendarDay(dayGoal, dayProgress, textNames));
+	public String getDate(int day) {
+		return year + "-" + month + "-" + day;
 	}
 
 	public void setDayGoal(int day, int dayGoal) {
@@ -87,7 +112,7 @@ public class Calendar {
 	}
 
 	public String getTextNames(int day) {
-		return dayMap.getOrDefault(day, CalendarDay.getDefault()).getTextNames();
+		return dayMap.getOrDefault(day, CalendarDay.getDefault()).getTextNames().replace("/", System.lineSeparator());
 	}
 
 	public static int getTodayMonth() {

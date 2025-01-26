@@ -18,7 +18,7 @@ public class Core {
 	@Setter
 	private static ProdTimerController controller;
 
-	// ищет и добавляет файлы поштучно
+	/// ищет и добавляет файлы поштучно
 	private static LinkedList<Path> findProd(Path startPath) {
 		LinkedList<Path> paths = new LinkedList<>();
 		Iterator<File> path = FileUtils.iterateFiles(
@@ -34,7 +34,7 @@ public class Core {
 		return paths;
 	}
 
-	// список ВСЕХ найденных файлов
+	/// список ВСЕХ найденных файлов
 	public static LinkedList<Path> findProd(LinkedList<Path> directories) {
 		LinkedList<Path> files = new LinkedList<>();
 		for (Path directory : directories) files.addAll(findProd(directory));

@@ -1,7 +1,5 @@
 package litheraa.view.calendar;
 
-import lombok.Setter;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
@@ -11,13 +9,18 @@ public class DaysPanel extends JPanel {
 	private final int columns;
 	private final int hGap;
 	private final int vGap;
+	private final GridLayout layout = new GridLayout();
 
 	public DaysPanel(int rows, int columns, int hGap, int vGap) {
-		super(new GridLayout(rows, columns, hGap, vGap));
+		setLayout(layout);
 		this.rows = rows;
 		this.columns = columns;
 		this.hGap = hGap;
 		this.vGap = vGap;
+		layout.setRows(rows);
+		layout.setColumns(columns);
+		layout.setHgap(hGap);
+		layout.setVgap(vGap);
 	}
 
 	public Dimension getDaySize(Dimension containerSize) {
@@ -27,7 +30,7 @@ public class DaysPanel extends JPanel {
 
 	public void setRows(int rows) {
 		this.rows = rows;
-		setLayout(new GridLayout(rows, columns, hGap, vGap));
+		layout.setRows(rows);
 	}
 
 	public boolean isEmpty() {

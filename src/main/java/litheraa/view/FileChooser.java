@@ -5,7 +5,7 @@ import litheraa.SettingsController;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-//TODO вертикальная полоса прокрутки
+
 public class FileChooser extends JFileChooser {
 
     private static final FileNameExtensionFilter FILTER =

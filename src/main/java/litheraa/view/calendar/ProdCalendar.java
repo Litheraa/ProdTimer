@@ -78,8 +78,8 @@ public class ProdCalendar extends JPanel {
 		add(daysPanel);
 	}
 
-	private void createEmptyDays() {
-		for (int i = 1; i < data.getFirstDay(); i++) {
+	private void createEmptyDays(int days) {
+		for (int i = 1; i < days; i++) {
 			JPanel emptyDay = new JPanel();
 			emptyDay.setVisible(false);
 			daysPanel.add(emptyDay);
@@ -88,9 +88,9 @@ public class ProdCalendar extends JPanel {
 
 	private void createDays() {
 		for (int day = 1; day <= data.getDays(); day++) {
-			ProgressContainer container = new ProgressContainer(data.getProgress(day), data.getDayGoal(day));
+			ProgressContainer container = new ProgressContainer(data, day);
 			container.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-			container.createVerticalProgress(day);
+			container.createVerticalProgress(controller);
 			days.add(container);
 			daysPanel.add(days.get(day - 1));
 		}
@@ -110,8 +110,11 @@ public class ProdCalendar extends JPanel {
 	}
 
 	public void build() {
-		createEmptyDays();
+		createEmptyDays(data.getFirstDay());
 		createDays();
+/// GritLayout in which days located ignores number of columns (days in week) if rows are set.
+/// To prevent weeks with 6 days im forced to add some empty days in the end of the month
+		createEmptyDays(7 - data.getLastDay());
 		for (ProgressContainer container : days) {
 			container.adjustInnerComponentsSize(daysPanel.getDaySize(getDaysPanelSize(controller.getWindowSize(ViewType.CALENDAR.ordinal()))));
 		}

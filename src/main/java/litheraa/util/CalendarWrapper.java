@@ -8,10 +8,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class CalendarWrapper {
+    private static final String SEPARATOR = "-";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
 
     public static Date wrapToDate(@NotNull String dateString) {
-        String[] date = dateString.split("-");
+        String[] date = dateString.split(SEPARATOR);
         Calendar calendar = new GregorianCalendar();
         calendar.set(Calendar.DATE, Integer.parseInt(date[0]));
         calendar.set(Calendar.MONTH, Integer.parseInt(date[1]) - 1);
@@ -20,7 +21,7 @@ public class CalendarWrapper {
     }
 
     public static java.sql.Date wrapToSQLDate(String dateString) {
-        String[] date = dateString.split("-");
+        String[] date = dateString.split(SEPARATOR);
         Calendar calendar = new GregorianCalendar();
         calendar.set(Calendar.DATE, Integer.parseInt(date[0]));
         calendar.set(Calendar.MONTH, Integer.parseInt(date[1]) - 1);
@@ -30,5 +31,13 @@ public class CalendarWrapper {
 
     public static String wrapToString(@NotNull Date date) {
         return DATE_FORMAT.format(date);
+    }
+
+    public static int getYear(String date) {
+        return Integer.parseInt(date.split(SEPARATOR)[0]);
+    }
+
+    public static int getMonth(String date) {
+        return Integer.parseInt(date.split(SEPARATOR)[1]);
     }
 }

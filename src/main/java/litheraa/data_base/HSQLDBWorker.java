@@ -48,7 +48,7 @@ public class HSQLDBWorker {
 			"WHERE lastModified < CURRENT_DATE AND textPath = ? LIMIT 1";
 
 	private static final String CREATE_ROUTINE = "CREATE TABLE IF NOT EXISTS Routine " +
-			"(date DATE DEFAULT CURRENT_DATE UNIQUE, chars REAL DEFAULT 0, textNames VARCHAR(500))";
+			"(date DATE DEFAULT CURRENT_DATE UNIQUE, chars REAL DEFAULT 0, charGoal INTEGER, textNames VARCHAR(500))";
 
 	private static final String CREATE_ROUTINE_TEMP_TABLE = "DECLARE LOCAL TEMPORARY TABLE RTemp AS " +
 			"(SELECT lastModified, SUM(charsOnDate) AS chars, STRING_AGG(name, '/') AS names " +
@@ -61,7 +61,9 @@ public class HSQLDBWorker {
 
 	private static final String SELECT_ROUTINE = "SELECT date, chars, textNames FROM Routine WHERE date >= ?";
 
-	private static final String SELECT_CALENDAR =  "SELECT date, chars, textNames FROM Routine WHERE date LIKE ?";
+	private static final String SELECT_CALENDAR =  "SELECT date, chars, charGoal, textNames FROM Routine WHERE date LIKE ?";
+
+	private static final String UPDATE_CALENDAR = "UPDATE ROUTINE SET charGoal = ? WHERE date LIKE ?";
 
 	private static final String SELECT_AVAILABLE_YEARS = "SELECT EXTRACT (YEAR FROM date) AS UniqueYear FROM ROUTINE GROUP BY UniqueYear";
 
@@ -200,8 +202,7 @@ public class HSQLDBWorker {
 	}
 
 	public static Calendar selectCalendar(String date) {
-		String[] dateArray = date.split("-");
-		Calendar calendar = new Calendar(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]));
+		Calendar calendar = new Calendar(date);
 		try (PreparedStatement pS = getPreparedStatement(SELECT_CALENDAR)) {
 			pS.setString(1, date);
 			var result = pS.executeQuery();
@@ -210,14 +211,24 @@ public class HSQLDBWorker {
 				java.util.Date resultDate = result.getDate("date");
 				temp.setTime(resultDate);
 				int day = temp.get(java.util.Calendar.DATE);
-//				calendar.setDayGoal(day, result.getInt("goal"));
 				calendar.setDayProgress(day, result.getDouble("chars"));
+				calendar.setDayGoal(day, result.getInt("charGoal"));
 				calendar.setTextNames(day, result.getString("textNames"));
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return calendar;
+	}
+
+	public static void updateCalendar(Calendar data, int day) {
+		try (PreparedStatement pS = getPreparedStatement(UPDATE_CALENDAR)) {
+			pS.setInt(1, data.getDayGoal(day));
+			pS.setString(2, data.getDate(day));
+			pS.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static ArrayList<Integer> selectYears() {

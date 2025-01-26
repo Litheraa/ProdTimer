@@ -7,8 +7,6 @@ import java.util.ArrayList;
 
 public interface ProdTimerControllerInterface {
 
-    void openProd();
-
     void createDB();
 
     void setAutoStart(boolean isAutoStart);

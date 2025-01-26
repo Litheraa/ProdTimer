@@ -18,7 +18,7 @@ import lombok.SneakyThrows;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-//TODO подсветка радиобаттонов
+
 public class TableMenuBar extends JMenuBar {
 
 	private final ProdTimerController controller;

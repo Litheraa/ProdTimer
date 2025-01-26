@@ -25,10 +25,6 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 		setTrayIcon(false);
 	}
 
-	@Override
-	public void openProd() {
-	}
-
 	public void setView(ViewType viewType) {
 		SettingsController.setViewType(viewType);
 	}
@@ -81,6 +77,10 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 
 	public Calendar getCalendarData() {
 		return HSQLDBWorker.selectCalendar(Calendar.getTodayYear(), Calendar.getTodayMonth());
+	}
+
+	public void setCalendarGoal(Calendar calendar, int day) {
+		HSQLDBWorker.updateCalendar(calendar, day);
 	}
 
 	public ArrayList<Integer> getCalendarYears() {

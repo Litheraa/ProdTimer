@@ -18,7 +18,7 @@ public class NumberDeclensionRu {
 			return isMale ? text : text.concat(a);
 		}
 		if (Boolean.logicalOr(ten >= 2 && ten <= 4, ten > 20 && (one >= 2 && one <= 4))) {
-			String ret = "";
+			String ret = empty;
 			ret = isMale ? ret.concat(temp[0]).concat(a) : ret.concat(temp[0]).replace("а", i);
 			return ret.concat(" ").concat(temp[1].concat(o));
 		}

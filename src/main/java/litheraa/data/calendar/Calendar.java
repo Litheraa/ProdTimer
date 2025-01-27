@@ -82,11 +82,13 @@ public class Calendar {
 	}
 
 	public String getDate(int day) {
-		return year + "-" + month + "-" + day;
+		String monthString = month < 10 ? "0" + month : String.valueOf(month);
+		return year + "-" + monthString + "-" + day;
 	}
 
 	public void setDayGoal(int day, int dayGoal) {
 		CalendarDay calendarDay = dayMap.getOrDefault(day, CalendarDay.getDefault());
+		dayGoal = dayGoal == 0 ? CalendarDay.defaultGoal : dayGoal;
 		calendarDay.setGoal(dayGoal);
 		dayMap.put(day, calendarDay);
 	}

@@ -1,7 +1,9 @@
 package litheraa;
 
 import litheraa.data.Text;
-import litheraa.util.WordReaderUtil;
+import litheraa.util.readers.FileTypes;
+import litheraa.util.readers.ReaderFactory;
+import litheraa.util.readers.ReaderInterface;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -14,7 +16,6 @@ import java.util.*;
 
 public class Core {
 
-	private static final WordReaderUtil wordReader = new WordReaderUtil();
 	@Setter
 	private static ProdTimerController controller;
 
@@ -23,7 +24,7 @@ public class Core {
 		LinkedList<Path> paths = new LinkedList<>();
 		Iterator<File> path = FileUtils.iterateFiles(
 				startPath.toFile(),
-				WildcardFileFilter.builder().setWildcards("*.docx").get(),
+				WildcardFileFilter.builder().setWildcards(new FileTypes().getWildCards()).get(),
 				TrueFileFilter.INSTANCE);
 		while (path.hasNext()) {
 			Path p = path.next().toPath();
@@ -47,21 +48,21 @@ public class Core {
 	public static LinkedList<Text> collectTextsData(LinkedList<Path> files) {
 		try {
 			Iterator<Path> iterator = Objects.requireNonNull(findProd(files)).iterator();
-
 			LinkedList<Text> data = new LinkedList<>();
 			while (iterator.hasNext()) {
 				Path file = iterator.next();
+				ReaderInterface reader = ReaderFactory.createReader(file);
 				Text text = new Text();
-				text.setProdName(wordReader.getProdName(file));
-				text.setCreated(wordReader.getCreationDate(file));
-				text.setLastModified(wordReader.getLastModifiedDate(file));
-				text.setTextChars(wordReader.getCharacters(file));
+				text.setProdName(reader.getProdName(file));
+				text.setCreated(reader.getCreationDate(file));
+				text.setLastModified(reader.getLastModifiedDate(file));
+				text.setTextChars(reader.getCharacters(file));
 				text.setTextName(String.valueOf(file.getFileName()));
 				text.setPath(file);
 				data.add(text);
 			}
 			return data;
-		} catch (NullPointerException e) {
+		} catch (RuntimeException e) {
 			controller.notFilesFound();
 		}
 		return null;

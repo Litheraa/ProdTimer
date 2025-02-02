@@ -54,6 +54,7 @@ public class TrayView {
 
 			PopupMenu menu = new PopupMenu();
 			menu.add(toFull);
+			menu.add(refresh);
 			menu.addSeparator();
 			menu.add(exit);
 			trayIcon = new TrayIcon(getBI(), "Сегодня написано: " + todayChars, menu);

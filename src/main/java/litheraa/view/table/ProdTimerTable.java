@@ -5,6 +5,7 @@ import litheraa.data.RoutineEnum;
 import litheraa.view.MainFrame;
 import litheraa.data.TextEnum;
 import litheraa.view.table.renderers.HeaderRenderer;
+import litheraa.view.table.renderers.LayeredRenderer;
 import litheraa.view.table.renderers.ProgressRenderer;
 import litheraa.view.table.renderers.TextAreaRenderer;
 import litheraa.view.util.DoubleFilter;
@@ -69,6 +70,10 @@ public class ProdTimerTable extends JTable {
 
 	public void setProgressBar() {
 		getColumnModel().getColumn(convertColumnIndexToView(RoutineEnum.PROD_CHARS.ordinal())).setCellRenderer(new ProgressRenderer());
+	}
+
+	public void setProgress() {
+		getColumnModel().getColumn(convertColumnIndexToView(TextEnum.CHARS_TOTAL.ordinal())).setCellRenderer(new LayeredRenderer());
 	}
 
 	@Override

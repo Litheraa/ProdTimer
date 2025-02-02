@@ -39,6 +39,7 @@ public class ViewController {
 		switch (SettingsController.getViewType()) {
 			case ViewType.TEXTS:
 				table = new ProdTimerTable(mainFrame, new TextModel(controller.getTextsData()));
+				table.setProgress();
 				menu = new TableMenuBar(controller).createTextsMenu();
 				mainFrame.setMainComponent(table);
 				mainFrame.setJMenuBar(menu);

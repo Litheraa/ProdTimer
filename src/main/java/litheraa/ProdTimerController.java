@@ -5,6 +5,7 @@ import litheraa.data_base.HSQLDBWorker;
 import litheraa.data.Routine;
 import litheraa.data.Text;
 import litheraa.util.ViewType;
+import litheraa.util.readers.FileTypes;
 import litheraa.view.*;
 import litheraa.view.message.Tip;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import java.util.*;
 @Getter
 public class ProdTimerController implements ProdTimerControllerInterface {
 	private final ViewController viewController;
+	private final FileTypes fileTypes = new FileTypes();
 
 	public ProdTimerController() {
 		createDB();
@@ -94,7 +96,7 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	}
 
 	public void notFilesFound() {
-		int result = MainFrame.getErrorMessage("Не найдено файлов с расширением \"docx\". Проверьте настройки " + SettingsController.getPathToDirectories());
+		int result = MainFrame.getErrorMessage("Не найдено файлов с расширениями " + Arrays.toString(fileTypes.getWildCards()) + ". Проверьте настройки " + SettingsController.getPathToDirectories());
 		if (result == JOptionPane.YES_OPTION) {
 			chooseFile();
 		}

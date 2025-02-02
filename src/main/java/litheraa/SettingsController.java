@@ -235,8 +235,8 @@ public class SettingsController extends SettingsUtil {
 
 	public static Point getLocation() {
 		String[] string = SettingsUtil.get(KEYS.location()).split("/");
-		if (!string[0].matches("^[0-9]+$") && !string[1].matches("^[0-9]+$")) {
-			return GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
+		if (!string[0].matches("^[0-9]+$") || !string[1].matches("^[0-9]+$")) {
+			return new Point(0, 0);
 		}
 		return new Point(Integer.parseInt(string[0]), Integer.parseInt(string[1]));
 	}

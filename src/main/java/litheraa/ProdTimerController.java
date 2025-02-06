@@ -4,21 +4,24 @@ import litheraa.data.calendar.Calendar;
 import litheraa.data_base.HSQLDBWorker;
 import litheraa.data.Routine;
 import litheraa.data.Text;
+import litheraa.util.SpringContextReaders;
 import litheraa.util.ViewType;
-import litheraa.util.readers.FileTypes;
+import litheraa.util.readers.ReaderFactory;
 import litheraa.view.*;
 import litheraa.view.message.Tip;
 import lombok.Getter;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.swing.*;
+import java.io.File;
 import java.util.*;
 
 @Getter
 public class ProdTimerController implements ProdTimerControllerInterface {
 	private final ViewController viewController;
-	private final FileTypes fileTypes = new FileTypes();
 
 	public ProdTimerController() {
+		new AnnotationConfigApplicationContext(SpringContextReaders.class).getBean(ReaderFactory.class);
 		createDB();
 		viewController = new ViewController(this);
 		saveData();
@@ -30,7 +33,6 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	public void setView(ViewType viewType) {
 		SettingsController.setViewType(viewType);
 	}
-
 
 	@Override
 	public void createDB() {
@@ -96,14 +98,21 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	}
 
 	public void notFilesFound() {
-		int result = MainFrame.getErrorMessage("Не найдено файлов с расширениями " + Arrays.toString(fileTypes.getWildCards()) + ". Проверьте настройки " + SettingsController.getPathToDirectories());
+		int result = MainFrame.getErrorMessage("Не найдено файлов с расширениями " +
+				Arrays.toString(ReaderFactory.getWildCards()) +
+				". Проверьте настройки " +
+				SettingsController.getPathToDirectories());
 		if (result == JOptionPane.YES_OPTION) {
 			chooseFile();
 		}
 	}
 
 	public void chooseFile() {
-		FileChooser.chooseFile(viewController.getMainFrame(), this);
+		File file = FileChooser.chooseFile(viewController.getMainFrame(), ReaderFactory.getReaders());
+		if (file != null) {
+			SettingsController.setProdDirectory(file);
+			refresh();
+		}
 	}
 
 	public void refresh() {

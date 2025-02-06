@@ -1,18 +1,13 @@
 package litheraa.view;
 
-import litheraa.ProdTimerController;
-import litheraa.SettingsController;
-import litheraa.util.readers.FileTypes;
+import litheraa.util.readers.ReaderInterface;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
+import java.util.Collection;
 
 public class FileChooser extends JFileChooser {
-/// There's strange bug in FileNameExtensionFilter. It may not set extensions to filter while it's an argument in array form.
-///  Instead I forced to set extensions one by one
-    private static final FileTypes F = new FileTypes();
-    private static final FileNameExtensionFilter FILTER =
-            new FileNameExtensionFilter(F.getFullNames(), F.docx(), F.doc(), F.odt());
 
     static {
         UIManager.put(
@@ -25,18 +20,19 @@ public class FileChooser extends JFileChooser {
                 "FileChooser.lookInLabelText", "Путь");
     }
 
-    private FileChooser(String name) {
-        super(name);
+    private FileChooser(Collection<ReaderInterface> collection) {
+        super("Добавить новую проду");
+		for (ReaderInterface readerInterface : collection) {
+			addChoosableFileFilter(new FileNameExtensionFilter(readerInterface.getFileTypeDescription(), readerInterface.getFileType()));
+		}
+	    setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     }
 
-    public static void chooseFile(MainFrame mainFrame, ProdTimerController controller) {
-        JFileChooser fileChooser = new JFileChooser("Добавить новую проду");
-        fileChooser.setFileFilter(FILTER);
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    public static File chooseFile(MainFrame mainFrame, Collection<ReaderInterface> collection) {
+        FileChooser fileChooser = new FileChooser(collection);
 
         if (fileChooser.showDialog(mainFrame, "Открыть") == JFileChooser.APPROVE_OPTION) {
-            SettingsController.setProdDirectory(fileChooser.getSelectedFile());
-            controller.refresh();
-        }
+            return fileChooser.getSelectedFile();
+        } else return null;
     }
 }

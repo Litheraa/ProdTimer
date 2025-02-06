@@ -14,6 +14,9 @@ import java.util.Date;
 
 public abstract class ReaderInterface {
 
+	public abstract String getFileType();
+	public abstract String getFileTypeDescription();
+
 	protected abstract StringBuilder getText(Path path);
 
 	private StringBuilder trimText(Path path) {

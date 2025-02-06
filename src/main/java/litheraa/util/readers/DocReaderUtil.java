@@ -3,12 +3,14 @@ package litheraa.util.readers;
 import org.apache.commons.math3.util.Pair;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Date;
 
+@Component
 public class DocReaderUtil extends ReaderInterface{
 
 	private HWPFDocument getDocument(Path path) {
@@ -17,6 +19,16 @@ public class DocReaderUtil extends ReaderInterface{
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public String getFileType() {
+		return "doc";
+	}
+
+	@Override
+	public String getFileTypeDescription() {
+		return "Word document (*.doc)";
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package litheraa;
 
 import litheraa.data.Text;
-import litheraa.util.readers.FileTypes;
 import litheraa.util.readers.ReaderFactory;
 import litheraa.util.readers.ReaderInterface;
 import lombok.Setter;
@@ -24,7 +23,7 @@ public class Core {
 		LinkedList<Path> paths = new LinkedList<>();
 		Iterator<File> path = FileUtils.iterateFiles(
 				startPath.toFile(),
-				WildcardFileFilter.builder().setWildcards(new FileTypes().getWildCards()).get(),
+				WildcardFileFilter.builder().setWildcards(ReaderFactory.getWildCards()).get(),
 				TrueFileFilter.INSTANCE);
 		while (path.hasNext()) {
 			Path p = path.next().toPath();

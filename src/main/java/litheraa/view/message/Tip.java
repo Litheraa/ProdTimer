@@ -1,6 +1,6 @@
 package litheraa.view.message;
 
-import litheraa.SettingsController;
+import litheraa.controller.SettingsController;
 import litheraa.view.MainFrame;
 import org.jdesktop.swingx.JXLabel;
 

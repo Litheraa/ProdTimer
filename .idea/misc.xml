@@ -3,6 +3,7 @@
   <component name="EntryPointsManager">
     <writeAnnotations>
       <writeAnnotation name="lombok.Getter" />
+      <writeAnnotation name="org.springframework.beans.factory.annotation.Autowired" />
     </writeAnnotations>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />

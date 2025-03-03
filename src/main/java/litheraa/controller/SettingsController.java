@@ -1,4 +1,4 @@
-package litheraa;
+package litheraa.controller;
 
 import litheraa.data_base.HSQLDBWorker;
 import litheraa.util.ViewType;

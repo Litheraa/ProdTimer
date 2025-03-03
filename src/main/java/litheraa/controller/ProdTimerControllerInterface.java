@@ -1,7 +1,7 @@
-package litheraa;
+package litheraa.controller;
 
-import litheraa.data.Routine;
-import litheraa.data.Text;
+import litheraa.data.RoutineOld;
+import litheraa.data.TextOld;
 
 import java.util.ArrayList;
 
@@ -17,8 +17,8 @@ public interface ProdTimerControllerInterface {
 
     void saveDataByTimer();
 
-    ArrayList<Text> getTextsData();
+    ArrayList<TextOld> getTextsData();
 
-    ArrayList<Routine> getRoutineData();
+    ArrayList<RoutineOld> getRoutineData();
 
 }

@@ -1,5 +1,6 @@
 package litheraa.util.readers;
 
+import lombok.Setter;
 import org.apache.poi.ooxml.POIXMLProperties;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -8,13 +9,13 @@ import org.springframework.stereotype.Component;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
 public final class DocXReaderUtil extends ReaderInterface {
 
-    private XWPFDocument getDocument(Path path) {
+    private XWPFDocument getDocument() {
         try (FileInputStream fileInputStream = new FileInputStream(path.toString())) {
             return new XWPFDocument(fileInputStream);
         } catch (IOException e) {
@@ -33,8 +34,8 @@ public final class DocXReaderUtil extends ReaderInterface {
     }
 
     @Override
-    protected StringBuilder getText(Path path) {
-        List<XWPFParagraph> paragraphs = getDocument(path).getParagraphs();
+    protected StringBuilder getText() {
+        List<XWPFParagraph> paragraphs = getDocument().getParagraphs();
         StringBuilder text = new StringBuilder();
         for (XWPFParagraph p : paragraphs) {
             text.append(p.getText());
@@ -42,17 +43,17 @@ public final class DocXReaderUtil extends ReaderInterface {
         return text;
     }
 
-    private POIXMLProperties.ExtendedProperties getProperties(Path path) {
-        return getDocument(path).getProperties().getExtendedProperties();
+    private POIXMLProperties.ExtendedProperties getProperties() {
+        return getDocument().getProperties().getExtendedProperties();
     }
 
     @Override
-    public Date getCreationDate(Path path) {
-        return getDocument(path).getProperties().getCoreProperties().getCreated();
+    public LocalDate getCreationDate() {
+        return convertToLocalDate(getDocument().getProperties().getCoreProperties().getCreated());
     }
 
     @Override
-    public Date getLastModifiedDate(Path path) {
-        return getDocument(path).getProperties().getCoreProperties().getModified();
+    public LocalDate getLastModifiedDate() {
+        return convertToLocalDate(getDocument().getProperties().getCoreProperties().getModified());
     }
 }

@@ -1,7 +1,7 @@
 package litheraa.data_base;
 
 import litheraa.util.ProjectFolderUtil;
-import litheraa.util.PropertiesUtil;
+//import litheraa.util.PropertiesUtil;
 import lombok.SneakyThrows;
 
 import java.sql.Connection;
@@ -15,20 +15,20 @@ public class HSQLDBConnector extends ProjectFolderUtil {
     @lombok.Getter
     private static Connection connection;
 
-    static {
-	    try {
-		    Class.forName("org.hsqldb.jdbc.JDBCDriver");
-	    } catch (ClassNotFoundException e) {
-		    throw new RuntimeException(e);
-	    }
-    }
+//    static {
+//	    try {
+//		    Class.forName("org.hsqldb.jdbc.JDBCDriver");
+//	    } catch (ClassNotFoundException e) {
+//		    throw new RuntimeException(e);
+//	    }
+//    }
 
     @SneakyThrows
     public static PreparedStatement getPreparedStatement(String query) {
         connection = DriverManager.getConnection(
                 URL_KEY,
-                PropertiesUtil.get(USER_KEY),
-                PropertiesUtil.get(PASSWORD_KEY));
+                "SA",
+                "");
         return connection.prepareStatement(query);
     }
 }

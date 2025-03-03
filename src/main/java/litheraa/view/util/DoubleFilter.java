@@ -1,6 +1,6 @@
 package litheraa.view.util;
 
-import litheraa.SettingsController;
+import litheraa.controller.SettingsController;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;

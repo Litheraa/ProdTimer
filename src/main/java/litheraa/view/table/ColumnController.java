@@ -1,6 +1,6 @@
 package litheraa.view.table;
 
-import litheraa.SettingsController;
+import litheraa.controller.SettingsController;
 import litheraa.util.KeysRecord;
 import litheraa.view.MainFrame;
 import litheraa.view.util.ColumnKeysRecord;

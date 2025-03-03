@@ -11,7 +11,7 @@ import java.util.Iterator;
 @Component
 public class ODTReaderUtil extends ReaderInterface {
 
-	private TextDocument getDocument(Path path) {
+	private TextDocument getDocument() {
 		try {
 			FileInputStream fileInputStream = new FileInputStream(path.toString());
 			return TextDocument.loadDocument(fileInputStream);
@@ -31,9 +31,9 @@ public class ODTReaderUtil extends ReaderInterface {
 	}
 
 	@Override
-	public StringBuilder getText(Path path) {
+	public StringBuilder getText() {
 		StringBuilder text = new StringBuilder();
-		for (Iterator<Paragraph> it = getDocument(path).getParagraphIterator(); it.hasNext(); ) {
+		for (Iterator<Paragraph> it = getDocument().getParagraphIterator(); it.hasNext(); ) {
 			text.append(it.next().getTextContent());
 		}
 		return text;

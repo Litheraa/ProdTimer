@@ -1,7 +1,7 @@
 package litheraa.view.table;
 
 import com.github.weisj.darklaf.listener.PopupMenuAdapter;
-import litheraa.ViewController;
+import litheraa.controller.ViewController;
 import litheraa.data.ColumnDataTypeEnum;
 import litheraa.view.DateChooseDialog;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package litheraa.view.table;
 
 import litheraa.data.ColumnDataTypeEnum;
-import litheraa.data.Routine;
+import litheraa.data.RoutineOld;
 import litheraa.data.RoutineEnum;
 import litheraa.util.CalendarWrapper;
 import litheraa.util.MeasureUnit;
@@ -13,10 +13,10 @@ import java.util.ArrayList;
 
 public class RoutineModel extends AbstractTableModel implements ColumnType{
 
-        private final ArrayList<? extends Routine> data;
+        private final ArrayList<? extends RoutineOld> data;
         private final String[] header = {"Дата", "Знаки", "В текстах"};
 
-        public RoutineModel(ArrayList<? extends Routine> data) {
+        public RoutineModel(ArrayList<? extends RoutineOld> data) {
             this.data = data;
         }
 
@@ -33,13 +33,13 @@ public class RoutineModel extends AbstractTableModel implements ColumnType{
         @SneakyThrows
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            Routine routine = data.get(rowIndex);
+            RoutineOld routineOld = data.get(rowIndex);
             RoutineEnum column = RoutineEnum.values()[columnIndex];
 
             return switch (column) {
-                case RoutineEnum.DATE -> CalendarWrapper.wrapToString(routine.getLastModified().getTime());
-                case RoutineEnum.PROD_CHARS -> MeasureUnit.getToUnit(routine.getProdChars());
-                case RoutineEnum.NAMES -> routine.getTextNames().replaceAll("/", System.lineSeparator());
+                case RoutineEnum.DATE -> CalendarWrapper.wrapToString(routineOld.getLastModified().getTime());
+                case RoutineEnum.PROD_CHARS -> MeasureUnit.getToUnit(routineOld.getProdChars());
+                case RoutineEnum.NAMES -> routineOld.getTextNames().replaceAll("/", System.lineSeparator());
             };
         }
 

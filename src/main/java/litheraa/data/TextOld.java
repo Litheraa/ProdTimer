@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 @Getter
-public class Text extends Routine {
+public class TextOld extends RoutineOld {
     @Setter
     private String prodName;
     private Calendar created;
@@ -36,6 +36,6 @@ public class Text extends Routine {
     }
 
     public String toString() {
-        return "Text(prodName=" + this.getProdName() + ", created=" + this.getCreated().getTime() + ", lastModified=" + this.getLastModified().getTime() + ", prodChars=" + this.getProdChars() + ", textChars=" + this.getTextChars() + ", charsTotal=" + this.getCharsTotal() + ", textName=" + this.getTextName() + ", path=" + this.getPath() + ")";
+        return "TextOld(prodName=" + this.getProdName() + ", created=" + this.getCreated().getTime() + ", lastModified=" + this.getLastModified().getTime() + ", prodChars=" + this.getProdChars() + ", textChars=" + this.getTextChars() + ", charsTotal=" + this.getCharsTotal() + ", textName=" + this.getTextName() + ", path=" + this.getPath() + ")";
     }
 }

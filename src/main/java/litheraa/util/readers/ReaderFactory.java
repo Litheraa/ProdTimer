@@ -38,20 +38,13 @@ public class ReaderFactory {
 		return INTERFACE_MAP.values();
 	}
 
-	public static String getDescriptions() {
-		StringBuilder description = new StringBuilder();
-		for (ReaderInterface readerInterface : INTERFACE_MAP.values()) {
-			description.append(readerInterface.getFileTypeDescription()).append(", ");
-		}
-		return description.substring(0, description.length() - 2);
-	}
-
-	public static ReaderInterface createReader(Path file) {
-		String fileType = FileNameUtils.getExtension(file);
+	public static ReaderInterface createReader(Path path) {
+		String fileType = FileNameUtils.getExtension(path);
 		ReaderInterface readerInterface = INTERFACE_MAP.get(fileType);
 		if (readerInterface == null) {
 			throw new IllegalArgumentException("Unexpected value: " + fileType);
 		}
+		readerInterface.setPath(path);
 		return readerInterface;
 	}
 }

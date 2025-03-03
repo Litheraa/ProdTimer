@@ -1,22 +1,25 @@
-package litheraa;
+package litheraa.controller;
 
 import com.github.weisj.darklaf.LafManager;
 import com.github.weisj.darklaf.theme.Theme;
-import litheraa.data.calendar.Calendar;
+import litheraa.data.models.ProdTimeModel;
 import litheraa.data_base.HSQLDBWorker;
 import litheraa.util.ViewType;
 import litheraa.view.*;
-import litheraa.view.calendar.ProdCalendar;
+import litheraa.view.calendar.CalendarPanel;
 import litheraa.view.calendar.ProgressContainer;
 import litheraa.view.menu.TableMenuBar;
 import litheraa.view.table.ColumnController;
 import litheraa.view.table.ProdTimerTable;
 import litheraa.view.table.RoutineModel;
 import litheraa.view.table.TextModel;
+import litheraa.view.util.AspectRatioAdapter;
 import litheraa.view.util.Themes;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.Year;
+import java.util.Set;
 
 public class ViewController {
 	@lombok.Getter
@@ -65,7 +68,13 @@ public class ViewController {
 				mainFrame.setJMenuBar(menu);
 				mainFrame.setSize(getWindowSize(ViewType.CALENDAR.ordinal()));
 				mainFrame.setResizable(true);
-				ProdCalendar calendar = new ProdCalendar(this, controller.getCalendarData());
+
+				CalendarPanel calendar = new CalendarPanel(
+						this,
+						controller.getDataByPeriod(Year.now().atDay(1),
+								LocalDate.now()),
+						getWindowSize(ViewType.CALENDAR.ordinal()));
+
 				mainFrame.setMainComponent(calendar);
 				mainFrame.setVisible(true);
 				break;
@@ -111,16 +120,16 @@ public class ViewController {
 		SettingsController.setSize(SettingsController.getViewType().ordinal(), mainFrame.getWidth(), mainFrame.getHeight());
 	}
 
-	public Calendar getCalendarData(int year, String month) {
-		return controller.getCalendarData(year, Calendar.getMonthNo(month));
+	public ProdTimeModel getDataByPeriod(LocalDate from, LocalDate to) {
+		return controller.getDataByPeriod(from, to);
 	}
 
-	public void setCalendarGoal(Calendar calendar, int day) {
-		controller.setCalendarGoal(calendar, day);
+	public void setGoal(int goal, Long... timeId) {
+		controller.setGoal(goal, timeId);
 	}
 
-	public ArrayList<Integer> getCalendarYears() {
-		return controller.getCalendarYears();
+	public Set<Integer> getUniqueYears() {
+		return controller.getUniqueYears();
 	}
 
 	public void reset() {

@@ -1,7 +1,7 @@
 package litheraa.view.table;
 
 import litheraa.data.RoutineEnum;
-import litheraa.SettingsController;
+import litheraa.controller.SettingsController;
 import litheraa.data.ColumnDataTypeEnum;
 import litheraa.data.TableComparator;
 import litheraa.util.ViewType;

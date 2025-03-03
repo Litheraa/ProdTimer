@@ -1,7 +1,7 @@
 package litheraa.view;
 
 import com.github.weisj.darklaf.theme.Theme;
-import litheraa.ViewController;
+import litheraa.controller.ViewController;
 import litheraa.util.CalendarWrapper;
 import litheraa.view.table.FilterTextField;
 import litheraa.view.themes.ThemeColors;
@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class DateChooseDialog extends JXMonthView {
 	private final Calendar calendar = new GregorianCalendar();

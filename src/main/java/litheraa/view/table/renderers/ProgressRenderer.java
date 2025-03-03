@@ -1,6 +1,6 @@
 package litheraa.view.table.renderers;
 
-import litheraa.SettingsController;
+import litheraa.controller.SettingsController;
 import litheraa.util.MeasureUnit;
 import litheraa.util.NumberDeclensionRu;
 

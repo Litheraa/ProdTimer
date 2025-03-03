@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import litheraa.ProdTimerController;
+import litheraa.controller.ProdTimerController;
 import litheraa.view.table.ProdTimerTable;
 import lombok.Getter;
 import org.jdesktop.swingx.HorizontalLayout;

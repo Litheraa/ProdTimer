@@ -1,6 +1,6 @@
 package litheraa.view.time_spinner;
 
-import litheraa.SettingsController;
+import litheraa.controller.SettingsController;
 import lombok.SneakyThrows;
 
 import javax.swing.*;

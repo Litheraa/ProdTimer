@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 @Getter
-public class Routine {
+public class RoutineOld {
     private Calendar lastModified;
     @Setter
     private double prodChars;
@@ -21,6 +21,6 @@ public class Routine {
     }
 
     public String toString() {
-        return "Routine(lastModified=" + this.getLastModified().getTime() + ", prodChars=" + this.getProdChars() + ", textNames=" + this.getTextNames() + ")";
+        return "RoutineOld(lastModified=" + this.getLastModified().getTime() + ", prodChars=" + this.getProdChars() + ", textNames=" + this.getTextNames() + ")";
     }
 }

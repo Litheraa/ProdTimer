@@ -1,5 +1,7 @@
 package litheraa;
 
+import litheraa.controller.ProdTimerController;
+import litheraa.controller.SettingsController;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 

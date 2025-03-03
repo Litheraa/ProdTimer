@@ -1,6 +1,6 @@
 package litheraa.view.calendar;
 
-import litheraa.ViewController;
+import litheraa.controller.ViewController;
 import litheraa.view.themes.ThemeColors;
 
 import javax.swing.*;

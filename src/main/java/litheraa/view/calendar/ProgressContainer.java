@@ -1,8 +1,8 @@
 package litheraa.view.calendar;
 
-import litheraa.SettingsController;
-import litheraa.ViewController;
-import litheraa.data.calendar.Calendar;
+import litheraa.controller.SettingsController;
+import litheraa.controller.ViewController;
+import litheraa.data.models.ProdTimeModel;
 import litheraa.util.MeasureUnit;
 import litheraa.util.NumberDeclensionRu;
 import litheraa.view.util.IntegerFilter;
@@ -30,7 +30,7 @@ public class ProgressContainer extends JPanel {
 	private ImageIcon blankIcon;
 	private FlippedProgressBar progressBar;
 	private int date;
-	private Calendar data;
+	private ProdTimeModel prodTimeModel;
 
 	public ProgressContainer(double value, int maxValue) {
 		measuredValue = MeasureUnit.toChars(value);
@@ -38,9 +38,9 @@ public class ProgressContainer extends JPanel {
 		this.maxValue = maxValue;
 	}
 
-	public ProgressContainer(Calendar data, int date) {
-		this(data.getProgress(date), data.getDayGoal(date));
-		this.data = data;
+	public ProgressContainer(ProdTimeModel prodTimeModel, int date) {
+		this(prodTimeModel.getProgress(date), prodTimeModel.getDayGoal(date));
+		this.prodTimeModel = prodTimeModel;
 		this.date = date;
 	}
 
@@ -140,10 +140,10 @@ public class ProgressContainer extends JPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					String day = textField.getText();
-					goal.setText(day);
-					data.setDayGoal(date, Integer.parseInt(day));
-					controller.setCalendarGoal(data, date);
+					String dayGoal = textField.getText();
+					goal.setText(dayGoal);
+					prodTimeModel.setGoal(Integer.parseInt(dayGoal), date);
+					controller.setGoal(Integer.parseInt(dayGoal), prodTimeModel.getTimeId(date));
 					menu.setVisible(false);
 				}
 			}
@@ -165,7 +165,7 @@ public class ProgressContainer extends JPanel {
 	private void setDatePopUp() {
 		JPopupMenu menu = new JPopupMenu();
 		JXLabel textNames = new JXLabel();
-		textNames.setText("Вы работали в текстах:" + System.lineSeparator() + data.getTextNames(date));
+//		textNames.setText("Вы работали в текстах:" + System.lineSeparator() + prodTimeModel.getTextNames(date));
 		textNames.setSize(150, 10);
 		textNames.setVerticalTextPosition(SwingConstants.TOP);
 		textNames.setTextAlignment(JXLabel.TextAlignment.CENTER);

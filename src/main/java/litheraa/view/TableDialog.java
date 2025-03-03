@@ -1,6 +1,6 @@
 package litheraa.view;
 
-import litheraa.SettingsController;
+import litheraa.controller.SettingsController;
 import litheraa.util.CalendarWrapper;
 import litheraa.view.util.IntegerFilter;
 import lombok.SneakyThrows;

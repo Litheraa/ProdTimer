@@ -1,7 +1,7 @@
 package litheraa.view.menu;
 
 import com.github.weisj.darklaf.theme.Theme;
-import litheraa.ViewController;
+import litheraa.controller.ViewController;
 import litheraa.view.themes.OneDark;
 import litheraa.view.themes.ThemeColors;
 import lombok.Getter;

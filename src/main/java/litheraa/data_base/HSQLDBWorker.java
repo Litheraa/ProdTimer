@@ -1,15 +1,17 @@
 package litheraa.data_base;
 
-import litheraa.SettingsController;
-import litheraa.data.calendar.Calendar;
-import litheraa.data.Routine;
-import litheraa.data.Text;
+import litheraa.controller.SettingsController;
+import litheraa.data.RoutineOld;
+import litheraa.data.TextOld;
+import litheraa.data.models.ProdTimeModel;
 import litheraa.util.CalendarWrapper;
 
 import java.nio.file.Path;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -47,7 +49,7 @@ public class HSQLDBWorker {
 	private static final String SELECT_PROD_CHARS = "SELECT charsSoFar FROM Texts " +
 			"WHERE lastModified < CURRENT_DATE AND textPath = ? LIMIT 1";
 
-	private static final String CREATE_ROUTINE = "CREATE TABLE IF NOT EXISTS Routine " +
+	private static final String CREATE_ROUTINE = "CREATE TABLE IF NOT EXISTS RoutineOld " +
 			"(date DATE DEFAULT CURRENT_DATE UNIQUE, chars REAL DEFAULT 0, charGoal INTEGER, textNames VARCHAR(500))";
 
 	private static final String CREATE_ROUTINE_TEMP_TABLE = "DECLARE LOCAL TEMPORARY TABLE RTemp AS " +
@@ -55,19 +57,19 @@ public class HSQLDBWorker {
 			"FROM Texts GROUP BY lastModified) " +
 			"WITH DATA ON COMMIT PRESERVE ROWS";
 
-	private static final String MERGE_ROUTINE_FROM_TEMP = "MERGE INTO Routine r USING RTemp t ON r.date = t.lastModified " +
+	private static final String MERGE_ROUTINE_FROM_TEMP = "MERGE INTO RoutineOld r USING RTemp t ON r.date = t.lastModified " +
 			"WHEN MATCHED THEN UPDATE SET chars = t.chars, textNames = t.names " +
 			"WHEN NOT MATCHED THEN INSERT (date, chars, textNames) VALUES (t.lastModified, t.chars, t.names)";
 
-	private static final String SELECT_ROUTINE = "SELECT date, chars, textNames FROM Routine WHERE date >= ?";
+	private static final String SELECT_ROUTINE = "SELECT date, chars, textNames FROM RoutineOld WHERE date >= ?";
 
-	private static final String SELECT_CALENDAR =  "SELECT date, chars, charGoal, textNames FROM Routine WHERE date LIKE ?";
+	private static final String SELECT_CALENDAR =  "SELECT date, chars, charGoal, textNames FROM RoutineOld WHERE date LIKE ?";
 
 	private static final String UPDATE_CALENDAR = "UPDATE ROUTINE SET charGoal = ? WHERE date LIKE ?";
 
 	private static final String SELECT_AVAILABLE_YEARS = "SELECT EXTRACT (YEAR FROM date) AS UniqueYear FROM ROUTINE GROUP BY UniqueYear";
 
-	private static final String SELECT_CHARS = "SELECT chars FROM Routine WHERE date = CURRENT_DATE ORDER BY date DESC LIMIT 1";
+	private static final String SELECT_CHARS = "SELECT chars FROM RoutineOld WHERE date = CURRENT_DATE ORDER BY date DESC LIMIT 1";
 
 	public static void createTexts() {
 		try (PreparedStatement ps = getPreparedStatement(CREATE_TEXTS)) {
@@ -77,7 +79,7 @@ public class HSQLDBWorker {
 		}
 	}
 
-	public static void upsertTexts(LinkedList<Text> data) {
+	public static void upsertTexts(LinkedList<TextOld> data) {
 		try (PreparedStatement pS1 = getPreparedStatement(CREATE_TEXTS_TEMP_TABLE)) {
 			pS1.executeUpdate();
 			try (PreparedStatement pS2 = getConnection().prepareStatement(INSERT_TEMP)) {
@@ -102,22 +104,22 @@ public class HSQLDBWorker {
 		}
 	}
 
-	public static ArrayList<Text> selectTexts() {
-		ArrayList<Text> data = new ArrayList<>();
+	public static ArrayList<TextOld> selectTexts() {
+		ArrayList<TextOld> data = new ArrayList<>();
 		try (PreparedStatement pS = getPreparedStatement(SELECT_TEXTS)) {
 			pS.setDate(1, CalendarWrapper.wrapToSQLDate(SettingsController.getCutDate()));
 			var result = pS.executeQuery();
 			while (result.next()) {
-				Text text = new Text();
-				text.setProdName(result.getString("prodName"));
-				text.setCreated(result.getDate("created"));
-				text.setLastModified(result.getTimestamp("lastModified"));
-				text.setProdChars(result.getDouble("charsOnDate"));
-				text.setTextChars(result.getDouble("charsSoFar"));
-				text.setCharsTotal(result.getDouble("charsTotal"));
-				text.setTextName(result.getString("name"));
-				text.setPath(Path.of(result.getString("textPath")));
-				data.add(text);
+				TextOld textOld = new TextOld();
+				textOld.setProdName(result.getString("prodName"));
+				textOld.setCreated(result.getDate("created"));
+				textOld.setLastModified(result.getTimestamp("lastModified"));
+				textOld.setProdChars(result.getDouble("charsOnDate"));
+				textOld.setTextChars(result.getDouble("charsSoFar"));
+				textOld.setCharsTotal(result.getDouble("charsTotal"));
+				textOld.setTextName(result.getString("name"));
+				textOld.setPath(Path.of(result.getString("textPath")));
+				data.add(textOld);
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -178,13 +180,13 @@ public class HSQLDBWorker {
 		}
 	}
 
-	public static ArrayList<Routine> selectRoutine() {
-		ArrayList<Routine> data = new ArrayList<>();
+	public static ArrayList<RoutineOld> selectRoutine() {
+		ArrayList<RoutineOld> data = new ArrayList<>();
 		try (PreparedStatement pS = getPreparedStatement(SELECT_ROUTINE)) {
 			pS.setDate(1, CalendarWrapper.wrapToSQLDate(SettingsController.getCutDate()));
 			var result = pS.executeQuery();
 			while (result.next()) {
-				Routine day = new Routine();
+				RoutineOld day = new RoutineOld();
 				day.setLastModified(result.getDate("date"));
 				day.setProdChars(result.getDouble("chars"));
 				day.setTextNames(result.getString("textNames"));
@@ -196,14 +198,14 @@ public class HSQLDBWorker {
 		return data;
 	}
 
-	public static Calendar selectCalendar(int year, int month) {
+	public static ProdTimeModel selectCalendar(int year, int month) {
 		String monthString = month < 10 ? "0" + month : String.valueOf(month);
 		String date = year + "-" + monthString + "-%";
 		return selectCalendar(date);
 	}
 
-	public static Calendar selectCalendar(String date) {
-		Calendar calendar = new Calendar(date);
+	public static ProdTimeModel selectCalendar(String date) {
+		ProdTimeModel prodTimeModel = new ProdTimeModel(new ArrayList<>(), new ArrayList<>(), Year.now().atDay(1), LocalDate.now());
 		try (PreparedStatement pS = getPreparedStatement(SELECT_CALENDAR)) {
 			pS.setString(1, date);
 			var result = pS.executeQuery();
@@ -212,20 +214,20 @@ public class HSQLDBWorker {
 				java.util.Date resultDate = result.getDate("date");
 				temp.setTime(resultDate);
 				int day = temp.get(java.util.Calendar.DATE);
-				calendar.setDayProgress(day, result.getDouble("chars"));
-				calendar.setDayGoal(day, result.getInt("charGoal"));
-				calendar.setTextNames(day, result.getString("textNames"));
+//				prodTimeModel.setWritten(day, result.getDouble("chars"));
+//				prodTimeModel.setGoal(day, result.getInt("charGoal"));
+//				prodTimeModel.setTextNames(day, result.getString("textNames"));
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return calendar;
+		return prodTimeModel;
 	}
 
-	public static void updateCalendar(Calendar data, int day) {
+	public static void updateCalendar(ProdTimeModel data, int day) {
 		try (PreparedStatement pS = getPreparedStatement(UPDATE_CALENDAR)) {
 			pS.setInt(1, data.getDayGoal(day));
-			pS.setString(2, data.getDate(day));
+//			pS.setString(2, data.getDate(day));
 			pS.executeUpdate();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

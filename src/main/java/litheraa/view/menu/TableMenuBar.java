@@ -2,8 +2,8 @@ package litheraa.view.menu;
 
 import com.github.weisj.darklaf.LafManager;
 import litheraa.data.RoutineEnum;
-import litheraa.ProdTimerController;
-import litheraa.SettingsController;
+import litheraa.controller.ProdTimerController;
+import litheraa.controller.SettingsController;
 import litheraa.data.TextEnum;
 import litheraa.util.ViewType;
 import litheraa.view.table.ColumnController;

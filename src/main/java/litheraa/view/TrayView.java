@@ -1,6 +1,6 @@
 package litheraa.view;
 
-import litheraa.ProdTimerController;
+import litheraa.controller.ProdTimerController;
 import litheraa.util.MeasureUnit;
 import litheraa.util.ProjectFolderUtil;
 import lombok.AccessLevel;

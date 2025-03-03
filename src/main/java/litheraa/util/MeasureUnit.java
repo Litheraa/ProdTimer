@@ -1,6 +1,6 @@
 package litheraa.util;
 
-import litheraa.SettingsController;
+import litheraa.controller.SettingsController;
 
 import java.text.DecimalFormat;
 

@@ -1,26 +1,37 @@
-package litheraa;
+package litheraa.controller;
 
-import litheraa.data.calendar.Calendar;
+import litheraa.*;
+import litheraa.data.TextFinder;
+import litheraa.data.TextOld;
+import litheraa.data.models.ProdTimeModel;
 import litheraa.data_base.HSQLDBWorker;
-import litheraa.data.Routine;
-import litheraa.data.Text;
+import litheraa.data.RoutineOld;
 import litheraa.util.SpringContextReaders;
 import litheraa.util.ViewType;
 import litheraa.util.readers.ReaderFactory;
 import litheraa.view.*;
 import litheraa.view.message.Tip;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Controller;
 
 import javax.swing.*;
 import java.io.File;
+import java.time.LocalDate;
 import java.util.*;
 
+@Slf4j
+@Controller
 @Getter
 public class ProdTimerController implements ProdTimerControllerInterface {
 	private final ViewController viewController;
+	private final RepositoryController repositoryController;
 
-	public ProdTimerController() {
+	@Autowired
+	public ProdTimerController(RepositoryController repositoryController) {
+		this.repositoryController = repositoryController;
 		new AnnotationConfigApplicationContext(SpringContextReaders.class).getBean(ReaderFactory.class);
 		createDB();
 		viewController = new ViewController(this);
@@ -42,7 +53,7 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 
 	@Override
 	public void setAutoStart(boolean isAutoStart) {
-		Core.autoRun(isAutoStart);
+		RepositoryController.autoRun(isAutoStart);
 		SettingsController.switchAutoStart();
 	}
 
@@ -58,37 +69,36 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 		if (SettingsController.isDirectoriesEmpty()) {
 			Tip.forceShowTip(viewController.getMainFrame());
 		} else {
-			Core.setController(this);
-			HSQLDBWorker.upsertTexts(Objects.requireNonNull(
-					Core.collectTextsData(SettingsController.collectTextPath())));
-			HSQLDBWorker.upsertRoutine();
+			try {
+				RepositoryController.collectData(TextFinder.findProd(SettingsController.collectTextPath()));
+			} catch (NullPointerException e) {
+				log.error("e: ", e);
+				noFilesFound();
+			}
 		}
 	}
 
 	@Override
-	public ArrayList<Text> getTextsData() {
+	public ArrayList<TextOld> getTextsData() {
 		return HSQLDBWorker.selectTexts();
 	}
 
 	@Override
-	public ArrayList<Routine> getRoutineData() {
+	public ArrayList<RoutineOld> getRoutineData() {
 		return HSQLDBWorker.selectRoutine();
 	}
 
-	public Calendar getCalendarData(int year, int month) {
-		return HSQLDBWorker.selectCalendar(year, month);
+	public ProdTimeModel getDataByPeriod(LocalDate from, LocalDate to) {
+		return new ProdTimeModel(RepositoryController.getDataByPeriod(from, to).getFirst(),
+				RepositoryController.getDataByPeriod(from, to).getSecond(), from, to);
 	}
 
-	public Calendar getCalendarData() {
-		return HSQLDBWorker.selectCalendar(Calendar.getTodayYear(), Calendar.getTodayMonth());
+	public void setGoal(int goal, Long... dayId) {
+		RepositoryController.setGoal(goal, dayId);
 	}
 
-	public void setCalendarGoal(Calendar calendar, int day) {
-		HSQLDBWorker.updateCalendar(calendar, day);
-	}
-
-	public ArrayList<Integer> getCalendarYears() {
-		return HSQLDBWorker.selectYears();
+	public Set<Integer> getUniqueYears() {
+		return RepositoryController.getUniqueYears();
 	}
 
 	@Override
@@ -97,7 +107,7 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 		DataSaver.saveData();
 	}
 
-	public void notFilesFound() {
+	public void noFilesFound() {
 		int result = MainFrame.getErrorMessage("Не найдено файлов с расширениями " +
 				Arrays.toString(ReaderFactory.getWildCards()) +
 				". Проверьте настройки " +

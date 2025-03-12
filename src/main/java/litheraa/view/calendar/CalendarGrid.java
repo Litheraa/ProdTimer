@@ -18,17 +18,19 @@ public class CalendarGrid extends JPanel {
 		setLayout(layout);
 		this.rows = rows;
 		this.firstDay = firstDay;
+
 		addPosition = firstDay;
 		layout.setRows(rows);
 		layout.setColumns(columns);
 		layout.setHgap(hGap);
 		layout.setVgap(vGap);
-		IntStream.range(0, (firstDay + (columns - lastDay)) - 2).mapToObj(i -> new Filler()).forEach(this::addFiller);
-	}
 
-	public Dimension getDaySize(Dimension containerSize) {
-		return new Dimension(containerSize.width / columns - columns,
-				containerSize.height / rows - rows);
+///     To improve performance, I am emulating the componentResized event of the DayPanel component.
+///     The InnerComponentSize interface provides the getComponentSize method used in the DayPanelListener.
+///     This way, the DayPanelListener could use the size of one of the DayPanels
+///     instead of the size of the original event source.
+
+		IntStream.range(0, (firstDay + (columns - lastDay)) - 2).mapToObj(i -> new Filler()).forEach(this::addFiller);
 	}
 
 	public void setRows(int rows) {
@@ -68,13 +70,20 @@ public class CalendarGrid extends JPanel {
 		super.removeAll();
 	}
 
+	@Override
+	public Component add(Component comp) {
+		return super.add(comp, addPosition++);
+	}
+
+	/// GritLayout in which days located ignores number of columns (days in week) if rows are set. ///
+	/// To prevent weeks with 6 days im forced to add some empty days in the end of the month      ///
 	private void addFiller(Filler filler) {
 		super.add(filler);
 	}
 
-	@Override
-	public Component add(Component comp) {
-			return super.add(comp, addPosition++);
+	public Dimension getDayPanelSize() {
+		return new Dimension(this.getWidth() / columns - columns,
+				this.getHeight() / rows - rows);
 	}
 
 	private static final class Filler extends JPanel {

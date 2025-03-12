@@ -13,7 +13,7 @@ public class ProdTimeModel extends ProdDataModel {
 	private int weeks = 0;
 	private final int firstDay;
 	private final int lastDay;
-	private final List<Integer> dates;
+	private final int[] dates;
 	private final LocalDate from;
 	private final LocalDate to;
 	private static final int DEFAULT = SettingsController.getProdVolume();
@@ -22,7 +22,7 @@ public class ProdTimeModel extends ProdDataModel {
 		super(times, texts);
 		this.from = from;
 		this.to = to;
-		dates = from.datesUntil(to).map(LocalDate::getDayOfMonth).toList();
+		dates = from.datesUntil(to).map(LocalDate::getDayOfMonth).mapMultiToInt((integer, intConsumer) -> intConsumer.accept(integer)).toArray();
 		firstDay = from.getDayOfWeek().getValue();
 		lastDay = to.getDayOfWeek().getValue();
 		//noinspection StatementWithEmptyBody
@@ -52,7 +52,7 @@ public class ProdTimeModel extends ProdDataModel {
 		return DEFAULT;
 	}
 
-	public double getProgress(int day) {
+	public int getWritten(int day) {
 		for (Time time : times.values()) {
 			if (time.getModified().getDayOfMonth() == day) return time.getWritten();
 		}

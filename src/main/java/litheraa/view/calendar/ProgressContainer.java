@@ -39,7 +39,7 @@ public class ProgressContainer extends JPanel {
 	}
 
 	public ProgressContainer(ProdTimeModel prodTimeModel, int date) {
-		this(prodTimeModel.getProgress(date), prodTimeModel.getDayGoal(date));
+		this(prodTimeModel.getWritten(date), prodTimeModel.getDayGoal(date));
 		this.prodTimeModel = prodTimeModel;
 		this.date = date;
 	}
@@ -182,22 +182,5 @@ public class ProgressContainer extends JPanel {
 			}
 		});
 
-	}
-
-	public void adjustInnerComponentsSize(Dimension size) {
-		double minimalSize = Math.min(size.getHeight() / 2, size.getWidth() - progressBar.getWidth());
-		Font dateFont = new Font("Aerial", Font.BOLD, (int) (minimalSize));
-		dateLabel.setFont(dateFont);
-		int iconSize = (int) (minimalSize / 3);
-		Font font = new Font("Aerial", Font.PLAIN, iconSize);
-		goal.setIcon(new ImageIcon(goalIcon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH)));
-		goal.setPreferredSize(new Dimension(goal.getWidth(), iconSize));
-		goal.setFont(font);
-		done.setIcon(new ImageIcon(doneIcon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH)));
-		done.setPreferredSize(new Dimension(done.getWidth(), iconSize));
-		done.setFont(font);
-		remaining.setIcon(new ImageIcon(blankIcon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH)));
-		remaining.setPreferredSize(new Dimension(remaining.getWidth(), iconSize));
-		remaining.setFont(font);
 	}
 }

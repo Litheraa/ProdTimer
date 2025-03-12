@@ -6,21 +6,16 @@ import litheraa.view.themes.ThemeColors;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.Locale;
 
 public class CalendarPanel extends JPanel {
 	private CalendarGrid calendarGrid;
 	private ProdTimeModel prodTimeModel;
 	private final ViewController controller;
-	private final ArrayList<ProgressContainer> days = new ArrayList<>();
 	private final JPanel header;
 	private final Dimension containerSize;
 
@@ -74,27 +69,11 @@ public class CalendarPanel extends JPanel {
 		header.add(headerName);
 	}
 
-	/// GritLayout in which days located ignores number of columns (days in week) if rows are set. ///
-	/// To prevent weeks with 6 days im forced to add some empty days in the end of the month      ///
-	private void fillUp(JPanel dayPanel) {
-		int i = 1;
-		for (Integer integer : prodTimeModel.getDates()) {
-			ProgressContainer container = new ProgressContainer(prodTimeModel, integer);
-			container.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-			container.createVerticalProgress(controller);
-//			days.add(container);
-			calendarGrid.add(container);
-		}
-	}
-
 	private void setCalendar(ProdTimeModel prodTimeModel) {
 		this.prodTimeModel = prodTimeModel;
 	}
 
 	private void clearView() {
-//		if (!days.isEmpty()) {
-//			days.clear();
-//		}
 		if (!calendarGrid.isEmpty()) {
 			calendarGrid.removeAll();
 		}
@@ -118,30 +97,16 @@ public class CalendarPanel extends JPanel {
 		layout.putConstraint(SpringLayout.SOUTH, calendarGrid, 0, SpringLayout.SOUTH, this);
 		setLayout(layout);
 
+		DayPanelController dayPanelController = new DayPanelController(prodTimeModel, calendarGrid);
+		dayPanelController.buildDayPanels(true, true, true);
+		dayPanelController.addDayPanelsToContainer();
+
 		add(header);
 		add(dayNames);
 		add(calendarGrid);
-		fillUp(null);
-		for (Component container : calendarGrid.getComps()) {
-			((ProgressContainer) container).adjustInnerComponentsSize(calendarGrid.getDaySize(calculateThisSize()));
-		}
 	}
 
-	private Dimension calculateThisSize() {
+	private Dimension calculateSize() {
 		return new Dimension(containerSize.width - 20, containerSize.height - 121);
-	}
-
-	private class ComboBoxListener implements ItemListener {
-
-		@Override
-		public void itemStateChanged(ItemEvent e) {
-			clearView();
-			//noinspection DataFlowIssue
-			setCalendar(/*controller.getDataByPeriod((Integer) yearLabel.getSelectedItem(),
-					monthLabel.getSelectedItem().toString())*/controller.getDataByPeriod(Year.now().atDay(1), LocalDate.now()));
-			calendarGrid.setRows(prodTimeModel.getWeeks());
-			build();
-			controller.repaint();
-		}
 	}
 }

@@ -13,12 +13,10 @@ import litheraa.view.table.ColumnController;
 import litheraa.view.table.ProdTimerTable;
 import litheraa.view.table.RoutineModel;
 import litheraa.view.table.TextModel;
-import litheraa.view.util.AspectRatioAdapter;
 import litheraa.view.util.Themes;
 
 import java.awt.*;
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.Set;
 
 public class ViewController {
@@ -71,8 +69,8 @@ public class ViewController {
 
 				CalendarPanel calendar = new CalendarPanel(
 						this,
-						controller.getDataByPeriod(Year.now().atDay(1),
-								LocalDate.now()),
+						controller.getDataByPeriod(LocalDate.of(2025, 2, 1),
+								LocalDate.of(2025, 2, 28)),
 						getWindowSize(ViewType.CALENDAR.ordinal()));
 
 				mainFrame.setMainComponent(calendar);

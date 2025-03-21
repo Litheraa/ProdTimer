@@ -1,5 +1,6 @@
 package litheraa.view.util;
 
+import litheraa.view.calendar.AdjustableComponentInterface;
 import litheraa.view.calendar.DayPanelController;
 
 import javax.swing.*;
@@ -7,11 +8,11 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-public class SizeStepListener extends ComponentAdapter {
-	private final DayPanelController controller;
+public class SizeStepAdapter extends ComponentAdapter {
+	private final AdjustableComponentInterface controller;
 	private Step oldStep;
 
-	public SizeStepListener(DayPanelController controller) {
+	public SizeStepAdapter(DayPanelController controller) {
 		this.controller = controller;
 	}
 
@@ -20,41 +21,42 @@ public class SizeStepListener extends ComponentAdapter {
 		Step sizeStep = calculateSizeStep(e.getComponent().getSize());
 		if (oldStep != sizeStep) {
 			oldStep = sizeStep;
-			controller.sizeStepChanged(sizeStep);
+			controller.sizeChanged(sizeStep);
 		}
 	}
 
 	private Step calculateSizeStep(Dimension d) {
 		Rectangle dimension = new Rectangle(d);
 		if (SwingUtilities.isRectangleContainingRectangle(
-				new Rectangle(getStepDimension(Step.SECOND)),
+				getStepDimension(Step.SECOND),
 				dimension)) {
 			return Step.FIRST;
 		}
 		if (SwingUtilities.isRectangleContainingRectangle(
-				new Rectangle(getStepDimension(Step.THIRD)),
+				getStepDimension(Step.THIRD),
 				dimension)) {
 			return Step.SECOND;
 		}
 		if (SwingUtilities.isRectangleContainingRectangle(
-				new Rectangle(getStepDimension(Step.FOURTH)),
+				getStepDimension(Step.FOURTH),
 				dimension)) {
 			return Step.THIRD;
 		}
 		if (SwingUtilities.isRectangleContainingRectangle(
-				new Rectangle(getStepDimension(Step.FIFTH)),
+				getStepDimension(Step.FIFTH),
 				dimension)) {
 			return Step.FOURTH;
 		} else return Step.FIFTH;
 	}
 
-	private Dimension getStepDimension(Step step) {
+	private Rectangle getStepDimension(Step step) {
 		return switch (step) {
-			case FIRST -> new Dimension(90, 70);
-			case SECOND -> new Dimension(120, 93);
-			case THIRD -> new Dimension(150, 116);
-			case FIFTH -> new Dimension(180, 140);
-			case null, default -> new Dimension(210, 163);
+			case FIRST -> new Rectangle(90, 70);
+			case SECOND -> new Rectangle(110, 88);
+			case THIRD -> new Rectangle(135, 108);
+			case FOURTH -> new Rectangle(175, 130);
+			case FIFTH -> new Rectangle(220, 154);
+			case null, default -> new Rectangle(260, 180);
 		};
 	}
 
@@ -63,6 +65,7 @@ public class SizeStepListener extends ComponentAdapter {
 		SECOND,
 		THIRD,
 		FOURTH,
-		FIFTH
+		FIFTH,
+		SIXTH,
 	}
 }

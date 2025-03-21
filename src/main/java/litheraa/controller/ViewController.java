@@ -7,6 +7,7 @@ import litheraa.data_base.HSQLDBWorker;
 import litheraa.util.ViewType;
 import litheraa.view.*;
 import litheraa.view.calendar.CalendarPanel;
+import litheraa.view.calendar.DayPanelController;
 import litheraa.view.calendar.ProgressContainer;
 import litheraa.view.menu.TableMenuBar;
 import litheraa.view.table.ColumnController;
@@ -67,20 +68,22 @@ public class ViewController {
 				mainFrame.setSize(getWindowSize(ViewType.CALENDAR.ordinal()));
 				mainFrame.setResizable(true);
 
-				CalendarPanel calendar = new CalendarPanel(
-						this,
-						controller.getDataByPeriod(LocalDate.of(2025, 2, 1),
-								LocalDate.of(2025, 2, 28)),
-						getWindowSize(ViewType.CALENDAR.ordinal()));
-
-				mainFrame.setMainComponent(calendar);
+//				CalendarPanel calendar = new CalendarPanel(
+//						this,
+//						controller.getDataByPeriod(LocalDate.of(2025, 2, 1),
+//								LocalDate.of(2025, 2, 28)),
+//						getWindowSize(ViewType.CALENDAR.ordinal()));
+				DayPanelController dayPanelController = new DayPanelController(controller.getDataByPeriod(LocalDate.of(2025, 2, 1),
+								LocalDate.of(2025, 2, 28)));
+				mainFrame.setMinimumSize(new Dimension(632, 538));
+				mainFrame.setMainComponent(dayPanelController.fullDayPanel());
 				mainFrame.setVisible(true);
 				break;
 			case ViewType.SMALL_WINDOW:
 				menu = new TableMenuBar(controller).createSmallWindowMenu();
 				mainFrame.setSize(250, 130);
 				mainFrame.setResizable(false);
-				mainFrame.setMainComponent(new ProgressContainer(HSQLDBWorker.selectTodayChars(), SettingsController.getProdVolume()).createHorizontalProgress());
+				mainFrame.setMainComponent(new ProgressContainer(HSQLDBWorker.selectTodayChars(), SettingsController.getProdGoal()).createHorizontalProgress());
 				mainFrame.setJMenuBar(menu);
 		}
 	}

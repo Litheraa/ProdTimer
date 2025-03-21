@@ -1,7 +1,11 @@
 package litheraa.view.calendar;
 
-import litheraa.view.util.ComponentAdjuster;
+import litheraa.view.util.AspectRatioAdapter;
 import litheraa.view.util.IntegerFilter;
+import litheraa.view.util.SizeStepAdapter;
+import litheraa.view.util.fabric.ConstraintFactory;
+import litheraa.view.util.fabric.FontLightWeight;
+import litheraa.view.util.fabric.IconFactory;
 import org.jdesktop.swingx.VerticalLayout;
 
 import javax.swing.*;
@@ -9,30 +13,34 @@ import javax.swing.text.AbstractDocument;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LabelGroup extends JPanel implements ComponentAdjuster {
+public class LabelGroup extends JPanel implements AdjustableComponentInterface {
 	private final JLabel goalLabel;
-	private final JLabel valueLabel;
+	private final JLabel writtenLabel;
 	private final JLabel toGoLabel;
-	private final Long timeId;
-	private final DayPanelController controller;
+	private final ConstraintFactory CONSTRAINT_FABRIC;
+	private final FontLightWeight FONT_FABRIC;
+	private final IconFactory ICON_FABRIC;
+	private Container PARENT = getParent();
+	private static final String[] ICON_NAMES = {"mission.png", "magic-book.png", "writed-book.png"};
 
-	public LabelGroup(DayPanelController controller, int written, int goal, Long timeId) {
-		this.controller = controller;
-		this.timeId = timeId;
+	public LabelGroup(int written, int goal, ConstraintFactory constraintFactory, FontLightWeight fontLightWeight, IconFactory iconFactory) {
+		CONSTRAINT_FABRIC = constraintFactory;
+		FONT_FABRIC = fontLightWeight;
+		ICON_FABRIC = iconFactory;
 		goalLabel = new JLabel(String.valueOf(goal));
-		valueLabel = new JLabel(String.valueOf(written));
+		writtenLabel = new JLabel(String.valueOf(written));
 		toGoLabel = new JLabel(String.valueOf((goal - written)));
 
 		add(goalLabel);
-		add(valueLabel);
+		add(writtenLabel);
 		add(toGoLabel);
 
-		setGoalPopUp(controller);
+		setGoalPopUp();
 		setLayout(new VerticalLayout(2));
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 	}
 
-	private void setGoalPopUp(DayPanelController controller) {
+	private void setGoalPopUp() {
 		JPopupMenu menu = new JPopupMenu();
 		JTextField textField = new JTextField(goalLabel.getText());
 		textField.setPreferredSize(new Dimension(50, textField.getHeight() + 25));
@@ -44,7 +52,7 @@ public class LabelGroup extends JPanel implements ComponentAdjuster {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					String goalString = textField.getText();
 					goalLabel.setText(goalString);
-					controller.setGoal(Integer.parseInt(goalString), timeId);
+//					controller.setGoal(Integer.parseInt(goalString), timeId);
 //					TODO установка цели в модели времени
 					menu.setVisible(false);
 				}
@@ -65,11 +73,22 @@ public class LabelGroup extends JPanel implements ComponentAdjuster {
 	}
 
 	@Override
-	public void adjust(Font font) {
-		Icon[] icons = controller.getIcon();
-		for (int i = 0; i < getComponents().length; i++) {
-			getComponent(i).setFont(font);
-			((JLabel) getComponent(i)).setIcon(icons[i]);
+	public void aspectRatioChanged(AspectRatioAdapter.AspectRatio ratio) {
+		PARENT.add(this, CONSTRAINT_FABRIC.getConstraints(getUIClassID(), ratio));
+	}
+
+	@Override
+	public void sizeChanged(SizeStepAdapter.Step step) {
+		for (int i = 0; i < getComponentCount(); i++) {
+			JLabel label = (JLabel) getComponent(i);
+			label.setFont(FONT_FABRIC.getFont(getUIClassID(), step, 4, Font.BOLD));
+			label.setIcon(ICON_FABRIC.getIcon(ICON_NAMES[i], step, 4));
 		}
+	}
+
+	@Override
+	public void wireWithParent(JComponent parent) {
+		PARENT = parent;
+		PARENT.add(this);
 	}
 }

@@ -49,7 +49,7 @@ public class RepositoryController {
 			if (from.minusDays(1).isBefore(date)) {
 				Text text = Optional.ofNullable(textRepository.findTopByPath(path.toString())).
 						orElseGet(new TextSupplier(reader));
-				if (text.getId() == null/* || text.getId() == 0*/) {
+				if (text.getId() == null) {
 					textRepository.save(text);
 				}
 				Time time = Optional.ofNullable(timeRepository.findByModified(date)).

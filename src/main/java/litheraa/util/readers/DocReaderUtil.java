@@ -1,6 +1,5 @@
 package litheraa.util.readers;
 
-import lombok.Setter;
 import org.apache.commons.math3.util.Pair;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDate;
 
 @Component

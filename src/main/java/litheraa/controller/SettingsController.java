@@ -50,7 +50,7 @@ public class SettingsController extends SettingsUtil {
 		SettingsUtil.set(KEYS.prodVolume(), volume);
 	}
 
-	public static int getProdVolume() {
+	public static int getProdGoal() {
 		String prodVolume = SettingsUtil.get(KEYS.prodVolume());
 		if (prodVolume.matches("^[0-9]+[:/-]?")) {
 			return Integer.parseInt(SettingsUtil.loadDefault(KEYS.prodVolume()));

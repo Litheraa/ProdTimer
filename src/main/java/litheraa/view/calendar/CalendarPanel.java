@@ -27,6 +27,7 @@ public class CalendarPanel extends JPanel {
 		header = new JPanel();
 
 		header.setBackground(((ThemeColors) ViewController.getTheme()).getAccentBackground());
+
 		setHeaderName(prodTimeModel);
 
 		build();
@@ -47,6 +48,7 @@ public class CalendarPanel extends JPanel {
 	private void setHeaderName(ProdTimeModel prodTimeModel) {
 		JLabel headerName = new JLabel();
 		headerName.setFont(new Font("Aerial", Font.BOLD, 26));
+		headerName.setBackground(((ThemeColors) ViewController.getTheme()).getAccentBackground());
 
 		LocalDate from = prodTimeModel.getFrom();
 		LocalDate to = prodTimeModel.getTo();
@@ -85,8 +87,8 @@ public class CalendarPanel extends JPanel {
 				prodTimeModel.getFirstDay(), prodTimeModel.getLastDay());
 
 		SpringLayout layout = new SpringLayout();
-		layout.putConstraint(SpringLayout.WIDTH, header, 0, SpringLayout.WIDTH, this);
 		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, header, 0, SpringLayout.HORIZONTAL_CENTER, this);
+		layout.putConstraint(SpringLayout.WIDTH, header, 0, SpringLayout.WIDTH, this);
 		layout.putConstraint(SpringLayout.NORTH, header, 0, SpringLayout.NORTH, this);
 		layout.putConstraint(SpringLayout.SOUTH, header, 35, SpringLayout.NORTH, this);
 		layout.putConstraint(SpringLayout.NORTH, dayNames, 1, SpringLayout.SOUTH, header);
@@ -97,9 +99,9 @@ public class CalendarPanel extends JPanel {
 		layout.putConstraint(SpringLayout.SOUTH, calendarGrid, 0, SpringLayout.SOUTH, this);
 		setLayout(layout);
 
-		DayPanelController dayPanelController = new DayPanelController(prodTimeModel, calendarGrid);
-		dayPanelController.buildDayPanels(true, true, true);
-		dayPanelController.addDayPanelsToContainer();
+
+		DayPanelController dayPanelController = new DayPanelController(prodTimeModel);
+		dayPanelController.fullDayPanel();
 
 		add(header);
 		add(dayNames);

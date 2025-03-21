@@ -10,7 +10,7 @@ import java.awt.*;
 
 public class ProgressRenderer extends DefaultTableCellRenderer {
 	private final JProgressBar progressBar = new JProgressBar();
-	private final int prodVolume = SettingsController.getProdVolume();
+	private final int prodVolume = SettingsController.getProdGoal();
 
 	public ProgressRenderer() {
 		setOpaque(true);

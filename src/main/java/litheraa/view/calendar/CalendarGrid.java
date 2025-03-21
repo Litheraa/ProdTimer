@@ -26,8 +26,8 @@ public class CalendarGrid extends JPanel {
 		layout.setVgap(vGap);
 
 ///     To improve performance, I am emulating the componentResized event of the DayPanel component.
-///     The InnerComponentSize interface provides the getComponentSize method used in the DayPanelListener.
-///     This way, the DayPanelListener could use the size of one of the DayPanels
+///     The InnerComponentSize interface provides the getComponentSize method used in the AspectRatioAdapter.
+///     This way, the AspectRatioAdapter could use the size of one of the DayPanels
 ///     instead of the size of the original event source.
 
 		IntStream.range(0, (firstDay + (columns - lastDay)) - 2).mapToObj(i -> new Filler()).forEach(this::addFiller);

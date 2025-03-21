@@ -5,7 +5,6 @@ import org.odftoolkit.simple.text.Paragraph;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
-import java.nio.file.Path;
 import java.util.Iterator;
 
 @Component

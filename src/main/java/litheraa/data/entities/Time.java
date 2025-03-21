@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +13,7 @@ import java.util.Objects;
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
-public class Time {
+public class Time implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -23,8 +24,9 @@ public class Time {
 	@OneToMany(mappedBy = "id.timeId", cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private List<Prod> prods;
 
-	public Time(LocalDate modified) {
+	public Time(LocalDate modified, int goal) {
 		this.modified = modified;
+		this.goal = goal;
 	}
 
 	public void addWritten(int written) {
@@ -53,10 +55,6 @@ public class Time {
 
 	@Override
 	public int hashCode() {
-		final int PRIME = 59;
-		int result = 1;
-		final Object $modified = this.getModified();
-		result = result * PRIME + ($modified == null ? 43 : $modified.hashCode());
-		return result;
+		return this.getModified().hashCode();
 	}
 }

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Objects;
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
-public class Text {
+public class Text implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

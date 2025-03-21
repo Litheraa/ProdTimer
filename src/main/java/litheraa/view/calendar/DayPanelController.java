@@ -1,281 +1,184 @@
 package litheraa.view.calendar;
 
+import litheraa.controller.ViewController;
 import litheraa.data.models.ProdTimeModel;
-import litheraa.view.util.ComponentAdjuster;
-import litheraa.view.util.DayPanelListener;
-import litheraa.view.util.SizeStepListener;
-import org.jetbrains.annotations.NotNull;
+import litheraa.view.themes.ThemeColors;
+import litheraa.view.util.AspectRatioAdapter;
+import litheraa.view.util.SizeStepAdapter;
+import litheraa.view.util.fabric.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.*;
-import java.util.List;
-import java.util.stream.IntStream;
 
-public class DayPanelController {
+public class DayPanelController implements AdjustableComponentInterface {
 	private final ProdTimeModel prodTimeModel;
-	private final Map<JPanel, List<Component>> dayPanels = new LinkedHashMap<>();
-	private final Map<DayPanelListener.AspectRatio, List<GridBagConstraints>> constraintsMap = new HashMap<>();
-	private final Map<SizeStepListener.Step, List<Font>> fonts = new HashMap<>();
-	private final Map<SizeStepListener.Step, Icon[]> icons = new HashMap<>();
+	private final Map<LocalDate, AdjustableComponentInterface> dayPanels = new HashMap<>(31);
+	private final ConstraintFactory constraintFactory = new ConstraintFactory();
+	private final DimensionLightWeight dimensionLightWeight = new DimensionLightWeight();
+	private final FontLightWeight fontLightWeight = new FontLightWeight();
+	private final IconFactory iconFactory = new IconFactory();
 
-	private Dimension firstDimension;
-	private Dimension secondDimension;
-	private Dimension thirdimension;
-	private Dimension fourthDimension;
-	private Dimension fifthDimension;
-
-	private final Container container;
-	private boolean withProgressBar = false;
-
-	private SizeStepListener.Step currentStep;
-
-	public DayPanelController(ProdTimeModel prodTimeModel, Container container) {
+	public DayPanelController(ProdTimeModel prodTimeModel) {
 		this.prodTimeModel = prodTimeModel;
-		this.container = container;
-
-		ClassLoader loader = DayPanelController.class.getClassLoader();
-		ImageIcon goalIcon = new ImageIcon(Objects.requireNonNull(loader.getResource("mission.png")));
-		ImageIcon doneIcon = new ImageIcon(Objects.requireNonNull(loader.getResource("magic-book.png")));
-		ImageIcon blankIcon = new ImageIcon(Objects.requireNonNull(loader.getResource("writed-book.png")));
-
-		icons.put(SizeStepListener.Step.FIRST, new Icon[]{
-				new ImageIcon(goalIcon.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH)),
-				new ImageIcon(doneIcon.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH)),
-				new ImageIcon(blankIcon.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH)),
-		});
-		icons.put(SizeStepListener.Step.SECOND, new Icon[]{
-				new ImageIcon(goalIcon.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH)),
-				new ImageIcon(doneIcon.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH)),
-				new ImageIcon(blankIcon.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH)),
-		});
-		icons.put(SizeStepListener.Step.THIRD, new Icon[]{
-				new ImageIcon(goalIcon.getImage().getScaledInstance(22, 22, Image.SCALE_SMOOTH)),
-				new ImageIcon(doneIcon.getImage().getScaledInstance(22, 22, Image.SCALE_SMOOTH)),
-				new ImageIcon(blankIcon.getImage().getScaledInstance(22, 22, Image.SCALE_SMOOTH)),
-		});
-		icons.put(SizeStepListener.Step.FOURTH, new Icon[]{
-				new ImageIcon(goalIcon.getImage().getScaledInstance(26, 26, Image.SCALE_SMOOTH)),
-				new ImageIcon(doneIcon.getImage().getScaledInstance(26, 26, Image.SCALE_SMOOTH)),
-				new ImageIcon(blankIcon.getImage().getScaledInstance(26, 26, Image.SCALE_SMOOTH)),
-		});
-		icons.put(SizeStepListener.Step.FIFTH, new Icon[]{
-				new ImageIcon(goalIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)),
-				new ImageIcon(doneIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)),
-				new ImageIcon(blankIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)),
-		});
 	}
 
-	public void buildDayPanels(boolean withDayLabel, boolean withLabelGroup, boolean withProgressBar) {
+	private DayPanel createHeader(String headerText, String headerIcon) {
+		JLabel label = new JLabel(headerText.substring(0, 1).toUpperCase() + headerText.substring(1));
+		JLabel icon = new JLabel("");
+
+		DayPanel panel = DayPanel.builder(LocalDate.of(1970, 1, 1), fontLightWeight)
+				.label(label, (l, step) -> l.setFont(fontLightWeight
+						.getFont("header", step, 10, Font.BOLD)))
+				.label(icon, (l, step) -> l.setIcon(iconFactory.getIcon(headerIcon, step, 10)))
+				.build();
+
+		SpringLayout layout = new SpringLayout();
+		layout.putConstraint(SpringLayout.EAST, icon, -5, SpringLayout.EAST, panel);
+		layout.putConstraint(SpringLayout.VERTICAL_CENTER, icon, 0, SpringLayout.VERTICAL_CENTER, panel);
+		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, label, 0, SpringLayout.HORIZONTAL_CENTER, panel);
+
+		panel.setLayout(layout);
+		panel.setBackground(((ThemeColors) ViewController.getTheme()).getAccentBackground());
+		return panel;
+	}
+
+	private JLabel createLabel(String headerName, JPanel parent) {
+		JLabel label = new JLabel(headerName.substring(0, 1).toUpperCase() + headerName.substring(1));
+		label.setOpaque(true);
+//		label.setBackground(background);
+
+//		AdjustableLabelContainer<JLabel> headerLabelContainer = new AdjustableLabelContainer<>(label, (c, step)-> label
+//				.setFont(fontLightWeight
+//						.getFont("header", step, 10, Font.BOLD)));
+//		parent.add(label);
+//	dayPanels.put(LocalDate.of(1970, 1, 1), headerLabelContainer);
+
+		return label;
+	}
+
+	private JLabel createIconLabel(String iconName, int dayNo) {
+		JLabel icon = new JLabel();
+//		AdjustableIconContainer<JLabel> iconContainer = new AdjustableIconContainer<>(icon, iconName, iconFactory);
+//		dayPanels.put(LocalDate.of(1970, 1, dayNo), iconContainer);
+		return icon;
+	}
+
+	private DayPanel createSubHeader() {
+		DayPanel dayNamesPanel = DayPanel.builder(LocalDate.of(1970, 1, 2), fontLightWeight)
+				.dayName(DayOfWeek.of(1).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
+				.dayName(DayOfWeek.of(2).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
+				.dayName(DayOfWeek.of(3).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
+				.dayName(DayOfWeek.of(4).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
+				.dayName(DayOfWeek.of(5).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
+				.dayName(DayOfWeek.of(6).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
+				.dayName(DayOfWeek.of(7).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
+				.build();
+
+		dayNamesPanel.setLayout(new GridLayout(1, 7, 5, 0));
+
+		return dayNamesPanel;
+	}
+
+	private JPanel createTweakedPanel(JLabel label, JLabel icon, Color background) {
+		JPanel panel = new JPanel();
+
+		SpringLayout layout = new SpringLayout();
+		layout.putConstraint(SpringLayout.EAST, icon, -5, SpringLayout.EAST, panel);
+		layout.putConstraint(SpringLayout.VERTICAL_CENTER, icon, 0, SpringLayout.VERTICAL_CENTER, panel);
+		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, label, 0, SpringLayout.HORIZONTAL_CENTER, panel);
+
+		panel.setLayout(layout);
+		panel.add(label);
+		panel.add(icon);
+		panel.setBackground(background);
+		return panel;
+	}
+
+	private CalendarGrid createGrid() {
+		return new CalendarGrid(prodTimeModel.getWeeks(), 5, 5,
+				prodTimeModel.getFirstDay(), prodTimeModel.getLastDay());
+	}
+
+	public JPanel fullDayPanel() {
 		boolean firstDayPanel = true;
 
-		for (int i : prodTimeModel.getDates()) {
-			JPanel dayPanel = new JPanel(new GridBagLayout());
+		JPanel dayGrid = createGrid();
 
-			List<Component> components = new ArrayList<>(3);
-
-			List<GridBagConstraints> horizontalC = new ArrayList<>(3);
-			List<GridBagConstraints> squareC = new ArrayList<>(3);
-			List<GridBagConstraints> verticalC = new ArrayList<>(3);
-
-			Font dateFont = new Font("Aerial", Font.BOLD, 20);
-
-			List<Font> firstStepFonts = new ArrayList<>(2);
-			List<Font> secondStepFonts = new ArrayList<>(2);
-			List<Font> thirdStepFonts = new ArrayList<>(2);
-			List<Font> fourthStepFonts = new ArrayList<>(2);
-			List<Font> fifthStepFonts = new ArrayList<>(2);
-
-			if (withDayLabel) {
-				DayLabel dayLabel = new DayLabel(this);
-				dayLabel.setText(String.valueOf(i));
-
-				components.add(dayLabel);
-				dayPanel.add(dayLabel);
-
-				horizontalC.add(getDayLabelC());
-				squareC.add(getDayLabelC());
-				verticalC.add(getDayLabelC());
-
-				if (firstDayPanel) {
-					firstStepFonts.add(dateFont);
-					secondStepFonts.add(dateFont.deriveFont(30L));
-					thirdStepFonts.add(dateFont.deriveFont(40L));
-					fourthStepFonts.add(dateFont.deriveFont(50L));
-					fifthStepFonts.add(dateFont.deriveFont(60L));
-
-					firstDimension = new Dimension(23, 23);
-					secondDimension = new Dimension(36, 36);
-					thirdimension = new Dimension(50, 50);
-					fourthDimension = new Dimension(63, 63);
-					fifthDimension = new Dimension(66, 66);
-				}
-			}
-			if (withLabelGroup) {
-				LabelGroup labelGroup = new LabelGroup(this,
-						prodTimeModel.getWritten(i),
-						prodTimeModel.getDayGoal(i),
-						prodTimeModel.getTimeId(i));
-				components.add(labelGroup);
-				dayPanel.add(labelGroup);
-
-				horizontalC.add(getLabelGroupC(DayPanelListener.AspectRatio.HORIZONTAL));
-				squareC.add(getLabelGroupC(DayPanelListener.AspectRatio.SQUARE));
-				verticalC.add(getLabelGroupC(DayPanelListener.AspectRatio.VERTICAL));
-
-				if (firstDayPanel) {
-					labelGroup.addComponentListener(new SizeStepListener(this));
-					firstStepFonts.add(dateFont.deriveFont(14L));
-					secondStepFonts.add(dateFont.deriveFont(18L));
-					thirdStepFonts.add(dateFont.deriveFont(22L));
-					fourthStepFonts.add(dateFont.deriveFont(26L));
-					fifthStepFonts.add(dateFont.deriveFont(30L));
-				}
-			}
-			if (withProgressBar) {
-				this.withProgressBar = true;
-
-				JProgressBar progressBar = new JProgressBar();
-				progressBar.setMaximum(prodTimeModel.getDayGoal(i));
-				progressBar.setValue(prodTimeModel.getWritten(i));
-				progressBar.setStringPainted(true);
-				components.add(progressBar);
-				dayPanel.add(progressBar);
-
-				horizontalC.add(getProgressBarC(DayPanelListener.AspectRatio.HORIZONTAL));
-				squareC.add(getProgressBarC(DayPanelListener.AspectRatio.SQUARE));
-				verticalC.add(getProgressBarC(DayPanelListener.AspectRatio.VERTICAL));
-			}
+		ProdTimeModel.Iterator iterator = prodTimeModel.iterator();
+		while (iterator.hasNext()) {
+			DayPanel dayPanel;
 			if (firstDayPanel) {
-				dayPanel.addComponentListener(new DayPanelListener(this));
-
-				constraintsMap.put(DayPanelListener.AspectRatio.HORIZONTAL, horizontalC);
-				constraintsMap.put(DayPanelListener.AspectRatio.SQUARE, squareC);
-				constraintsMap.put(DayPanelListener.AspectRatio.VERTICAL, verticalC);
-
-				fonts.put(SizeStepListener.Step.FIRST, firstStepFonts);
-				fonts.put(SizeStepListener.Step.SECOND, secondStepFonts);
-				fonts.put(SizeStepListener.Step.THIRD, thirdStepFonts);
-				fonts.put(SizeStepListener.Step.FOURTH, fourthStepFonts);
-				fonts.put(SizeStepListener.Step.FIFTH, fifthStepFonts);
-
+				dayPanel = DayPanel.builder(iterator.getId(), fontLightWeight, constraintFactory, dimensionLightWeight, iconFactory)
+						.dayLabel()
+						.labelGroup(iterator.getWritten(), iterator.getGoal())
+						.progressBar(iterator.getWritten(), iterator.getGoal())
+						.sizeStepListener(this)
+						.build();
+				dayPanel.addComponentListener(new AspectRatioAdapter(this));
 				firstDayPanel = false;
+			} else {
+				dayPanel = DayPanel.builder(iterator.getId(), fontLightWeight, constraintFactory, dimensionLightWeight, iconFactory)
+						.dayLabel()
+						.labelGroup(iterator.getWritten(), iterator.getGoal())
+						.progressBar(iterator.getWritten(), iterator.getGoal())
+						.build();
 			}
-			dayPanels.put(dayPanel, components);
+			dayGrid.add(dayPanel);
+			dayPanels.put(iterator.getId(), dayPanel);
+			iterator.next();
+		}
+		Color background = ((ThemeColors) ViewController.getTheme()).getAccentBackground();
+		JPanel panel = new JPanel();
+		DayPanel header = createHeader(prodTimeModel.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")), "gear.png");
+		DayPanel subHeader = createSubHeader();
+
+		SpringLayout layout = new SpringLayout();
+		layout.putConstraint(SpringLayout.EAST, header, 0, SpringLayout.EAST, panel);
+		layout.putConstraint(SpringLayout.WIDTH, header, 0, SpringLayout.WIDTH, panel);
+		layout.putConstraint(SpringLayout.NORTH, header, 0, SpringLayout.NORTH, panel);
+		layout.putConstraint(SpringLayout.SOUTH, header, 35, SpringLayout.NORTH, panel);
+		layout.putConstraint(SpringLayout.NORTH, subHeader, 1, SpringLayout.SOUTH, header);
+		layout.putConstraint(SpringLayout.SOUTH, subHeader, 25, SpringLayout.SOUTH, header);
+		layout.putConstraint(SpringLayout.WIDTH, subHeader, 0, SpringLayout.WIDTH, panel);
+		layout.putConstraint(SpringLayout.WIDTH, dayGrid, 0, SpringLayout.WIDTH, panel);
+		layout.putConstraint(SpringLayout.NORTH, dayGrid, 1, SpringLayout.SOUTH, subHeader);
+		layout.putConstraint(SpringLayout.SOUTH, dayGrid, 0, SpringLayout.SOUTH, panel);
+		panel.setLayout(layout);
+
+		panel.add(header);
+		panel.add(subHeader);
+		panel.add(dayGrid);
+
+		dayPanels.put(LocalDate.of(1970, 1, 1), header);
+		dayPanels.put(LocalDate.of(1970, 1, 2), subHeader);
+		return panel;
+	}
+
+	@Override
+	public void aspectRatioChanged(AspectRatioAdapter.AspectRatio ratio) {
+		for (AdjustableComponentInterface dayPanel : dayPanels.values()) {
+			dayPanel.aspectRatioChanged(ratio);
 		}
 	}
 
-	public void addDayPanelsToContainer() {
-		for (JPanel panel : dayPanels.keySet()) {
-			container.add(panel);
+	@Override
+	public void sizeChanged(SizeStepAdapter.Step step) {
+		for (AdjustableComponentInterface dayPanel : dayPanels.values()) {
+			dayPanel.sizeChanged(step);
 		}
 	}
 
-	public void aspectRatioChanged(DayPanelListener.AspectRatio ratio) {
-		dayPanels.forEach((key, value) -> {
-			IntStream.range(0, value.size())
-					.forEach(i -> key.add(value.get(i), constraintsMap.get(ratio).get(i)));
-			if (withProgressBar) {
-				((JProgressBar) value.getLast()).setOrientation(ratioToProgressBarOrientation(ratio));
-			}
-		});
-	}
-
-	public void sizeStepChanged(SizeStepListener.Step sizeStep) {
-		currentStep = sizeStep;
-		dayPanels.forEach((key, value) -> {
-			int j = withProgressBar ? value.size() - 1 : value.size();
-			{
-				try (IntStream stream = IntStream.range(0, j)) {
-					stream.forEach(i -> ((ComponentAdjuster) value.get(i)).adjust(fonts.get(sizeStep).get(i)));
-				} catch (Exception ignored) {
-				}
-			}
-		});
-	}
-
-	public Icon[] getIcon() {
-		return icons.get(currentStep);
-	}
-
-	public Dimension getDimension() {
-		return switch (currentStep) {
-			case FIRST -> firstDimension;
-			case SECOND -> secondDimension;
-			case THIRD -> thirdimension;
-			case FOURTH -> fourthDimension;
-			case FIFTH -> fifthDimension;
-		};
-	}
-
-	private int ratioToProgressBarOrientation(DayPanelListener.AspectRatio ratio) {
-		if (ratio == DayPanelListener.AspectRatio.HORIZONTAL) {
-			return SwingConstants.VERTICAL;
-		} else return SwingConstants.HORIZONTAL;
+	@Override
+	public void wireWithParent(JComponent parent) {
 	}
 
 	public void setGoal(int goal, Long timeId) {
 
 	}
 
-	private GridBagConstraints getLabelGroupC(DayPanelListener.AspectRatio ratio) {
-		GridBagConstraints horizontalAndSquare = new GridBagConstraints();
-		horizontalAndSquare.fill = GridBagConstraints.BOTH;
-		horizontalAndSquare.gridy = 0;
-		horizontalAndSquare.gridx = 1;
-		horizontalAndSquare.weightx = 0.5;
-		horizontalAndSquare.weighty = 0.5;
 
-		GridBagConstraints vertical = new GridBagConstraints();
-		vertical.fill = GridBagConstraints.BOTH;
-		vertical.gridy = 1;
-		vertical.gridx = 0;
-		vertical.weightx = 0.5;
-		vertical.weighty = 0.5;
-
-		return switch (ratio) {
-			case HORIZONTAL, SQUARE -> horizontalAndSquare;
-			case VERTICAL -> vertical;
-		};
-	}
-
-	private GridBagConstraints getProgressBarC(DayPanelListener.AspectRatio ratio) {
-		GridBagConstraints horizontal = new GridBagConstraints();
-		horizontal.fill = GridBagConstraints.VERTICAL;
-		horizontal.gridy = 0;
-		horizontal.gridx = 2;
-		horizontal.weightx = 0;
-		horizontal.weighty = 1.0;
-		horizontal.gridwidth = 1;
-
-		GridBagConstraints square = new GridBagConstraints();
-		square.fill = GridBagConstraints.HORIZONTAL;
-		square.gridy = 1;
-		square.gridx = 0;
-		square.weightx = 1.0;
-		square.weighty = 0;
-		square.gridwidth = 2;
-
-		GridBagConstraints vertical = new GridBagConstraints();
-		vertical.fill = GridBagConstraints.HORIZONTAL;
-		vertical.gridy = 2;
-		vertical.gridx = 0;
-		vertical.weightx = 1.0;
-		vertical.weighty = 0;
-		vertical.gridwidth = 1;
-
-		return switch (ratio) {
-			case HORIZONTAL -> horizontal;
-			case SQUARE -> square;
-			case VERTICAL -> vertical;
-		};
-	}
-
-	private @NotNull GridBagConstraints getDayLabelC() {
-		GridBagConstraints dayLabelC = new GridBagConstraints();
-		dayLabelC.fill = GridBagConstraints.BOTH;
-		dayLabelC.gridy = 0;
-		dayLabelC.gridx = 0;
-		return dayLabelC;
-	}
 }

@@ -55,7 +55,7 @@ public class TableDialog extends JDialog {
 
 	public void createProdVolumeDialog() {
 		setTitle("Знаков в день");
-		JTextField field = new JTextField(String.valueOf(SettingsController.getProdVolume()));
+		JTextField field = new JTextField(String.valueOf(SettingsController.getProdGoal()));
 
 		Action action = new AbstractAction() {
 			@SneakyThrows

@@ -28,7 +28,7 @@ public class ProgressContainer extends JPanel {
 	private ImageIcon goalIcon;
 	private ImageIcon doneIcon;
 	private ImageIcon blankIcon;
-	private FlippedProgressBar progressBar;
+	private JProgressBar progressBar;
 	private int date;
 	private ProdTimeModel prodTimeModel;
 
@@ -48,7 +48,7 @@ public class ProgressContainer extends JPanel {
 //		<a href="https://www.flaticon.com/free-icons/mission" title="mission icons">Mission icons created by Us and Up - Flaticon</a>
 //		<div> Icons made by <a href="" title="SANB"> SANB </a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com'</a></div>
 //		<a href="https://www.flaticon.com/free-icons/myth" title="myth icons">Myth icons created by Aranagraphics - Flaticon</a>
-		progressBar = new FlippedProgressBar(JProgressBar.VERTICAL);
+		progressBar = new JProgressBar(JProgressBar.VERTICAL);
 		progressBar.setMaximum(maxValue);
 		progressBar.setValue(measuredValue);
 		progressBar.setStringPainted(true);
@@ -100,7 +100,7 @@ public class ProgressContainer extends JPanel {
 	public ProgressContainer createHorizontalProgress() {
 		JLabel label = new JLabel("Написано: " + measuredValue + " Осталось: " + (maxValue - measuredValue));
 
-		progressBar = new FlippedProgressBar();
+		progressBar = new JProgressBar();
 		progressBar.setOpaque(true);
 		progressBar.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 		progressBar.setMaximum(maxValue);

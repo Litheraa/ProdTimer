@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 public class SizeStepAdapter extends ComponentAdapter {
 	private final AdjustableComponentInterface controller;
 	private Step oldStep;
+	private long timer;
 
 	public SizeStepAdapter(DayPanelController controller) {
 		this.controller = controller;
@@ -20,8 +21,11 @@ public class SizeStepAdapter extends ComponentAdapter {
 	public void componentResized(ComponentEvent e) {
 		Step sizeStep = calculateSizeStep(e.getComponent().getSize());
 		if (oldStep != sizeStep) {
-			oldStep = sizeStep;
-			controller.sizeChanged(sizeStep);
+			if (System.currentTimeMillis() - timer > 50) {
+				timer = System.currentTimeMillis();
+				oldStep = sizeStep;
+				controller.sizeChanged(sizeStep);
+			}
 		}
 	}
 
@@ -46,7 +50,12 @@ public class SizeStepAdapter extends ComponentAdapter {
 				getStepDimension(Step.FIFTH),
 				dimension)) {
 			return Step.FOURTH;
-		} else return Step.FIFTH;
+		}
+		if (SwingUtilities.isRectangleContainingRectangle(
+				getStepDimension(Step.FIFTH),
+				dimension)) {
+			return Step.FIFTH;
+		} else return Step.SIXTH;
 	}
 
 	private Rectangle getStepDimension(Step step) {

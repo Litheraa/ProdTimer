@@ -8,11 +8,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ProgressBar extends JProgressBar implements AdjustableComponentInterface{
-	private final ConstraintFactory CONSTRAINT_FABRIC;
+	private final ConstraintFactory constraintFactory = ConstraintFactory.getInstance();
 	private Container PARENT = getParent();
 
-	public ProgressBar(int written, int goal, ConstraintFactory constraintFactory) {
-		CONSTRAINT_FABRIC = constraintFactory;
+	public ProgressBar(int written, int goal) {
 
 		setMaximum(goal);
 		if (written < 0) {
@@ -28,7 +27,7 @@ public class ProgressBar extends JProgressBar implements AdjustableComponentInte
 		if (ratio == AspectRatioAdapter.AspectRatio.HORIZONTAL) {
 			setOrientation(JProgressBar.VERTICAL);
 		} else setOrientation(JProgressBar.HORIZONTAL);
-		PARENT.add(this, CONSTRAINT_FABRIC.getConstraints(getUIClassID(), ratio));
+		PARENT.add(this, constraintFactory.getConstraints(getUIClassID(), ratio));
 	}
 
 	@Override
@@ -37,8 +36,8 @@ public class ProgressBar extends JProgressBar implements AdjustableComponentInte
 	}
 
 	@Override
-	public void wireWithParent(JComponent parent) {
+	public ProgressBar setParent(JComponent parent) {
 		PARENT = parent;
-		PARENT.add(this);
+		return this;
 	}
 }

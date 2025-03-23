@@ -1,6 +1,8 @@
 package litheraa.view.util.fabric;
 
 import litheraa.view.util.SizeStepAdapter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.intellij.lang.annotations.MagicConstant;
 
 import java.awt.*;
@@ -8,7 +10,9 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FontLightWeight implements FabricI{
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class FontFactory {
+	private static volatile FontFactory instance;
 	private final Map<String, Map<SizeStepAdapter.Step, Font>> MAP = new HashMap<>();
 
 	public Font getFont(String iUClassID, SizeStepAdapter.Step step, int sizeStep,
@@ -24,5 +28,16 @@ public class FontLightWeight implements FabricI{
 			MAP.put(iUClassID, fontMap);
 		}
 		return MAP.get(iUClassID).get(step);
+	}
+
+	public static FontFactory getInstance() {
+		if (instance == null) {
+			synchronized (FontFactory.class) {
+				if (instance == null) {
+					instance = new FontFactory();
+				}
+			}
+		}
+		return instance;
 	}
 }

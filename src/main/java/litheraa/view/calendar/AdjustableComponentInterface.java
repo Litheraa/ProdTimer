@@ -8,5 +8,5 @@ import javax.swing.*;
 public interface AdjustableComponentInterface {
 	void aspectRatioChanged(AspectRatioAdapter.AspectRatio ratio);
 	void sizeChanged(SizeStepAdapter.Step step);
-	void wireWithParent(JComponent parent);
+	JComponent setParent(JComponent parent);
 }

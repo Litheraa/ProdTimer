@@ -4,7 +4,7 @@ import litheraa.view.util.AspectRatioAdapter;
 import litheraa.view.util.IntegerFilter;
 import litheraa.view.util.SizeStepAdapter;
 import litheraa.view.util.fabric.ConstraintFactory;
-import litheraa.view.util.fabric.FontLightWeight;
+import litheraa.view.util.fabric.FontFactory;
 import litheraa.view.util.fabric.IconFactory;
 import org.jdesktop.swingx.VerticalLayout;
 
@@ -17,16 +17,13 @@ public class LabelGroup extends JPanel implements AdjustableComponentInterface {
 	private final JLabel goalLabel;
 	private final JLabel writtenLabel;
 	private final JLabel toGoLabel;
-	private final ConstraintFactory CONSTRAINT_FABRIC;
-	private final FontLightWeight FONT_FABRIC;
-	private final IconFactory ICON_FABRIC;
+	private final ConstraintFactory constraintFactory = ConstraintFactory.getInstance();
+	private final FontFactory fontFactory = FontFactory.getInstance();
+	private final IconFactory iconFactory = IconFactory.getInstance();
 	private Container PARENT = getParent();
 	private static final String[] ICON_NAMES = {"mission.png", "magic-book.png", "writed-book.png"};
 
-	public LabelGroup(int written, int goal, ConstraintFactory constraintFactory, FontLightWeight fontLightWeight, IconFactory iconFactory) {
-		CONSTRAINT_FABRIC = constraintFactory;
-		FONT_FABRIC = fontLightWeight;
-		ICON_FABRIC = iconFactory;
+	public LabelGroup(int written, int goal) {
 		goalLabel = new JLabel(String.valueOf(goal));
 		writtenLabel = new JLabel(String.valueOf(written));
 		toGoLabel = new JLabel(String.valueOf((goal - written)));
@@ -74,21 +71,21 @@ public class LabelGroup extends JPanel implements AdjustableComponentInterface {
 
 	@Override
 	public void aspectRatioChanged(AspectRatioAdapter.AspectRatio ratio) {
-		PARENT.add(this, CONSTRAINT_FABRIC.getConstraints(getUIClassID(), ratio));
+		PARENT.add(this, constraintFactory.getConstraints(getUIClassID(), ratio));
 	}
 
 	@Override
 	public void sizeChanged(SizeStepAdapter.Step step) {
 		for (int i = 0; i < getComponentCount(); i++) {
 			JLabel label = (JLabel) getComponent(i);
-			label.setFont(FONT_FABRIC.getFont(getUIClassID(), step, 4, Font.BOLD));
-			label.setIcon(ICON_FABRIC.getIcon(ICON_NAMES[i], step, 4));
+			label.setFont(fontFactory.getFont(getUIClassID(), step, 4, Font.BOLD));
+			label.setIcon(iconFactory.getIcon(ICON_NAMES[i], step, 4));
 		}
 	}
 
 	@Override
-	public void wireWithParent(JComponent parent) {
+	public LabelGroup setParent(JComponent parent) {
 		PARENT = parent;
-		PARENT.add(this);
+		return this;
 	}
 }

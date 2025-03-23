@@ -6,7 +6,6 @@ import litheraa.data.models.ProdTimeModel;
 import litheraa.data_base.HSQLDBWorker;
 import litheraa.util.ViewType;
 import litheraa.view.*;
-import litheraa.view.calendar.CalendarPanel;
 import litheraa.view.calendar.DayPanelController;
 import litheraa.view.calendar.ProgressContainer;
 import litheraa.view.menu.TableMenuBar;

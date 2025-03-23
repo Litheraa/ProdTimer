@@ -6,6 +6,7 @@ import litheraa.view.themes.ThemeColors;
 import litheraa.view.util.AspectRatioAdapter;
 import litheraa.view.util.SizeStepAdapter;
 import litheraa.view.util.fabric.*;
+import org.apache.commons.math3.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,85 +18,49 @@ import java.util.*;
 public class DayPanelController implements AdjustableComponentInterface {
 	private final ProdTimeModel prodTimeModel;
 	private final Map<LocalDate, AdjustableComponentInterface> dayPanels = new HashMap<>(31);
-	private final ConstraintFactory constraintFactory = new ConstraintFactory();
-	private final DimensionLightWeight dimensionLightWeight = new DimensionLightWeight();
-	private final FontLightWeight fontLightWeight = new FontLightWeight();
-	private final IconFactory iconFactory = new IconFactory();
+	private final FontFactory fontFactory = FontFactory.getInstance();
+	private final IconFactory iconFactory = IconFactory.getInstance();
 
 	public DayPanelController(ProdTimeModel prodTimeModel) {
 		this.prodTimeModel = prodTimeModel;
 	}
 
-	private DayPanel createHeader(String headerText, String headerIcon) {
+	private AdjustablePanel createHeader(String headerText, String headerIcon) {
 		JLabel label = new JLabel(headerText.substring(0, 1).toUpperCase() + headerText.substring(1));
-		JLabel icon = new JLabel("");
+		label.setHorizontalAlignment(SwingConstants.CENTER);
 
-		DayPanel panel = DayPanel.builder(LocalDate.of(1970, 1, 1), fontLightWeight)
-				.label(label, (l, step) -> l.setFont(fontLightWeight
-						.getFont("header", step, 10, Font.BOLD)))
-				.label(icon, (l, step) -> l.setIcon(iconFactory.getIcon(headerIcon, step, 10)))
+		JLabel icon = new JLabel("");
+		icon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+
+		AdjustablePanel panel = AdjustablePanel.adjustablePanelBuilder(LocalDate.of(1970, 1, 1))
+				.label((l, step) -> l.setFont(fontFactory
+						.getFont("header", step, 8, Font.BOLD)), new Pair<>(label, BorderLayout.CENTER))
+				.label((l, step) -> l.setIcon(iconFactory.getIcon(headerIcon, step, 8)), new Pair<>(icon, BorderLayout.EAST))
+				.layout(new BorderLayout())
 				.build();
 
-		SpringLayout layout = new SpringLayout();
-		layout.putConstraint(SpringLayout.EAST, icon, -5, SpringLayout.EAST, panel);
-		layout.putConstraint(SpringLayout.VERTICAL_CENTER, icon, 0, SpringLayout.VERTICAL_CENTER, panel);
-		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, label, 0, SpringLayout.HORIZONTAL_CENTER, panel);
+		panel.add(label, BorderLayout.CENTER);
+		panel.add(icon, BorderLayout.EAST);
 
-		panel.setLayout(layout);
 		panel.setBackground(((ThemeColors) ViewController.getTheme()).getAccentBackground());
 		return panel;
 	}
 
-	private JLabel createLabel(String headerName, JPanel parent) {
-		JLabel label = new JLabel(headerName.substring(0, 1).toUpperCase() + headerName.substring(1));
-		label.setOpaque(true);
-//		label.setBackground(background);
+	private AdjustablePanel createSubHeader() {
+		JLabel[] labels = new JLabel[7];
+		for (DayOfWeek day : DayOfWeek.values()) {
+			JLabel label = new JLabel(day.getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")));
+			label.setOpaque(true);
+			label.setForeground(((ThemeColors) ViewController.getTheme()).getBackgroundDark());
+			label.setBackground(((ThemeColors) ViewController.getTheme()).getForeground());
+			label.setHorizontalAlignment(JLabel.CENTER);
+			labels[day.getValue() - 1] = label;
+		}
 
-//		AdjustableLabelContainer<JLabel> headerLabelContainer = new AdjustableLabelContainer<>(label, (c, step)-> label
-//				.setFont(fontLightWeight
-//						.getFont("header", step, 10, Font.BOLD)));
-//		parent.add(label);
-//	dayPanels.put(LocalDate.of(1970, 1, 1), headerLabelContainer);
-
-		return label;
-	}
-
-	private JLabel createIconLabel(String iconName, int dayNo) {
-		JLabel icon = new JLabel();
-//		AdjustableIconContainer<JLabel> iconContainer = new AdjustableIconContainer<>(icon, iconName, iconFactory);
-//		dayPanels.put(LocalDate.of(1970, 1, dayNo), iconContainer);
-		return icon;
-	}
-
-	private DayPanel createSubHeader() {
-		DayPanel dayNamesPanel = DayPanel.builder(LocalDate.of(1970, 1, 2), fontLightWeight)
-				.dayName(DayOfWeek.of(1).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
-				.dayName(DayOfWeek.of(2).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
-				.dayName(DayOfWeek.of(3).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
-				.dayName(DayOfWeek.of(4).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
-				.dayName(DayOfWeek.of(5).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
-				.dayName(DayOfWeek.of(6).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
-				.dayName(DayOfWeek.of(7).getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")))
-				.build();
-
-		dayNamesPanel.setLayout(new GridLayout(1, 7, 5, 0));
-
-		return dayNamesPanel;
-	}
-
-	private JPanel createTweakedPanel(JLabel label, JLabel icon, Color background) {
-		JPanel panel = new JPanel();
-
-		SpringLayout layout = new SpringLayout();
-		layout.putConstraint(SpringLayout.EAST, icon, -5, SpringLayout.EAST, panel);
-		layout.putConstraint(SpringLayout.VERTICAL_CENTER, icon, 0, SpringLayout.VERTICAL_CENTER, panel);
-		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, label, 0, SpringLayout.HORIZONTAL_CENTER, panel);
-
-		panel.setLayout(layout);
-		panel.add(label);
-		panel.add(icon);
-		panel.setBackground(background);
-		return panel;
+		return AdjustablePanel.adjustablePanelBuilder(LocalDate.of(1970, 1, 2))
+				.layout(new GridLayout(1, 7, 5, 0))
+				.label((l, step) ->
+						l.setFont(fontFactory.getFont("subHeader", step, 4, Font.PLAIN)), labels).build();
 	}
 
 	private CalendarGrid createGrid() {
@@ -110,70 +75,57 @@ public class DayPanelController implements AdjustableComponentInterface {
 
 		ProdTimeModel.Iterator iterator = prodTimeModel.iterator();
 		while (iterator.hasNext()) {
-			DayPanel dayPanel;
+			AdjustablePanel adjustablePanel = AdjustablePanel.dayPanelbuilder(iterator.getId())
+					.dayLabel()
+					.labelGroup(iterator.getWritten(), iterator.getGoal())
+					.progressBar(iterator.getWritten(), iterator.getGoal())
+					.build();
 			if (firstDayPanel) {
-				dayPanel = DayPanel.builder(iterator.getId(), fontLightWeight, constraintFactory, dimensionLightWeight, iconFactory)
-						.dayLabel()
-						.labelGroup(iterator.getWritten(), iterator.getGoal())
-						.progressBar(iterator.getWritten(), iterator.getGoal())
-						.sizeStepListener(this)
-						.build();
-				dayPanel.addComponentListener(new AspectRatioAdapter(this));
+				adjustablePanel.addSizeStepListener(this);
+				adjustablePanel.addComponentListener(new AspectRatioAdapter(this));
 				firstDayPanel = false;
-			} else {
-				dayPanel = DayPanel.builder(iterator.getId(), fontLightWeight, constraintFactory, dimensionLightWeight, iconFactory)
-						.dayLabel()
-						.labelGroup(iterator.getWritten(), iterator.getGoal())
-						.progressBar(iterator.getWritten(), iterator.getGoal())
-						.build();
 			}
-			dayGrid.add(dayPanel);
-			dayPanels.put(iterator.getId(), dayPanel);
+			dayGrid.add(adjustablePanel);
+			dayPanels.put(iterator.getId(), adjustablePanel);
 			iterator.next();
 		}
-		Color background = ((ThemeColors) ViewController.getTheme()).getAccentBackground();
 		JPanel panel = new JPanel();
-		DayPanel header = createHeader(prodTimeModel.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")), "gear.png");
-		DayPanel subHeader = createSubHeader();
+		AdjustablePanel header = createHeader(prodTimeModel.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")), "gear.png");
+		AdjustablePanel subHeader = createSubHeader();
 
 		SpringLayout layout = new SpringLayout();
-		layout.putConstraint(SpringLayout.EAST, header, 0, SpringLayout.EAST, panel);
 		layout.putConstraint(SpringLayout.WIDTH, header, 0, SpringLayout.WIDTH, panel);
 		layout.putConstraint(SpringLayout.NORTH, header, 0, SpringLayout.NORTH, panel);
-		layout.putConstraint(SpringLayout.SOUTH, header, 35, SpringLayout.NORTH, panel);
 		layout.putConstraint(SpringLayout.NORTH, subHeader, 1, SpringLayout.SOUTH, header);
-		layout.putConstraint(SpringLayout.SOUTH, subHeader, 25, SpringLayout.SOUTH, header);
 		layout.putConstraint(SpringLayout.WIDTH, subHeader, 0, SpringLayout.WIDTH, panel);
 		layout.putConstraint(SpringLayout.WIDTH, dayGrid, 0, SpringLayout.WIDTH, panel);
 		layout.putConstraint(SpringLayout.NORTH, dayGrid, 1, SpringLayout.SOUTH, subHeader);
 		layout.putConstraint(SpringLayout.SOUTH, dayGrid, 0, SpringLayout.SOUTH, panel);
+
 		panel.setLayout(layout);
 
 		panel.add(header);
 		panel.add(subHeader);
 		panel.add(dayGrid);
 
-		dayPanels.put(LocalDate.of(1970, 1, 1), header);
-		dayPanels.put(LocalDate.of(1970, 1, 2), subHeader);
+		dayPanels.put(header.getId(), header);
+		dayPanels.put(subHeader.getId(), subHeader);
 		return panel;
 	}
 
 	@Override
 	public void aspectRatioChanged(AspectRatioAdapter.AspectRatio ratio) {
-		for (AdjustableComponentInterface dayPanel : dayPanels.values()) {
-			dayPanel.aspectRatioChanged(ratio);
-		}
+		dayPanels.values().forEach(dayPanel -> dayPanel.aspectRatioChanged(ratio));
 	}
 
 	@Override
 	public void sizeChanged(SizeStepAdapter.Step step) {
-		for (AdjustableComponentInterface dayPanel : dayPanels.values()) {
-			dayPanel.sizeChanged(step);
-		}
+		dayPanels.values().forEach(dayPanel -> dayPanel.sizeChanged(step));
 	}
 
 	@Override
-	public void wireWithParent(JComponent parent) {
+	public JComponent setParent(JComponent parent) {
+		return null;
 	}
 
 	public void setGoal(int goal, Long timeId) {

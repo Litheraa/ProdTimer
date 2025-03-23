@@ -1,13 +1,17 @@
 package litheraa.view.util.fabric;
 
 import litheraa.view.util.SizeStepAdapter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.awt.*;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DimensionLightWeight {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class DimensionFactory {
+	private static volatile DimensionFactory instance;
 	private final Map<String, Map<SizeStepAdapter.Step, Dimension>> MAP = new HashMap<>();
 
 	public Dimension getDimension(String iUClassID, SizeStepAdapter.Step step, int sizeStep) {
@@ -21,5 +25,16 @@ public class DimensionLightWeight {
 			MAP.put(iUClassID, dimensionMap);
 		}
 		return MAP.get(iUClassID).get(step);
+	}
+
+	public static DimensionFactory getInstance() {
+		if (instance == null) {
+			synchronized (DimensionFactory.class) {
+				if (instance == null) {
+					instance = new DimensionFactory();
+				}
+			}
+		}
+		return instance;
 	}
 }

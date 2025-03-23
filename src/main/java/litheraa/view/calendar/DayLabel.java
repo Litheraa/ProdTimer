@@ -3,43 +3,41 @@ package litheraa.view.calendar;
 import litheraa.view.util.AspectRatioAdapter;
 import litheraa.view.util.SizeStepAdapter;
 import litheraa.view.util.fabric.ConstraintFactory;
-import litheraa.view.util.fabric.DimensionLightWeight;
-import litheraa.view.util.fabric.FontLightWeight;
+import litheraa.view.util.fabric.DimensionFactory;
+import litheraa.view.util.fabric.FontFactory;
+import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 
 public class DayLabel extends JLabel implements AdjustableComponentInterface {
+	@Getter
 	private final LocalDate DATE;
-	private final ConstraintFactory CONSTRAINT_FABRIC;
-	private final DimensionLightWeight DIMENSION_FABRIC;
-	private final FontLightWeight FONT_FABRIC;
+	private final ConstraintFactory constraintFactory = ConstraintFactory.getInstance();
+	private final DimensionFactory dimensionFactory = DimensionFactory.getInstance();
+	private final FontFactory fontFactory = FontFactory.getInstance();
 	private Container PARENT = getParent();
 
-	public DayLabel(LocalDate date, ConstraintFactory constraintFactory, DimensionLightWeight dimensionLightWeight, FontLightWeight fontLightWeight) {
+	public DayLabel(LocalDate date) {
 		DATE = date;
-		CONSTRAINT_FABRIC = constraintFactory;
-		DIMENSION_FABRIC = dimensionLightWeight;
-		FONT_FABRIC = fontLightWeight;
-
 		setText(String.valueOf(date.getDayOfMonth()));
 	}
 
 	@Override
 	public void aspectRatioChanged(AspectRatioAdapter.AspectRatio ratio) {
-		PARENT.add(this, CONSTRAINT_FABRIC.getConstraints(getUIClassID(), ratio));
+		PARENT.add(this, constraintFactory.getConstraints(getUIClassID(), ratio));
 	}
 
 	@Override
 	public void sizeChanged(SizeStepAdapter.Step step) {
-		setPreferredSize(DIMENSION_FABRIC.getDimension(getUIClassID(), step, 13));
-		setFont(FONT_FABRIC.getFont(getUIClassID(), step, 7, Font.BOLD));
+		setMinimumSize(dimensionFactory.getDimension(getUIClassID(), step, 13));
+		setFont(fontFactory.getFont(getUIClassID(), step, 7, Font.BOLD));
 	}
 
 	@Override
-	public void wireWithParent(JComponent parent) {
+	public JComponent setParent(JComponent parent) {
 		PARENT = parent;
-		PARENT.add(this);
+		return this;
 	}
 }

@@ -1,13 +1,17 @@
 package litheraa.view.util.fabric;
 
 import litheraa.view.util.AspectRatioAdapter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.awt.*;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConstraintFactory {
+	private static volatile ConstraintFactory instance;
 	private final Map<String, Map<AspectRatioAdapter.AspectRatio, GridBagConstraints>> MAP = new HashMap<>();
 
 	public GridBagConstraints getConstraints(String iUClassId, AspectRatioAdapter.AspectRatio ratio) {
@@ -29,15 +33,15 @@ public class ConstraintFactory {
 					horizontalAndSquare.fill = GridBagConstraints.BOTH;
 					horizontalAndSquare.gridy = 0;
 					horizontalAndSquare.gridx = 1;
-					horizontalAndSquare.weightx = 1.0;
-					horizontalAndSquare.weighty = 1.0;
+					horizontalAndSquare.weightx = 0.5;
+					horizontalAndSquare.weighty = 0.5;
 
 					GridBagConstraints vertical = new GridBagConstraints();
 					vertical.fill = GridBagConstraints.BOTH;
 					vertical.gridy = 1;
 					vertical.gridx = 0;
-					vertical.weightx = 1.0;
-					vertical.weighty = 1.0;
+					vertical.weightx = 0.5;
+					vertical.weighty = 0.5;
 
 					constraintsMap.put(AspectRatioAdapter.AspectRatio.HORIZONTAL, horizontalAndSquare);
 					constraintsMap.put(AspectRatioAdapter.AspectRatio.SQUARE, horizontalAndSquare);
@@ -50,25 +54,19 @@ public class ConstraintFactory {
 					horizontal.fill = GridBagConstraints.VERTICAL;
 					horizontal.gridy = 0;
 					horizontal.gridx = 2;
-					horizontal.weightx = 0;
-					horizontal.weighty = 1.0;
-					horizontal.gridwidth = 1;
+					horizontal.gridwidth = GridBagConstraints.REMAINDER;
 
 					GridBagConstraints square = new GridBagConstraints();
 					square.fill = GridBagConstraints.HORIZONTAL;
 					square.gridy = 1;
 					square.gridx = 0;
-					square.weightx = 1.0;
-					square.weighty = 0;
-					square.gridwidth = 2;
+					square.gridwidth = GridBagConstraints.REMAINDER;
 
 					GridBagConstraints vertical = new GridBagConstraints();
 					vertical.fill = GridBagConstraints.HORIZONTAL;
 					vertical.gridy = 2;
 					vertical.gridx = 0;
-					vertical.weightx = 1.0;
-					vertical.weighty = 0;
-					vertical.gridwidth = 1;
+					vertical.gridwidth = GridBagConstraints.REMAINDER;
 
 					constraintsMap.put(AspectRatioAdapter.AspectRatio.HORIZONTAL, horizontal);
 					constraintsMap.put(AspectRatioAdapter.AspectRatio.SQUARE, square);
@@ -81,5 +79,16 @@ public class ConstraintFactory {
 			MAP.put(iUClassId, constraintsMap);
 		}
 		return MAP.get(iUClassId).get(ratio);
+	}
+
+	public static ConstraintFactory getInstance() {
+		if (instance == null) {
+			synchronized (ConstraintFactory.class) {
+				if (instance == null) {
+					instance = new ConstraintFactory();
+				}
+			}
+		}
+		return instance;
 	}
 }

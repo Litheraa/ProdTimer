@@ -3,7 +3,7 @@
 //import litheraa.view.util.AspectRatioAdapter;
 //import litheraa.view.util.SizeStepAdapter;
 //import litheraa.view.util.fabric.ConstraintFactory;
-//import litheraa.view.util.fabric.FontLightWeight;
+//import litheraa.view.util.fabric.FontFactory;
 //import litheraa.view.util.fabric.IconFactory;
 //
 //import javax.swing.*;
@@ -11,12 +11,12 @@
 //
 //public class AdjustableLabelGroup extends AbstractAdjustableComponent<LabelGroup> {
 //	private final ConstraintFactory CONSTRAINT_FABRIC;
-//	private final FontLightWeight FONT_FABRIC;
+//	private final FontFactory FONT_FABRIC;
 //	private final IconFactory ICON_FABRIC;
 //	private final Container PARENT = SOURCE.getParent();
 //	private static final String[] ICON_NAMES = {"mission.png", "magic-book.png", "writed-book.png"};
 //
-//	public AdjustableLabelGroup(LabelGroup labelGroup, ConstraintFactory constraintFabric, FontLightWeight fontFabric, IconFactory iconFabric) {
+//	public AdjustableLabelGroup(LabelGroup labelGroup, ConstraintFactory constraintFabric, FontFactory fontFabric, IconFactory iconFabric) {
 //		super(labelGroup);
 //		CONSTRAINT_FABRIC = constraintFabric;
 //		FONT_FABRIC = fontFabric;

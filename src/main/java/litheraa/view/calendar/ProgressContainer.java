@@ -2,7 +2,7 @@ package litheraa.view.calendar;
 
 import litheraa.controller.SettingsController;
 import litheraa.controller.ViewController;
-import litheraa.data.models.ProdTimeModel;
+import litheraa.data.models.CalendarModel;
 import litheraa.util.MeasureUnit;
 import litheraa.util.NumberDeclensionRu;
 import litheraa.view.util.IntegerFilter;
@@ -30,7 +30,7 @@ public class ProgressContainer extends JPanel {
 	private ImageIcon blankIcon;
 	private JProgressBar progressBar;
 	private int date;
-	private ProdTimeModel prodTimeModel;
+	private CalendarModel calendarModel;
 
 	public ProgressContainer(double value, int maxValue) {
 		measuredValue = MeasureUnit.toChars(value);
@@ -38,11 +38,11 @@ public class ProgressContainer extends JPanel {
 		this.maxValue = maxValue;
 	}
 
-	public ProgressContainer(ProdTimeModel prodTimeModel, int date) {
-		this(prodTimeModel.getWritten(date), prodTimeModel.getDayGoal(date));
-		this.prodTimeModel = prodTimeModel;
-		this.date = date;
-	}
+//	public ProgressContainer(CalendarModel calendarModel, int date) {
+//		this(calendarModel.getWritten(date), calendarModel.getGoal(date));
+//		this.calendarModel = calendarModel;
+//		this.date = date;
+//	}
 
 	public void createVerticalProgress(ViewController controller) {
 //		<a href="https://www.flaticon.com/free-icons/mission" title="mission icons">Mission icons created by Us and Up - Flaticon</a>
@@ -142,8 +142,8 @@ public class ProgressContainer extends JPanel {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					String dayGoal = textField.getText();
 					goal.setText(dayGoal);
-					prodTimeModel.setGoal(Integer.parseInt(dayGoal), date);
-					controller.setGoal(Integer.parseInt(dayGoal), prodTimeModel.getTimeId(date));
+//					calendarModel.setGoal(Integer.parseInt(dayGoal), date);
+//					controller.setGoal(Integer.parseInt(dayGoal), calendarModel.getTimeId(date));
 					menu.setVisible(false);
 				}
 			}
@@ -165,7 +165,7 @@ public class ProgressContainer extends JPanel {
 	private void setDatePopUp() {
 		JPopupMenu menu = new JPopupMenu();
 		JXLabel textNames = new JXLabel();
-//		textNames.setText("Вы работали в текстах:" + System.lineSeparator() + prodTimeModel.getTextNames(date));
+//		textNames.setText("Вы работали в текстах:" + System.lineSeparator() + calendarModel.getTextNames(date));
 		textNames.setSize(150, 10);
 		textNames.setVerticalTextPosition(SwingConstants.TOP);
 		textNames.setTextAlignment(JXLabel.TextAlignment.CENTER);

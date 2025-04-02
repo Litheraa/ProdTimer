@@ -1,7 +1,7 @@
 package litheraa.view.util;
 
 import litheraa.view.calendar.AdjustableComponentInterface;
-import litheraa.view.calendar.DayPanelController;
+import litheraa.view.calendar.MonthlyCalendarController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +13,7 @@ public class SizeStepAdapter extends ComponentAdapter {
 	private Step oldStep;
 	private long timer;
 
-	public SizeStepAdapter(DayPanelController controller) {
+	public SizeStepAdapter(MonthlyCalendarController controller) {
 		this.controller = controller;
 	}
 

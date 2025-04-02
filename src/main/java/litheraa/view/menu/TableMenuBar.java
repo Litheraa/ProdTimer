@@ -239,7 +239,10 @@ public class TableMenuBar extends JMenuBar {
 		JMenuItem cutDate = new JMenuItem("Не показывать тексты до");
 		cutDate.addActionListener(e -> {
 			TableDialog dayChooser = new TableDialog(point);
-			dayChooser.createDayChooserDialog();
+			dayChooser.createDayChooserDialog("Не показывать тексты до",
+					SettingsController.getCutDate(),
+					new SettingsController(),
+					(sC, string) -> SettingsController.setCutDate(string));
 		});
 
 		JMenu behaviorMenu = createBehaviourMenu();

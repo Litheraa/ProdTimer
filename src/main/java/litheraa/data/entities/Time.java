@@ -21,7 +21,7 @@ public class Time implements Serializable {
 	private final LocalDate modified;
 	private int goal;
 	private int written = 0;
-	@OneToMany(mappedBy = "id.timeId", cascade = CascadeType.PERSIST, orphanRemoval = true)
+	@OneToMany(mappedBy = "id.timeId", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<Prod> prods;
 
 	public Time(LocalDate modified, int goal) {

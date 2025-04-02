@@ -3,8 +3,11 @@ package litheraa.data_base;
 import litheraa.controller.SettingsController;
 import litheraa.data.RoutineOld;
 import litheraa.data.TextOld;
-import litheraa.data.models.ProdTimeModel;
+import litheraa.data.entities.Text;
+import litheraa.data.entities.Time;
+import litheraa.data.models.CalendarModel;
 import litheraa.util.CalendarWrapper;
+import org.apache.commons.math3.util.Pair;
 
 import java.nio.file.Path;
 import java.sql.Date;
@@ -15,6 +18,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.List;
 
 import static litheraa.data_base.HSQLDBConnector.*;
 
@@ -198,14 +202,14 @@ public class HSQLDBWorker {
 		return data;
 	}
 
-	public static ProdTimeModel selectCalendar(int year, int month) {
+	public static CalendarModel selectCalendar(int year, int month) {
 		String monthString = month < 10 ? "0" + month : String.valueOf(month);
 		String date = year + "-" + monthString + "-%";
 		return selectCalendar(date);
 	}
 
-	public static ProdTimeModel selectCalendar(String date) {
-		ProdTimeModel prodTimeModel = new ProdTimeModel(new ArrayList<>(), new ArrayList<>(), Year.now().atDay(1), LocalDate.now());
+	public static CalendarModel selectCalendar(String date) {
+		CalendarModel calendarModel = new CalendarModel(new Pair<>(new ArrayList<>(), new ArrayList<>()));
 		try (PreparedStatement pS = getPreparedStatement(SELECT_CALENDAR)) {
 			pS.setString(1, date);
 			var result = pS.executeQuery();
@@ -214,19 +218,19 @@ public class HSQLDBWorker {
 				java.util.Date resultDate = result.getDate("date");
 				temp.setTime(resultDate);
 				int day = temp.get(java.util.Calendar.DATE);
-//				prodTimeModel.setWritten(day, result.getDouble("chars"));
-//				prodTimeModel.setGoal(day, result.getInt("charGoal"));
-//				prodTimeModel.setTextNames(day, result.getString("textNames"));
+//				calendarModel.setWritten(day, result.getDouble("chars"));
+//				calendarModel.setGoal(day, result.getInt("charGoal"));
+//				calendarModel.setTextNames(day, result.getString("textNames"));
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return prodTimeModel;
+		return calendarModel;
 	}
 
-	public static void updateCalendar(ProdTimeModel data, int day) {
+	public static void updateCalendar(CalendarModel data, int day) {
 		try (PreparedStatement pS = getPreparedStatement(UPDATE_CALENDAR)) {
-			pS.setInt(1, data.getDayGoal(day));
+//			pS.setInt(1, data.getGoal(day));
 //			pS.setString(2, data.getDate(day));
 			pS.executeUpdate();
 		} catch (SQLException e) {

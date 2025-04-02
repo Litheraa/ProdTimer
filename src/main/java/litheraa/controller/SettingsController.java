@@ -5,13 +5,20 @@ import litheraa.util.ViewType;
 import litheraa.view.util.ColumnKeysRecord;
 import litheraa.util.KeysRecord;
 import litheraa.util.SettingsUtil;
+import org.apache.commons.math3.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.YearMonth;
+import java.time.format.TextStyle;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class SettingsController extends SettingsUtil {
@@ -256,5 +263,53 @@ public class SettingsController extends SettingsUtil {
 
 	public static void setSize(int viewNo, int width, int height) {
 		SettingsUtil.set(KEYS.size() + viewNo, width + "/" + height);
+	}
+
+	public static void setMonth(String month) {
+		SettingsUtil.set(KEYS.month(), month);
+	}
+
+	public static int getMonth() {
+		String month = SettingsUtil
+				.get(KEYS.month());
+		if (!month.matches("^[0-9]$")) {
+			month = SettingsUtil.loadDefault(KEYS.month());
+		}
+		if (month.startsWith("0")) {
+			month.replace("0", "");
+		}
+		return Integer.parseInt(month);
+	}
+
+	public static void setText(String text) {
+		SettingsUtil.set(KEYS.text(), text);
+	}
+
+	public static String getText() {
+		return SettingsUtil.get(KEYS.text());
+	}
+
+	public static void setPeriod(LocalDate date) {
+		SettingsUtil.set(KEYS.period(), date.toString());
+	}
+
+	public static LocalDate getPeriod() {
+		String period = SettingsUtil.get(KEYS.period());
+		if (period == null || !period.matches("^[0-9]{4}-[0-9]{2}-[0-9]{2}$")) {
+			return LocalDate.now();
+		}
+		return LocalDate.parse(period);
+	}
+
+	public static void setCalendarType(ViewController.CalendarType type) {
+		SettingsUtil.set(KEYS.calendarType(), String.valueOf(type.ordinal()));
+	}
+
+	public static ViewController.CalendarType getCalendarType() {
+		String type = SettingsUtil.get(KEYS.calendarType());
+		if (type == null || !type.matches("^[0-2]{1}$")) {
+			type = "0";
+		}
+		return ViewController.CalendarType.of(Integer.parseInt(type));
 	}
 }

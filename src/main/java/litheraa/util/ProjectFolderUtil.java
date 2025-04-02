@@ -18,6 +18,8 @@ public class ProjectFolderUtil {
 	@Getter(AccessLevel.PROTECTED)
 	private static final String PROJECT_FOLDER = FileSystemView.getFileSystemView().getDefaultDirectory().
 			toString() + "/ProdMaster";
+	private static final String IMAGE_FOLDER = PROJECT_FOLDER + "/images";
+	private static final String DEFAULT_FOLDER = PROJECT_FOLDER + "/default";
 	@Getter(AccessLevel.PROTECTED)
 	private static File settingsFile = new File(PROJECT_FOLDER + "/settings");
 	@Getter(AccessLevel.PROTECTED)
@@ -25,24 +27,25 @@ public class ProjectFolderUtil {
 	@Getter(AccessLevel.PROTECTED)
 	private static File messageFile = new File(PROJECT_FOLDER + "/messages");
 	@Getter(AccessLevel.PROTECTED)
-	private static final File DEFAULT_SETTINGS = new File(PROJECT_FOLDER + "/default");
-	private static final String IMAGE_FOLDER = PROJECT_FOLDER + "/images";
+	private static final File DEFAULT_SETTINGS = new File(DEFAULT_FOLDER + "/default_settings");
 
 	static {
 		Path dir = Path.of(PROJECT_FOLDER);
 		Path images = Path.of(IMAGE_FOLDER);
+		Path def = Path.of(DEFAULT_FOLDER);
 
 		createFolder(dir);
 		createFolder(images);
-		createFile("default", PROJECT_FOLDER, "settings");
+		createFolder(def);
+		createFile("default_settings", DEFAULT_FOLDER, "settings");
 		createFile("settings", PROJECT_FOLDER);
 		createFile("directories", PROJECT_FOLDER);
 		createFile("messages", PROJECT_FOLDER);
-		try {
-			Files.setAttribute(DEFAULT_SETTINGS.toPath(), "dos:hidden", true, LinkOption.NOFOLLOW_LINKS);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+//		try {
+//			Files.setAttribute(def, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS);
+//		} catch (IOException e) {
+//			throw new RuntimeException(e);
+//		}
 	}
 
 	private static void createFolder(Path folder) {
@@ -55,8 +58,8 @@ public class ProjectFolderUtil {
 		}
 	}
 
-	private static void createFile(String toFile, String path, String fromFile) {
-		final String PATHS = path + "/" + toFile;
+	private static void createFile(String fileName, String path, String fromFile) {
+		final String PATHS = path + "/" + fileName;
 		Path filePath = Path.of(PATHS);
 		if (Files.notExists(filePath)) {
 			try {

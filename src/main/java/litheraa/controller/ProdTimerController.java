@@ -3,7 +3,8 @@ package litheraa.controller;
 import litheraa.*;
 import litheraa.data.TextFinder;
 import litheraa.data.TextOld;
-import litheraa.data.models.ProdTimeModel;
+import litheraa.data.entities.Text;
+import litheraa.data.entities.Time;
 import litheraa.data_base.HSQLDBWorker;
 import litheraa.data.RoutineOld;
 import litheraa.util.SpringContextReaders;
@@ -13,6 +14,7 @@ import litheraa.view.*;
 import litheraa.view.message.Tip;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -88,9 +90,8 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 		return HSQLDBWorker.selectRoutine();
 	}
 
-	public ProdTimeModel getDataByPeriod(LocalDate from, LocalDate to) {
-		return new ProdTimeModel(RepositoryController.getDataByPeriod(from, to).getFirst(),
-				RepositoryController.getDataByPeriod(from, to).getSecond(), from, to);
+	public Pair<List<Time>, List<Text>> getData() {
+		return RepositoryController.getData();
 	}
 
 	public void setGoal(int goal, Long... dayId) {

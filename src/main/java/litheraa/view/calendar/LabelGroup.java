@@ -21,12 +21,12 @@ public class LabelGroup extends JPanel implements AdjustableComponentInterface {
 	private final FontFactory fontFactory = FontFactory.getInstance();
 	private final IconFactory iconFactory = IconFactory.getInstance();
 	private Container PARENT = getParent();
-	private static final String[] ICON_NAMES = {"mission.png", "magic-book.png", "writed-book.png"};
+	private static final String[] icons = {"mission.png", "magic-book.png", "writed-book.png"};
 
 	public LabelGroup(int written, int goal) {
 		goalLabel = new JLabel(String.valueOf(goal));
 		writtenLabel = new JLabel(String.valueOf(written));
-		toGoLabel = new JLabel(String.valueOf((goal - written)));
+		toGoLabel = new JLabel(String.valueOf(Math.max(goal - written, 0)));
 
 		add(goalLabel);
 		add(writtenLabel);
@@ -34,7 +34,6 @@ public class LabelGroup extends JPanel implements AdjustableComponentInterface {
 
 		setGoalPopUp();
 		setLayout(new VerticalLayout(2));
-		setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 	}
 
 	private void setGoalPopUp() {
@@ -79,7 +78,7 @@ public class LabelGroup extends JPanel implements AdjustableComponentInterface {
 		for (int i = 0; i < getComponentCount(); i++) {
 			JLabel label = (JLabel) getComponent(i);
 			label.setFont(fontFactory.getFont(getUIClassID(), step, 4, Font.BOLD));
-			label.setIcon(iconFactory.getIcon(ICON_NAMES[i], step, 4));
+			label.setIcon(iconFactory.getIcon(icons[i], step, 4));
 		}
 	}
 

@@ -14,12 +14,20 @@ public class ProgressBar extends JProgressBar implements AdjustableComponentInte
 	public ProgressBar(int written, int goal) {
 
 		setMaximum(goal);
-		if (written < 0) {
-			setValue(0);
-		} else {
-			setValue(written);
-		}
 		setStringPainted(true);
+		if (written <= goal) {
+			setValue(written);
+		} else {
+			setString(calculatePercentageDifference(written, goal) + "%");
+		}
+	}
+
+	private int calculatePercentageDifference(int v1, int v2) {
+		double average = (v1 + v2) / 2.0;
+		if (average == 0) {
+			throw new IllegalArgumentException("The average of V1 and V2 cannot be zero.");
+		}
+		return (int) (Math.abs((v1 - v2) / average) * 100);
 	}
 
 	@Override

@@ -82,10 +82,12 @@ public class RepositoryController {
 		collect(files, LocalDate.of(1970, 1, 1));
 	}
 
-	public static Pair<List<Time>, List<Text>> getDataByPeriod(LocalDate from, LocalDate to) {
-		return new Pair<>(timeRepository.findByModifiedBetween(from, to),
+	public static Pair<List<Time>, List<Text>> getData() {
+		return new Pair<>(
+				IteratorUtils.toList(timeRepository.findAll().iterator()),
 				IteratorUtils.toList(textRepository.findAll().iterator()));
 	}
+
 //TODO не должно работать из-за нулевых ID
 	public static void setGoal(int goal, Long... timeId) {
 		List<Long> list = new ArrayList<>(Arrays.asList(timeId));

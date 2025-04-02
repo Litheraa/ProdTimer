@@ -20,6 +20,7 @@ public class AdjustablePanel extends JPanel implements AdjustableComponentInterf
 	private AdjustablePanel(LocalDate id, List<AdjustableComponentInterface> components) {
 		this.id = id;
 		setLayout(new GridBagLayout());
+		setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		COMPONENTS = components;
 		COMPONENTS.forEach(c -> add(c.setParent(this)));
 	}
@@ -41,7 +42,7 @@ public class AdjustablePanel extends JPanel implements AdjustableComponentInterf
 		return this;
 	}
 
-	public void addSizeStepListener(DayPanelController controller) {
+	public void addSizeStepListener(MonthlyCalendarController controller) {
 		Arrays.stream(getComponents())
 				.filter(component -> component instanceof DayLabel || component instanceof LabelGroup)
 				.findFirst()
@@ -129,7 +130,7 @@ public class AdjustablePanel extends JPanel implements AdjustableComponentInterf
 			return this;
 		}
 
-		public AdjustablePanelBuilder sizeStepListener(DayPanelController controller, int componentNo) {
+		public AdjustablePanelBuilder sizeStepListener(MonthlyCalendarController controller, int componentNo) {
 			COMPONENTS.get(componentNo).getFirst().setParent(null).addComponentListener(new SizeStepAdapter(controller));
 			return this;
 		}

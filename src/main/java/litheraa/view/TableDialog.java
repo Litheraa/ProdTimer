@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.text.AbstractDocument;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.function.BiConsumer;
 
 public class TableDialog extends JDialog {
 	private final Container container = getContentPane();
@@ -21,8 +22,8 @@ public class TableDialog extends JDialog {
 		setLocation(location);
 	}
 
-	public void createDayChooserDialog() {
-		setTitle("Не показывать тексты до");
+	public void createDayChooserDialog(String title, String dialogString, SettingsController controller, BiConsumer<SettingsController, String> biConsumer) {
+		setTitle(title);
 		setSize(477, 267);
 
 		DateChooseDialog dialog = new DateChooseDialog();
@@ -32,13 +33,13 @@ public class TableDialog extends JDialog {
 				dialog.setText(CalendarWrapper.wrapToString(dialog.getSelectionDate()));
 			}
 		});
-		dialog.wrapWithButtons(this, SettingsController.getCutDate());
+		dialog.wrapWithButtons(this, dialogString);
 		add(dialog);
 
 		addWindowFocusListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
-				SettingsController.setCutDate(dialog.getText());
+				biConsumer.accept(controller, dialog.getText());
 			}
 
 			@Override
@@ -46,7 +47,7 @@ public class TableDialog extends JDialog {
 				if (SwingUtilities.isDescendingFrom(e.getOppositeWindow(), TableDialog.this)) {
 					return;
 				}
-				SettingsController.setCutDate(dialog.getText());
+				biConsumer.accept(controller, dialog.getText());
 				TableDialog.this.setVisible(false);
 			}
 		});

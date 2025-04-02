@@ -94,9 +94,10 @@ public class SettingsUtil {
 		SETTINGS.putAll(DEFAULT);
 	}
 
-	protected static String loadDefault(String settingKey) {
-		String defaultValue = DEFAULT.get(settingKey);
-		SETTINGS.put(settingKey, defaultValue);
+	protected static String loadDefault(String key) {
+		if (Objects.equals(key, "textId")) {System.out.println(key);}
+		String defaultValue = DEFAULT.get(key);
+		SETTINGS.put(key, defaultValue);
 		return defaultValue;
 	}
 }

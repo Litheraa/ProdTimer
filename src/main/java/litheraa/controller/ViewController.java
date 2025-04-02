@@ -2,21 +2,23 @@ package litheraa.controller;
 
 import com.github.weisj.darklaf.LafManager;
 import com.github.weisj.darklaf.theme.Theme;
-import litheraa.data.models.ProdTimeModel;
+import litheraa.data.entities.Text;
+import litheraa.data.entities.Time;
 import litheraa.data_base.HSQLDBWorker;
 import litheraa.util.ViewType;
 import litheraa.view.*;
-import litheraa.view.calendar.DayPanelController;
-import litheraa.view.calendar.ProgressContainer;
+import litheraa.view.calendar.*;
 import litheraa.view.menu.TableMenuBar;
 import litheraa.view.table.ColumnController;
 import litheraa.view.table.ProdTimerTable;
 import litheraa.view.table.RoutineModel;
 import litheraa.view.table.TextModel;
 import litheraa.view.util.Themes;
+import org.apache.commons.math3.util.Pair;
 
+import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 public class ViewController {
@@ -25,10 +27,12 @@ public class ViewController {
 	@lombok.Getter
 	private final ColumnController columnController;
 	private final ProdTimerController controller;
+	private final Pair<List<Time>, List<Text>> data;
 
 	public ViewController(ProdTimerController controller) {
-		this.controller = controller;
 		mainFrame = new MainFrame(controller);
+		this.controller = controller;
+		this.data = controller.getData();
 		mainFrame.setLocation(SettingsController.getLocation());
 		columnController = new ColumnController(mainFrame);
 		LafManager.installTheme(getTheme());
@@ -63,19 +67,10 @@ public class ViewController {
 				break;
 			case ViewType.CALENDAR:
 				menu = new TableMenuBar(controller).createSmallWindowMenu();
+				buildCalendar(SettingsController.getCalendarType());
 				mainFrame.setJMenuBar(menu);
 				mainFrame.setSize(getWindowSize(ViewType.CALENDAR.ordinal()));
 				mainFrame.setResizable(true);
-
-//				CalendarPanel calendar = new CalendarPanel(
-//						this,
-//						controller.getDataByPeriod(LocalDate.of(2025, 2, 1),
-//								LocalDate.of(2025, 2, 28)),
-//						getWindowSize(ViewType.CALENDAR.ordinal()));
-				DayPanelController dayPanelController = new DayPanelController(controller.getDataByPeriod(LocalDate.of(2025, 2, 1),
-								LocalDate.of(2025, 2, 28)));
-				mainFrame.setMinimumSize(new Dimension(632, 538));
-				mainFrame.setMainComponent(dayPanelController.fullDayPanel());
 				mainFrame.setVisible(true);
 				break;
 			case ViewType.SMALL_WINDOW:
@@ -85,6 +80,10 @@ public class ViewController {
 				mainFrame.setMainComponent(new ProgressContainer(HSQLDBWorker.selectTodayChars(), SettingsController.getProdGoal()).createHorizontalProgress());
 				mainFrame.setJMenuBar(menu);
 		}
+	}
+
+	public Pair<List<Time>, List<Text>> getData() {
+		return controller.getData();
 	}
 
 	public void repaint() {
@@ -120,10 +119,6 @@ public class ViewController {
 		SettingsController.setSize(SettingsController.getViewType().ordinal(), mainFrame.getWidth(), mainFrame.getHeight());
 	}
 
-	public ProdTimeModel getDataByPeriod(LocalDate from, LocalDate to) {
-		return controller.getDataByPeriod(from, to);
-	}
-
 	public void setGoal(int goal, Long... timeId) {
 		controller.setGoal(goal, timeId);
 	}
@@ -144,6 +139,54 @@ public class ViewController {
 		} else {
 			controller.fullSave();
 			System.exit(0);
+		}
+	}
+
+	public void buildCalendar(CalendarType type) {
+		CalendarControllerInterface controller;
+		switch (type) {
+			case WEEKLY -> {
+				controller = new WeeklyCalendarController(this, data);
+				mainFrame.setMinimumSize(new Dimension(610, 215));
+//				TODO отнимать высоту в лишних строках
+				mainFrame.pack();
+			}
+			case DAILY -> {
+				controller = new DailyCalendarController(this, data);
+				mainFrame.setMinimumSize(new Dimension(270, 165));
+				mainFrame.pack();
+			}
+			default -> {
+				controller = new MonthlyCalendarController(this, data);
+				mainFrame.setMinimumSize(new Dimension(632, 538));
+			}
+		}
+		JPanel panel = controller.build();
+		mainFrame.setMainComponent(panel);
+		mainFrame.validate();
+	}
+
+	public enum CalendarType {
+		MONTHLY,
+		WEEKLY,
+		DAILY;
+
+		public static CalendarType of(int ordinal) {
+			return switch (ordinal) {
+				case 1 -> WEEKLY;
+				case 2 -> DAILY;
+				default -> MONTHLY;
+			};
+		}
+
+		public static CalendarType of(String period) {
+			 switch (period.charAt(2)) {
+				case 'н': if (period.charAt(3) == 'е') {
+					return WEEKLY;
+				} else return MONTHLY;
+				 case ' ': return DAILY;
+				 default: return MONTHLY;
+			}
 		}
 	}
 }

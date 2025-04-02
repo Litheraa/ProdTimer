@@ -1,7 +1,7 @@
 package litheraa.view.util;
 
 import litheraa.view.calendar.AdjustableComponentInterface;
-import litheraa.view.calendar.DayPanelController;
+import litheraa.view.calendar.MonthlyCalendarController;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -12,7 +12,7 @@ public class AspectRatioAdapter extends ComponentAdapter {
 	private final AdjustableComponentInterface controller;
 	private AspectRatio oldRatio;
 
-	public AspectRatioAdapter(DayPanelController controller) {
+	public AspectRatioAdapter(MonthlyCalendarController controller) {
 		this.controller = controller;
 	}
 

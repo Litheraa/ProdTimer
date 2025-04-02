@@ -4,12 +4,15 @@ public record KeysRecord(String tableType, String prodVolume, String trayIcon, S
                          String location, String size,
                          String deadline, String prodNameLength, String updateInterval, String theme,
                          String sortTextColumn, String sortTextOrder, String sortRoutineColumn, String sortRoutineOrder,
-                         String measureUnit, String pinTable, String autoRun, String cutDate, String showTips) {
+                         String measureUnit, String pinTable, String autoRun, String cutDate, String showTips,
+                         String month, String text, String period, String calendarType)
+{
     public KeysRecord() {
         this("table type", "prod volume", "tray icon", "on top",
                 "location", "size",
                 "deadline", "name length", "update interval", "theme",
                 "sort text column", "sort text order", "sort routine column", "sort routine order",
-                "measure unit", "pin table", "auto run", "cut date", "show tips");
+                "measure unit", "pin table", "auto run", "cut date", "show tips",
+                "show month", "textId", "period", "calendar");
     }
 }

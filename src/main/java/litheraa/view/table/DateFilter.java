@@ -20,7 +20,7 @@ public class DateFilter extends RowFilter<TableModel, Integer> {
 
     @Override
     public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-        RoutineModel model = (RoutineModel) entry.getModel();
+        TimeTableModel model = (TimeTableModel) entry.getModel();
         Date date = CalendarWrapper.wrapToDate(model.getValueAt(entry.getIdentifier(), column).toString());
         return switch (type) {
             case AFTER -> Boolean.logicalOr(date.after(sourceDate), date.equals(sourceDate));

@@ -209,7 +209,7 @@ public class HSQLDBWorker {
 	}
 
 	public static CalendarModel selectCalendar(String date) {
-		CalendarModel calendarModel = new CalendarModel(new Pair<>(new ArrayList<>(), new ArrayList<>()));
+		CalendarModel calendarModel = new CalendarModel(new Pair<>(new ArrayList<>(), new ArrayList<>()), 0L);
 		try (PreparedStatement pS = getPreparedStatement(SELECT_CALENDAR)) {
 			pS.setString(1, date);
 			var result = pS.executeQuery();

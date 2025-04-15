@@ -17,7 +17,7 @@ public class Tip extends JDialog {
 	private static JLabel tipCounter;
 	private static JLabel tipIcon;
 
-	private Tip(MainFrame mainFrame) {
+	private Tip(Component parent) {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
@@ -27,7 +27,7 @@ public class Tip extends JDialog {
 		setResizable(false);
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setSize(500, 250);
-		setLocationRelativeTo(mainFrame);
+		setLocationRelativeTo(parent);
 
 		JCheckBox checkBox = new JCheckBox("больше не показывать");
 		checkBox.addActionListener(e -> {
@@ -39,10 +39,10 @@ public class Tip extends JDialog {
 		ok.addActionListener(e -> setVisible(false));
 
 		JButton previous = new JButton("предыдущая");
-		previous.addActionListener(e -> previousTip(mainFrame));
+		previous.addActionListener(e -> previousTip(parent));
 
 		JButton next = new JButton("следующая");
-		next.addActionListener(e -> nextTip(mainFrame));
+		next.addActionListener(e -> nextTip(parent));
 
 		tipText = new JXLabel();
 
@@ -96,22 +96,22 @@ public class Tip extends JDialog {
 		setVisible(true);
 	}
 
-	public static void forceShowTip(MainFrame mainFrame) {
+	public static void forceShowTip(Component parent) {
 		if (tipDialog == null) {
-			tipDialog = new Tip(mainFrame);
+			tipDialog = new Tip(parent);
 		} else {
 			doNewTip();
 		}
 	}
 
-	private void nextTip(MainFrame mainFrame) {
+	private void nextTip(Component parent) {
 		tipNo = ++tipNo % TIP_COUNT;
-		forceShowTip(mainFrame);
+		forceShowTip(parent);
 	}
 
-	private void previousTip(MainFrame mainFrame) {
+	private void previousTip(Component parent) {
 		tipNo = (--tipNo + TIP_COUNT) % TIP_COUNT;
-		forceShowTip(mainFrame);
+		forceShowTip(parent);
 	}
 
 	private static void doNewTip() {

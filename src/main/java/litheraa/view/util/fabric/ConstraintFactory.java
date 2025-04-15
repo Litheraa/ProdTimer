@@ -23,6 +23,7 @@ public class ConstraintFactory {
 					constraint.fill = GridBagConstraints.BOTH;
 					constraint.gridy = 0;
 					constraint.gridx = 0;
+					constraint.insets = new Insets(2, 2, 2, 2);
 					for (AspectRatioAdapter.AspectRatio aspectRatio : AspectRatioAdapter.AspectRatio.values()) {
 						constraintsMap.put(aspectRatio, constraint);
 					}
@@ -50,23 +51,27 @@ public class ConstraintFactory {
 					break;
 				}
 				case "ProgressBarUI": {
+					Insets insets = new Insets(2, 2, 2, 2);
 					GridBagConstraints horizontal = new GridBagConstraints();
 					horizontal.fill = GridBagConstraints.VERTICAL;
 					horizontal.gridy = 0;
 					horizontal.gridx = 2;
 					horizontal.gridwidth = GridBagConstraints.REMAINDER;
+					horizontal.insets = insets;
 
 					GridBagConstraints square = new GridBagConstraints();
 					square.fill = GridBagConstraints.HORIZONTAL;
 					square.gridy = 1;
 					square.gridx = 0;
 					square.gridwidth = GridBagConstraints.REMAINDER;
+					square.insets = insets;
 
 					GridBagConstraints vertical = new GridBagConstraints();
 					vertical.fill = GridBagConstraints.HORIZONTAL;
 					vertical.gridy = 2;
 					vertical.gridx = 0;
 					vertical.gridwidth = GridBagConstraints.REMAINDER;
+					vertical.insets = insets;
 
 					constraintsMap.put(AspectRatioAdapter.AspectRatio.HORIZONTAL, horizontal);
 					constraintsMap.put(AspectRatioAdapter.AspectRatio.SQUARE, square);

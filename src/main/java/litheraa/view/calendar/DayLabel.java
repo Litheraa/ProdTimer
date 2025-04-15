@@ -20,8 +20,8 @@ public class DayLabel extends JLabel implements AdjustableComponentInterface {
 	private Container PARENT = getParent();
 
 	public DayLabel(LocalDate date) {
+		super(String.valueOf(date.getDayOfMonth()));
 		DATE = date;
-		setText(String.valueOf(date.getDayOfMonth()));
 	}
 
 	@Override

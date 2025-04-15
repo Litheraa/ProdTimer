@@ -5,20 +5,14 @@ import litheraa.util.ViewType;
 import litheraa.view.util.ColumnKeysRecord;
 import litheraa.util.KeysRecord;
 import litheraa.util.SettingsUtil;
-import org.apache.commons.math3.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.YearMonth;
-import java.time.format.TextStyle;
 import java.util.LinkedList;
-import java.util.Locale;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class SettingsController extends SettingsUtil {
@@ -80,7 +74,7 @@ public class SettingsController extends SettingsUtil {
 	public static void setSortedColumn(int column) {
 		switch (getViewType()) {
 			case ViewType.TEXTS -> SettingsUtil.set(KEYS.sortTextColumn(), String.valueOf(column));
-			case ViewType.ROUTINE -> SettingsUtil.set(KEYS.sortRoutineColumn(), String.valueOf(column));
+			case ViewType.TIME -> SettingsUtil.set(KEYS.sortRoutineColumn(), String.valueOf(column));
 			default -> throw new IllegalStateException("Unexpected tableType: " + SettingsUtil.get(KEYS.tableType()));
 		}
 	}
@@ -88,7 +82,7 @@ public class SettingsController extends SettingsUtil {
 	public static int getSortedColumn() {
 		return switch (getViewType()) {
 			case ViewType.TEXTS -> Integer.parseInt(SettingsUtil.get(KEYS.sortTextColumn()));
-			case ViewType.ROUTINE -> Integer.parseInt(SettingsUtil.get(KEYS.sortRoutineColumn()));
+			case ViewType.TIME -> Integer.parseInt(SettingsUtil.get(KEYS.sortRoutineColumn()));
 			default -> Integer.parseInt(SettingsUtil.loadDefault(KEYS.sortTextColumn()));
 		};
 	}
@@ -96,7 +90,7 @@ public class SettingsController extends SettingsUtil {
 	public static void setSortOrder(SortOrder order) {
 		switch (getViewType()) {
 			case ViewType.TEXTS -> SettingsUtil.set(KEYS.sortTextOrder(), String.valueOf(order));
-			case ViewType.ROUTINE -> SettingsUtil.set(KEYS.sortRoutineOrder(), String.valueOf(order));
+			case ViewType.TIME -> SettingsUtil.set(KEYS.sortRoutineOrder(), String.valueOf(order));
 			default -> throw new IllegalStateException("Unexpected tableType: " + SettingsUtil.get(KEYS.tableType()));
 		}
 	}
@@ -104,7 +98,7 @@ public class SettingsController extends SettingsUtil {
 	public static SortOrder getSortOrder() {
 		return switch (getViewType()) {
 			case ViewType.TEXTS -> SortOrder.valueOf(SettingsUtil.get(KEYS.sortTextOrder()));
-			case ViewType.ROUTINE -> SortOrder.valueOf(SettingsUtil.get(KEYS.sortRoutineOrder()));
+			case ViewType.TIME -> SortOrder.valueOf(SettingsUtil.get(KEYS.sortRoutineOrder()));
 			default -> SortOrder.valueOf(SettingsUtil.loadDefault(KEYS.sortTextOrder()));
 		};
 	}
@@ -177,10 +171,11 @@ public class SettingsController extends SettingsUtil {
 
 	public static ViewType getViewType() {
 		return switch (Integer.parseInt(SettingsUtil.get(KEYS.tableType()))) {
-			case 1 -> ViewType.ROUTINE;
-			case 2 -> ViewType.CALENDAR;
-			case 3 -> ViewType.SMALL_WINDOW;
-			default -> ViewType.TEXTS;
+			case 0 -> ViewType.TEXTS;
+			case 1 -> ViewType.TIME;
+			case 3 -> ViewType.WEEKLY;
+			case 4 -> ViewType.DAILY;
+			default -> ViewType.MONTHLY;
 		};
 	}
 
@@ -299,17 +294,5 @@ public class SettingsController extends SettingsUtil {
 			return LocalDate.now();
 		}
 		return LocalDate.parse(period);
-	}
-
-	public static void setCalendarType(ViewController.CalendarType type) {
-		SettingsUtil.set(KEYS.calendarType(), String.valueOf(type.ordinal()));
-	}
-
-	public static ViewController.CalendarType getCalendarType() {
-		String type = SettingsUtil.get(KEYS.calendarType());
-		if (type == null || !type.matches("^[0-2]{1}$")) {
-			type = "0";
-		}
-		return ViewController.CalendarType.of(Integer.parseInt(type));
 	}
 }

@@ -1,7 +1,7 @@
 package litheraa.view.calendar;
 
+import litheraa.controller.CalendarController;
 import litheraa.controller.SettingsController;
-import litheraa.controller.ViewController;
 import litheraa.data.models.CalendarModel;
 import litheraa.util.MeasureUnit;
 import litheraa.util.NumberDeclensionRu;
@@ -44,7 +44,7 @@ public class ProgressContainer extends JPanel {
 //		this.date = date;
 //	}
 
-	public void createVerticalProgress(ViewController controller) {
+	public void createVerticalProgress(CalendarController controller) {
 //		<a href="https://www.flaticon.com/free-icons/mission" title="mission icons">Mission icons created by Us and Up - Flaticon</a>
 //		<div> Icons made by <a href="" title="SANB"> SANB </a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com'</a></div>
 //		<a href="https://www.flaticon.com/free-icons/myth" title="myth icons">Myth icons created by Aranagraphics - Flaticon</a>
@@ -130,7 +130,7 @@ public class ProgressContainer extends JPanel {
 		measuredValue = MeasureUnit.toChars(value);
 	}
 
-	private void setGoalPopUp(ViewController controller) {
+	private void setGoalPopUp(CalendarController controller) {
 		JPopupMenu menu = new JPopupMenu();
 		JTextField textField = new JTextField(goal.getText());
 		textField.setPreferredSize(new Dimension(50, textField.getHeight() + 25));

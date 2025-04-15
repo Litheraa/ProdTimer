@@ -6,82 +6,58 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import litheraa.controller.ProdTimerController;
-import litheraa.view.table.ProdTimerTable;
-import lombok.Getter;
+import litheraa.view.menu.TableMenuBar;
 import org.jdesktop.swingx.HorizontalLayout;
-import org.jdesktop.swingx.JXLabel;
-
-import static javax.swing.BoxLayout.*;
 
 public class MainFrame extends JFrame {
-	@Getter
-	private ProdTimerTable table;
-	private final JPanel jMenuPane = new JPanel();
-	private JMenuBar menuBar;
-	private final Box contents = new Box(Y_AXIS);
-
-	public MainFrame() {
-		super("ProdMaster");
-		jMenuPane.setLayout(new HorizontalLayout());
-		add(jMenuPane, BorderLayout.NORTH);
-		setLocationRelativeTo(null);
-		getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 2, 2, 2));
-		add(contents);
-	}
+	private final JPanel contentPane = new JPanel(new GridBagLayout());
 
 	public MainFrame(ProdTimerController controller) {
-		this();
+		super("ProdMaster");
+		JPanel menuPane = new JPanel();
+		menuPane.setLayout(new HorizontalLayout());
+		menuPane.add(new TableMenuBar(controller));
+
+		add(menuPane, BorderLayout.NORTH);
+		add(contentPane);
+
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				controller.getViewController().exit();
+				controller.exit();
 			}
 		});
+		setLocationRelativeTo(null);
+		getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 2, 2, 2));
+	}
+
+	public void setHeader(JComponent header) {
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		if (contentPane.getComponents().length == 0) {
+			contentPane.add(header, constraints);
+		} else {
+			contentPane.remove(0);
+			contentPane.add(header, constraints);
+			validate();
+		}
 	}
 
 	public void setMainComponent(JComponent component) {
-		if (component.getClass() == ProdTimerTable.class) {
-			table = (ProdTimerTable) component;
-		}
-		if (isPaneEmpty()) {
-			contents.add(new JScrollPane(component));
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		constraints.weighty = 1.0;
+		constraints.weightx = 1.0;
+		if (contentPane.getComponents().length == 1) {
+			contentPane.add(component, constraints);
 		} else {
-			contents.remove(0);
-			contents.add(new JScrollPane(component));
+			contentPane.remove(0);
+			contentPane.add(component, constraints);
+			validate();
 		}
-	}
-
-	public void pinTable(boolean isTablePinned) {
-		table.pinElements(isTablePinned);
-	}
-
-	public static int getErrorMessage(String errorMessage) {
-		JXLabel label = new JXLabel(errorMessage);
-		label.setLineWrap(true);
-		return JOptionPane.showOptionDialog(null,
-				label,
-				"Ошибка",
-				JOptionPane.DEFAULT_OPTION,
-				JOptionPane.PLAIN_MESSAGE, null, null, null);
-	}
-
-	private boolean isPaneEmpty() {
-		return contents.getComponents().length == 0;
-	}
-
-	@Override
-	public void setJMenuBar(JMenuBar menubar) {
-		menuBar = menubar;
-		if (jMenuPane.getComponents().length == 0) {
-			jMenuPane.add(menubar, 0);
-		} else {
-			jMenuPane.remove(0);
-			jMenuPane.add(menubar);
-		}
-	}
-
-	@Override
-	public JMenuBar getJMenuBar() {
-		return menuBar;
 	}
 }

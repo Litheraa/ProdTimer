@@ -15,36 +15,74 @@ import litheraa.view.message.Tip;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
+import org.jdesktop.swingx.JXLabel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
-import java.time.LocalDate;
 import java.util.*;
+import java.util.List;
 
 @Slf4j
 @Controller
 @Getter
 public class ProdTimerController implements ProdTimerControllerInterface {
-	private final ViewController viewController;
+	private ViewControllerInterface viewController;
 	private final RepositoryController repositoryController;
+	private final MainFrame frame;
 
 	@Autowired
 	public ProdTimerController(RepositoryController repositoryController) {
 		this.repositoryController = repositoryController;
+		frame = new MainFrame(this);
 		new AnnotationConfigApplicationContext(SpringContextReaders.class).getBean(ReaderFactory.class);
 		createDB();
-		viewController = new ViewController(this);
+		createView(SettingsController.getViewType());
 		saveData();
-		viewController.getView();
 		saveDataByTimer();
 		setTrayIcon(false);
 	}
 
-	public void setView(ViewType viewType) {
-		SettingsController.setViewType(viewType);
+	public Component getFrame() {
+		return viewController.getFrame();
+	}
+
+	public void exit() {
+		saveWindowPosition();
+		saveWindowSize();
+		if (SettingsController.isTrayExit()) {
+			frame.setVisible(false);
+		} else {
+			fullSave();
+			System.exit(0);
+		}
+	}
+
+	public void repaint() {
+		frame.repaint();
+	}
+
+	public void saveWindowPosition() {
+		SettingsController.setLocation((int) frame.getLocationOnScreen().getX(), (int) frame.getLocationOnScreen().getY());
+	}
+
+	public void saveWindowSize() {
+		SettingsController.setSize(SettingsController.getViewType().ordinal(), frame.getWidth(), frame.getHeight());
+	}
+
+	public void createView(ViewType type) {
+		switch (type) {
+			case TEXTS, TIME -> viewController = new TableController(this, frame, type);
+			default -> viewController = new CalendarController(this, frame, type);
+		}
+	}
+
+	public void setView(ViewType type) {
+		SettingsController.setViewType(type);
+		createView(type);
 	}
 
 	@Override
@@ -62,14 +100,14 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	@Override
 	public void fullSave() {
 		saveData();
-		viewController.saveColumnPositions();
+//		viewController.saveColumnPositions();
 		SettingsController.saveToFile();
 	}
 
 	@Override
 	public void saveData() {
 		if (SettingsController.isDirectoriesEmpty()) {
-			Tip.forceShowTip(viewController.getMainFrame());
+			Tip.forceShowTip(frame);
 		} else {
 			try {
 				RepositoryController.collectData(TextFinder.findProd(SettingsController.collectTextPath()));
@@ -109,17 +147,25 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	}
 
 	public void noFilesFound() {
-		int result = MainFrame.getErrorMessage("Не найдено файлов с расширениями " +
-				Arrays.toString(ReaderFactory.getWildCards()) +
-				". Проверьте настройки " +
-				SettingsController.getPathToDirectories());
+			JXLabel label = new JXLabel("Не найдено файлов с расширениями " +
+					Arrays.toString(ReaderFactory.getWildCards()) +
+					". Проверьте настройки " +
+					SettingsController.getPathToDirectories());
+			label.setLineWrap(true);
+
+		int result =  JOptionPane.showOptionDialog(null,
+					label,
+					"Ошибка",
+					JOptionPane.DEFAULT_OPTION,
+					JOptionPane.PLAIN_MESSAGE, null, null, null);
+
 		if (result == JOptionPane.YES_OPTION) {
 			chooseFile();
 		}
 	}
 
 	public void chooseFile() {
-		File file = FileChooser.chooseFile(viewController.getMainFrame(), ReaderFactory.getReaders());
+		File file = FileChooser.chooseFile(viewController.getFrame(), ReaderFactory.getReaders());
 		if (file != null) {
 			SettingsController.setProdDirectory(file);
 			refresh();

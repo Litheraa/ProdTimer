@@ -1,9 +1,9 @@
 package litheraa.view.table;
 
 import com.github.weisj.darklaf.listener.PopupMenuAdapter;
-import litheraa.controller.ViewController;
 import litheraa.data.ColumnDataTypeEnum;
 import litheraa.view.DateChooseDialog;
+import litheraa.view.util.ThemeSupplier;
 import lombok.Getter;
 import org.jdesktop.swingx.JXLabel;
 
@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.time.LocalDate;
 
 @Getter
 public class HeaderPopup extends JPopupMenu {
@@ -54,9 +55,9 @@ public class HeaderPopup extends JPopupMenu {
 				columnNo = table.getActiveColumn();
 				int filterStorageNo = table.convertColumnIndexToView(columnNo);
 				changePopupLocation();
-				if (table.getColumnType(columnNo) == ColumnDataTypeEnum.DATE) {
+				if (table.getColumnClass(columnNo) == LocalDate.class) {
 					setPopupSize(460, 240);
-					dateChooseDialog.setColors(ViewController.getTheme());
+					dateChooseDialog.setColors(ThemeSupplier.getTheme());
 					dateChooseDialog.setText(table.getFilterStorage(filterStorageNo));
 					dateChooseDialog.setVisible(true);
 					filterField.setFocusable(false);

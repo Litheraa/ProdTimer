@@ -1,7 +1,8 @@
 size0=700/400
 size1=500/400
 size2=500/500
-size3=250/130
+size3=500/180
+size4=250/130
 location=100/100
 textId=0
 period=
@@ -34,6 +35,8 @@ chars total=5/20
 text name=6/70
 file=7/20
 
-date=0/38
-chars=1/50
-routine names=2/50
+MODIFIED=0/38
+WRITTEN=1/50
+GOAL=2/50
+TOGO=3/50
+PRODS=4/50

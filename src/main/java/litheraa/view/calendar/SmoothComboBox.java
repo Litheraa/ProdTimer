@@ -1,6 +1,6 @@
 package litheraa.view.calendar;
 
-import litheraa.controller.ViewController;
+import litheraa.controller.CalendarController;
 import litheraa.view.themes.ThemeColors;
 
 import javax.swing.*;
@@ -33,7 +33,7 @@ public class SmoothComboBox<E> extends JComboBox<E> {
 		}
 		setFont(new Font("Georgia", Font.BOLD, 28));
 		setBorder(BorderFactory.createEmptyBorder());
-		setForeground(((ThemeColors) ViewController.getTheme()).getAccentForeground());
+//		setForeground(((ThemeColors) CalendarController.getTheme()).getAccentForeground());
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {

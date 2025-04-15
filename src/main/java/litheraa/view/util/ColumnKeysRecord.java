@@ -1,12 +1,15 @@
 package litheraa.view.util;
 
+import litheraa.view.table.TimeTableModel;
+
 public record ColumnKeysRecord(String tProdName, String tCreated, String tLastModified, String tProdChars,
                                String tTextChars, String tCharsTotal, String tTextName, String tFile,
                                String rDate, String rChars, String rNames) {
 
     public ColumnKeysRecord() {
         this("prod name", "created", "last modified", "prod chars",
-                "text chars", "chars total", "text name", "file", "date", "chars", "routine names");
+                "text chars", "chars total", "text name", "file",
+                "date", "chars", "routine names");
     }
 
     public String getTextKey(int columnIdentifier) {
@@ -24,11 +27,6 @@ public record ColumnKeysRecord(String tProdName, String tCreated, String tLastMo
     }
 
     public String getRoutineKey(int columnIdentifier) {
-        return switch (columnIdentifier) {
-            case 0 -> rDate();
-            case 1 -> rChars();
-            case 2 -> rNames();
-            default -> throw new IllegalStateException("Unexpected columnIdentifier: " + columnIdentifier);
-        };
+        return TimeTableModel.Header.of(columnIdentifier).toString();
     }
 }

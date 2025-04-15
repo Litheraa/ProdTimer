@@ -1,10 +1,10 @@
 package litheraa.view;
 
 import com.github.weisj.darklaf.theme.Theme;
-import litheraa.controller.ViewController;
 import litheraa.util.CalendarWrapper;
 import litheraa.view.table.FilterTextField;
 import litheraa.view.themes.ThemeColors;
+import litheraa.view.util.ThemeSupplier;
 import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.calendar.DateSelectionModel;
 
@@ -34,7 +34,7 @@ public class DateChooseDialog extends JXMonthView {
 	private static final ImageIcon calendarCancel = new ImageIcon(Objects.requireNonNull(loader.getResource("calendar-cancel.png")));
 
 	public DateChooseDialog() {
-		setColors(ViewController.getTheme());
+		setColors(ThemeSupplier.getTheme());
 		calendar.add(Calendar.MONTH, -2);
 		setFirstDisplayedDay(calendar.getTime());
 		setSelectionMode(DateSelectionModel.SelectionMode.SINGLE_INTERVAL_SELECTION);

@@ -42,13 +42,6 @@ public class AdjustablePanel extends JPanel implements AdjustableComponentInterf
 		return this;
 	}
 
-	public void addSizeStepListener(MonthlyCalendarController controller) {
-		Arrays.stream(getComponents())
-				.filter(component -> component instanceof DayLabel || component instanceof LabelGroup)
-				.findFirst()
-				.ifPresent(component -> component.addComponentListener(new SizeStepAdapter(controller)));
-	}
-
 	public static DayPanelBuilder dayPanelbuilder(LocalDate date) {
 		return new DayPanelBuilder(date);
 	}
@@ -117,21 +110,13 @@ public class AdjustablePanel extends JPanel implements AdjustableComponentInterf
 			return this;
 		}
 
-		@SafeVarargs
-		public final AdjustablePanelBuilder label(BiConsumer<JLabel, SizeStepAdapter.Step> biConsumer, Pair<JLabel, Object>... labelsAndConstraints) {
-			Arrays.stream(labelsAndConstraints)
-					.forEach(laC -> COMPONENTS
-							.add(new Pair<>(new AdjustableComponentContainer<>(laC.getFirst(), biConsumer), laC.getSecond())));
+		public final AdjustablePanelBuilder label(BiConsumer<JLabel, SizeStepAdapter.Step> biConsumer, JLabel label, Object constraint) {
+					COMPONENTS.add(new Pair<>(new AdjustableComponentContainer<>(label, biConsumer), constraint));
 			return this;
 		}
 
 		public AdjustablePanelBuilder layout(LayoutManager layout) {
 			this.layout = layout;
-			return this;
-		}
-
-		public AdjustablePanelBuilder sizeStepListener(MonthlyCalendarController controller, int componentNo) {
-			COMPONENTS.get(componentNo).getFirst().setParent(null).addComponentListener(new SizeStepAdapter(controller));
 			return this;
 		}
 

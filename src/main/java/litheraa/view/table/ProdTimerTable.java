@@ -1,6 +1,5 @@
 package litheraa.view.table;
 
-import litheraa.data.ColumnDataTypeEnum;
 import litheraa.data.RoutineEnum;
 import litheraa.view.MainFrame;
 import litheraa.data.TextEnum;
@@ -18,6 +17,8 @@ import javax.swing.table.*;
 import javax.swing.text.AbstractDocument;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Comparator;
+import java.util.stream.IntStream;
 
 public class ProdTimerTable extends JTable {
 	@Setter
@@ -28,22 +29,21 @@ public class ProdTimerTable extends JTable {
 	private TableSorter sorter;
 	@Getter
 	private int activeColumn;
-	private final RoutineModel model;
 
-	public ProdTimerTable(MainFrame mainFrame, RoutineModel model) {
+	public ProdTimerTable(MainFrame mainFrame, TimeTableModel model) {
 		this.mainFrame = mainFrame;
-		this.model = model;
 		setModel(model);
 		sorter = new TableSorter(model, this);
+		sorter.setComparator(1, Comparator.naturalOrder());
 
 		int columns = getColumnModel().getColumnCount();
 		filterStorage = new String[columns];
-		for (int i = 0; i < columns; i++) {
+		IntStream.range(0, columns).forEach(i -> {
 			filterStorage[i] = "";
 			TableColumn column = getColumnModel().getColumn(i);
 			setDoubleFilterToColumn(column);
 			column.setHeaderRenderer(new HeaderRenderer());
-		}
+		});
 		setRowSorter(sorter);
 
 		HeaderPopup popup = new HeaderPopup(this);
@@ -79,10 +79,6 @@ public class ProdTimerTable extends JTable {
 	@Override
 	public TableColumn getColumn(@NotNull Object identifier) {
 		return getColumnModel().getColumn((Integer) identifier);
-	}
-
-	public ColumnDataTypeEnum getColumnType(int column) {
-		return model.getColumnType(convertColumnIndexToModel(column));
 	}
 
 	public void pinElements(boolean isTablePinned) {

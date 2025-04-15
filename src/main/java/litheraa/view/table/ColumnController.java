@@ -2,7 +2,6 @@ package litheraa.view.table;
 
 import litheraa.controller.SettingsController;
 import litheraa.util.KeysRecord;
-import litheraa.view.MainFrame;
 import litheraa.view.util.ColumnKeysRecord;
 import litheraa.util.SettingsUtil;
 import org.apache.commons.math3.util.Pair;
@@ -15,29 +14,23 @@ import java.util.stream.IntStream;
 
 public class ColumnController extends SettingsUtil{
 
-	private final MainFrame mainFrame;
+	private final ProdTimerTable table;
 	private final Map<Integer, Pair<TableColumn, Integer>> hidedColumns = new HashMap<>();
 	private final static ColumnKeysRecord COLUMN_KEYS = new ColumnKeysRecord();
+	private final TableColumnModel model;
 
-	public ColumnController(MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
-	}
-
-	private TableColumnModel getColumnModel() {
-		return getTable().getColumnModel();
-	}
-
-	private ProdTimerTable getTable() {
-		return mainFrame.getTable();
+	public ColumnController(ProdTimerTable table) {
+		this.table = table;
+		model = table.getColumnModel();
 	}
 
 	private int getColumnPositionInView(int columnIdentifier) {
-		return getTable().convertColumnIndexToView(columnIdentifier);
+		return table.convertColumnIndexToView(columnIdentifier);
 	}
 
 	private void showColumn(int columnIdentifier) {
-		getColumnModel().addColumn(hidedColumns.get(columnIdentifier).getFirst());
-		getTable().moveColumn(getColumnPositionInView(columnIdentifier),
+		model.addColumn(hidedColumns.get(columnIdentifier).getFirst());
+		table.moveColumn(getColumnPositionInView(columnIdentifier),
 				hidedColumns.get(columnIdentifier).getSecond());
 		switch (getTableType()) {
 			case 0 ->
@@ -48,9 +41,9 @@ public class ColumnController extends SettingsUtil{
 	}
 
 	private void hideColumn(int columnIdentifier) {
-		TableColumn column = getTable().getColumn(columnIdentifier);
+		TableColumn column = table.getColumn(columnIdentifier);
 		hidedColumns.put(columnIdentifier, new Pair<>(column, getColumnPositionInView(columnIdentifier)));
-		getColumnModel().removeColumn(column);
+		model.removeColumn(column);
 		switch (getTableType()) {
 			case 0 -> SettingsUtil.set(COLUMN_KEYS.getTextKey(columnIdentifier), "-1");
 			case 1 -> SettingsUtil.set(COLUMN_KEYS.getRoutineKey(columnIdentifier), "-1");
@@ -58,7 +51,7 @@ public class ColumnController extends SettingsUtil{
 	}
 
 	public void hideColumns() {
-		IntStream.range(0, getColumnModel().getColumnCount()).filter(SettingsController::isColumnHide).forEach(this::hideColumn);
+		IntStream.range(0, model.getColumnCount()).filter(SettingsController::isColumnHide).forEach(this::hideColumn);
 	}
 
 	public void setColumn(int columnIdentifier, boolean toHide) {
@@ -70,14 +63,14 @@ public class ColumnController extends SettingsUtil{
 	}
 
 	public void moveColumns() {
-		int columnIdentifier = getTable().getColumnCount() - 1;
+		int columnIdentifier = table.getColumnCount() - 1;
 		switch (getTableType()) {
 			case 0 -> {
 				while (columnIdentifier >= 0) {
 					int columnPosition = Integer.parseInt(SettingsUtil.get(COLUMN_KEYS.getTextKey(columnIdentifier)).split("/")[0]);
 					if (columnPosition != -1) {
-						getTable().moveColumn(getColumnPositionInView(columnIdentifier), columnPosition);
-						getColumnModel().getColumn(getTable().convertColumnIndexToView(columnIdentifier)).
+						table.moveColumn(getColumnPositionInView(columnIdentifier), columnPosition);
+						model.getColumn(table.convertColumnIndexToView(columnIdentifier)).
 								setPreferredWidth(Integer.parseInt(
 										SettingsUtil.get(COLUMN_KEYS.getTextKey(columnIdentifier)).split("/")[1]));
 					}
@@ -88,8 +81,8 @@ public class ColumnController extends SettingsUtil{
 				while (columnIdentifier >= 0) {
 					int columnPosition = Integer.parseInt(SettingsUtil.get(COLUMN_KEYS.getRoutineKey(columnIdentifier)).split("/")[0]);
 					if (columnPosition != -1) {
-						getTable().moveColumn(getColumnPositionInView(columnIdentifier), columnPosition);
-						getColumnModel().getColumn(getTable().convertColumnIndexToView(columnIdentifier)).
+						table.moveColumn(getColumnPositionInView(columnIdentifier), columnPosition);
+						model.getColumn(table.convertColumnIndexToView(columnIdentifier)).
 								setPreferredWidth(Integer.parseInt(
 										SettingsUtil.get(COLUMN_KEYS.getRoutineKey(columnIdentifier)).split("/")[1]));
 					}
@@ -101,16 +94,16 @@ public class ColumnController extends SettingsUtil{
 
 	public void saveColumnPositions() {
 		switch (getTableType()) {
-			case 0 -> IntStream.range(0, getTable().getColumnCount()).
-					forEach(i -> SettingsUtil.set(COLUMN_KEYS.getTextKey(getTable().convertColumnIndexToModel(i)),
-							i + "/" + getColumnModel().getColumn(i).getWidth()));
-			case 1 -> IntStream.range(0, getTable().getColumnCount()).
-					forEach(i -> SettingsUtil.set(COLUMN_KEYS.getRoutineKey(getTable().convertColumnIndexToModel(i)),
-							i + "/" + getColumnModel().getColumn(i).getWidth()));
+			case 0 -> IntStream.range(0, table.getColumnCount()).
+					forEach(i -> SettingsUtil.set(COLUMN_KEYS.getTextKey(table.convertColumnIndexToModel(i)),
+							i + "/" + model.getColumn(i).getWidth()));
+			case 1 -> IntStream.range(0, table.getColumnCount()).
+					forEach(i -> SettingsUtil.set(COLUMN_KEYS.getRoutineKey(table.convertColumnIndexToModel(i)),
+							i + "/" + model.getColumn(i).getWidth()));
 		}
 	}
 
-	public void reallignColumns() {
+	public void adjustColumns() {
 		hideColumns();
 		moveColumns();
 	}

@@ -1,45 +1,43 @@
 package litheraa.view.menu;
 
 import com.github.weisj.darklaf.LafManager;
-import litheraa.data.RoutineEnum;
 import litheraa.controller.ProdTimerController;
 import litheraa.controller.SettingsController;
-import litheraa.data.TextEnum;
 import litheraa.util.ViewType;
-import litheraa.view.table.ColumnController;
-import litheraa.view.MainFrame;
 import litheraa.view.TableDialog;
 import litheraa.view.message.About;
 import litheraa.view.message.Tip;
 import litheraa.view.time_spinner.TimeSpinner;
-import litheraa.view.util.Themes;
+import litheraa.view.util.ThemeSupplier;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class TableMenuBar extends JMenuBar {
 
 	private final ProdTimerController controller;
-	private final ColumnController columnController;
-	private final MainFrame mainFrame;
 	private Point point;
 	private JMenu viewMenu;
 
 	public TableMenuBar(ProdTimerController controller) {
-		this.mainFrame = controller.getViewController().getMainFrame();
 		this.controller = controller;
-		this.columnController = controller.getViewController().getColumnController();
+		add(createFileMenu());
+		add(createViewMenu());
+		add(createBehaviourMenu());
+		add(createHelpMenu());
 	}
 
 	private JMenu createFileMenu() {
-///		Spaces after menu names are added to make gap between right edges of menu item and its containers
+///		Spaces after menu names are added to make the gap between right edges of menu item and its containers
 		JMenu fileMenu = new JMenu("Файл ");
 
-		JMenuItem newProdMenuItem = new JMenuItem("Добавить проду ");
-		JMenuItem refresh = new JMenuItem("Обновить ");
-		JMenuItem exitMenuItem = new JMenuItem("Выход ");
+		JMenuItem newProdMenuItem = new JMenuItem("Добавить проду  ");
+		JMenuItem refresh = new JMenuItem("Обновить  ");
+		JMenuItem exitMenuItem = new JMenuItem("Выход  ");
 
 		fileMenu.add(newProdMenuItem);
 		fileMenu.add(refresh);
@@ -48,96 +46,41 @@ public class TableMenuBar extends JMenuBar {
 
 		newProdMenuItem.addActionListener(e -> controller.chooseFile());
 		refresh.addActionListener(e -> controller.refresh());
-		exitMenuItem.addActionListener(e -> controller.getViewController().exit());
+		exitMenuItem.addActionListener(e -> controller.exit());
 
 		return fileMenu;
-	}
-
-	private JCheckBoxMenuItem createHideColumnCheckBox(int column, String checkBoxName) {
-		JCheckBoxMenuItem checkBox = new JCheckBoxMenuItem(checkBoxName,
-				SettingsController.isColumnHide(column));
-		checkBox.addItemListener(e -> columnController.setColumn(
-				column, checkBox.isSelected()));
-		return checkBox;
-	}
-
-	private JMenu createRoutineTableMenu() {
-		JMenu tableMenu = new JMenu("Таблица");
-
-		String[] names = new String[]{"Скрыть дату", "Скрыть знаки", "Скрыть название текстов"};
-		for (int i = 0; i < RoutineEnum.values().length; i++) {
-			tableMenu.add(createHideColumnCheckBox(i, names[i]));
-		}
-
-		return tableMenu;
-	}
-
-	private JMenu createTextTableMenu() {
-		JMenu tableMenu = new JMenu("Таблица");
-
-		String[] names = new String[]{"Скрыть начало проды",
-				"Скрыть дату создания",
-				"Скрыть дату последнего изменения",
-				"Скрыть знаки в проде",
-				"Скрыть знаки в тексте",
-				"Скрыть знаков всего",
-				"Скрыть название текста",
-				"Скрыть путь к тексту"};
-		for (int i = 0; i < TextEnum.values().length; i++) {
-			tableMenu.add(createHideColumnCheckBox(i, names[i]));
-		}
-
-		return tableMenu;
-	}
-
-	private JMenu createTableViewMenu() {
-		JCheckBoxMenuItem pinElementsCheckbox = new JCheckBoxMenuItem("Закрепить элементы",
-				SettingsController.isTablePinned());
-		pinElementsCheckbox.addChangeListener(e -> {
-			SettingsController.pinTable();
-			mainFrame.pinTable(pinElementsCheckbox.isSelected());
-		});
-
-		viewMenu = createViewMenu();
-		viewMenu.add(pinElementsCheckbox);
-
-		return viewMenu;
 	}
 
 	private JMenu createViewMenu() {
 		viewMenu = new JMenu("Вид");
 
-		RadioButtonsMenu changeViewMenu = new RadioButtonsMenu("Переключиться",
-				ViewType.getNamesArray(),
+		RadioButtonsMenu viewMenu = new RadioButtonsMenu("Переключиться",
+				Arrays.stream(ViewType.values()).map(ViewType::getLocale).toArray(String[]::new),
 				SettingsController.getViewType().ordinal());
-		for (int i = 0; i < changeViewMenu.getBUTTONS_AMOUNT(); i++) {
-			int finalI = i;
-			changeViewMenu.getButton(i).addActionListener(e -> {
-				controller.getViewController().saveWindowSize();
-				controller.setView(ViewType.values()[finalI]);
-				controller.refresh();
-				changeViewMenu.setPopupMenuVisible(false);
-				viewMenu.setPopupMenuVisible(false);
-			});
-		}
-		changeViewMenu.getPopupMenu().addMouseMotionListener(new MouseMotionAdapter() {
+		int bound = viewMenu.getButtonAmount();
+		IntStream.range(0, bound).forEachOrdered(i -> viewMenu.getButton(i).addActionListener(e -> {
+			controller.saveWindowSize();
+			controller.setView(ViewType.values()[i]);
+			controller.refresh();
+			viewMenu.setPopupMenuVisible(false);
+			this.viewMenu.setPopupMenuVisible(false);
+		}));
+		viewMenu.getPopupMenu().addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				changeViewMenu.getPopupMenu().getComponent().contains(e.getPoint());
+				viewMenu.getPopupMenu().getComponent().contains(e.getPoint());
 			}
 		});
 
 		RadioButtonsMenu colorThemeMenu = new RadioButtonsMenu("Цветовая тема",
-				Themes.getThemeNames(),
+				ThemeSupplier.getThemeNames(),
 				SettingsController.getThemeNo());
-		for (int i = 0; i < Themes.getThemesLength(); i++) {
-			int finalI = i;
-			colorThemeMenu.getButton(i).addActionListener(e -> {
-				SettingsController.setTheme(finalI);
-				LafManager.installTheme(Themes.getTheme(finalI));
-				controller.refresh();
-			});
-		}
+		int bound1 = ThemeSupplier.getThemesLength();
+		IntStream.range(0, bound1).forEachOrdered(i -> colorThemeMenu.getButton(i).addActionListener(e -> {
+			SettingsController.setTheme(i);
+			LafManager.installTheme(ThemeSupplier.getTheme(i));
+			controller.refresh();
+		}));
 
 		RadioButtonsMenu measureUnitMenu = new RadioButtonsMenu("Единица измерения",
 				new String[] {"Знаки", "Алки"},
@@ -145,18 +88,18 @@ public class TableMenuBar extends JMenuBar {
 		for (int i = 0; i < 2; i++) {
 			measureUnitMenu.getButton(i).addActionListener(e -> {
 				SettingsController.switchMeasureUnit();
-				mainFrame.repaint();
+				controller.repaint();
 				measureUnitMenu.setPopupMenuVisible(false);
-				viewMenu.setPopupMenuVisible(false);
+				this.viewMenu.setPopupMenuVisible(false);
 			});
 		}
 
-		viewMenu.add(changeViewMenu);
-		viewMenu.add(colorThemeMenu);
-		viewMenu.addSeparator();
-		viewMenu.add(measureUnitMenu);
+		this.viewMenu.add(viewMenu);
+		this.viewMenu.add(colorThemeMenu);
+		this.viewMenu.addSeparator();
+		this.viewMenu.add(measureUnitMenu);
 
-		return viewMenu;
+		return this.viewMenu;
 	}
 
 	private JMenu createBehaviourMenu() {
@@ -176,17 +119,24 @@ public class TableMenuBar extends JMenuBar {
 		JCheckBoxMenuItem trayCheckBox = new JCheckBoxMenuItem("Иконка в трее", SettingsController.isTrayEnabled());
 		trayCheckBox.setEnabled(!SettingsController.isTrayExit());
 		JCheckBoxMenuItem exitInTrayCheckBox = new JCheckBoxMenuItem("При выходе сворачивать в трей", SettingsController.isTrayExit());
+		JCheckBoxMenuItem showOnTop = new JCheckBoxMenuItem("Поверх остальных окон", SettingsController.isOnTop());
 
 		startConditionsMenu.add(autoStartCheckbox);
 		startConditionsMenu.add(trayCheckBox);
 		startConditionsMenu.add(exitInTrayCheckBox);
+		startConditionsMenu.add(showOnTop);
 
+		JMenuItem cutDate = new JMenuItem("Не показывать тексты до");
+		JMenuItem prodNameLengthMenuItem = new JMenuItem("Длина названия проды");
 		JMenuItem prodVolumeMenuItem = new JMenuItem("Дневная норма знаков");
 		JMenuItem prodDeadlineMenuItem = new JMenuItem("Сбрасывать таймер в");
 		JMenuItem updateIntervalMenuItem = new JMenuItem("Автообновление");
 		JMenuItem resetMenuItem = new JMenuItem("Сбросить настройки");
 
+
 		behaviorMenu.add(startConditionsMenu);
+		behaviorMenu.add(cutDate);
+		behaviorMenu.add(prodNameLengthMenuItem);
 		behaviorMenu.add(prodVolumeMenuItem);
 		behaviorMenu.add(prodDeadlineMenuItem);
 		behaviorMenu.add(updateIntervalMenuItem);
@@ -194,16 +144,28 @@ public class TableMenuBar extends JMenuBar {
 		behaviorMenu.add(resetMenuItem);
 
 		autoStartCheckbox.addItemListener(e -> controller.setAutoStart(autoStartCheckbox.isSelected()));
-
 		trayCheckBox.addActionListener(e -> {
 			SettingsController.switchTray();
 			controller.setTrayIcon(false);
 		});
-
 		exitInTrayCheckBox.addActionListener(e -> {
 			SettingsController.switchTrayExit();
 			controller.setTrayIcon(false);
 			trayCheckBox.setEnabled(!SettingsController.isTrayExit());
+		});
+		showOnTop.addActionListener(e -> SettingsController.switchOnTop());
+
+		cutDate.addActionListener(e -> {
+			TableDialog dayChooser = new TableDialog(point);
+			dayChooser.createDayChooserDialog("Не показывать тексты до",
+					SettingsController.getCutDate(),
+					new SettingsController(),
+					(sC, string) -> SettingsController.setCutDate(string));
+		});
+
+		prodNameLengthMenuItem.addActionListener(e -> {
+			TableDialog dialog = new TableDialog(point);
+			dialog.createProdNameLengthDialog();
 		});
 
 		prodVolumeMenuItem.addActionListener(e -> {
@@ -222,46 +184,6 @@ public class TableMenuBar extends JMenuBar {
 		return behaviorMenu;
 	}
 
-	private JMenu createTextBehaviourMenu() {
-		JMenuItem prodNameLengthMenuItem = new JMenuItem("Длина названия проды");
-		prodNameLengthMenuItem.addActionListener(e -> {
-			TableDialog dialog = new TableDialog(point);
-			dialog.createProdNameLengthDialog();
-		});
-
-		JMenu behaviorMenu = createRoutineBehaviourMenu();
-		behaviorMenu.add(prodNameLengthMenuItem, 2);
-
-		return behaviorMenu;
-	}
-
-	private JMenu createRoutineBehaviourMenu() {
-		JMenuItem cutDate = new JMenuItem("Не показывать тексты до");
-		cutDate.addActionListener(e -> {
-			TableDialog dayChooser = new TableDialog(point);
-			dayChooser.createDayChooserDialog("Не показывать тексты до",
-					SettingsController.getCutDate(),
-					new SettingsController(),
-					(sC, string) -> SettingsController.setCutDate(string));
-		});
-
-		JMenu behaviorMenu = createBehaviourMenu();
-		behaviorMenu.add(cutDate, 1);
-
-		return behaviorMenu;
-	}
-
-	private JMenu createSmallWindowBehaviourMenu() {
-
-		JCheckBoxMenuItem showOnTop = new JCheckBoxMenuItem("Поверх остальных окон", SettingsController.isOnTop());
-		showOnTop.addActionListener(e -> SettingsController.switchOnTop());
-
-		JMenu behaviorMenu = createBehaviourMenu();
-		((JMenu) behaviorMenu.getMenuComponent(0)).add(showOnTop);
-
-		return behaviorMenu;
-	}
-
 	private JMenu createHelpMenu() {
 		JMenu helpMenu = new JMenu("Помощь");
 
@@ -273,40 +195,9 @@ public class TableMenuBar extends JMenuBar {
 		helpMenu.add(showTips);
 		helpMenu.add(about);
 
-		showTip.addActionListener(e -> Tip.forceShowTip(TableMenuBar.this.mainFrame));
-
+		showTip.addActionListener(e -> Tip.forceShowTip(controller.getFrame()));
 		showTips.addActionListener(e -> SettingsController.switchTipShow());
-
-		about.addActionListener(e -> About.showAbout(TableMenuBar.this.mainFrame));
+		about.addActionListener(e -> About.showAbout(controller.getFrame()));
 		return helpMenu;
-	}
-
-	public TableMenuBar createTextsMenu() {
-		add(createFileMenu());
-		add(createTableViewMenu());
-		add(createTextTableMenu());
-		add(createTextBehaviourMenu());
-		add(createHelpMenu());
-
-		return this;
-	}
-
-	public TableMenuBar createRoutineMenu() {
-		add(createFileMenu());
-		add(createTableViewMenu());
-		add(createRoutineTableMenu());
-		add(createRoutineBehaviourMenu());
-		add(createHelpMenu());
-
-		return this;
-	}
-
-	public TableMenuBar createSmallWindowMenu() {
-		new TableMenuBar(controller);
-		add(createFileMenu());
-		add(createViewMenu());
-		add(createSmallWindowBehaviourMenu());
-		add(createHelpMenu());
-		return this;
 	}
 }

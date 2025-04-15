@@ -2,14 +2,13 @@ package litheraa.view.table;
 
 import litheraa.data.RoutineEnum;
 import litheraa.controller.SettingsController;
-import litheraa.data.ColumnDataTypeEnum;
-import litheraa.data.TableComparator;
 import litheraa.util.ViewType;
 import org.jdesktop.swingx.sort.RowFilters;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -31,7 +30,7 @@ public class TableSorter extends TableRowSorter<TableModel> {
             SettingsController.setSortedColumn(sortKey.getColumn());
             SettingsController.setSortOrder(sortKey.getSortOrder());
         });
-        if (((RoutineModel) model).getExactModelType() == ViewType.ROUTINE.ordinal()) {
+        if (((TimeTableModel) model).getExactModelType() == ViewType.TIME.ordinal()) {
 	        setSortable(RoutineEnum.PROD_CHARS.ordinal(), false);
             setSortable(RoutineEnum.NAMES.ordinal(), false);
         }
@@ -43,7 +42,7 @@ public class TableSorter extends TableRowSorter<TableModel> {
     public void setFilter(int columnNo, String value) {
         int column = columnNo;
         columnNo = table.convertColumnIndexToModel(columnNo);
-        if (!value.isEmpty() && table.getColumnType(column) == ColumnDataTypeEnum.DATE) {
+        if (!value.isEmpty() && table.getColumnClass(column) == LocalDate.class) {
             String[] tempValue = value.split(" ");
             if (tempValue.length == 2) {
                 RowFilter<TableModel, Integer>[] list = new RowFilter[2];
@@ -58,11 +57,6 @@ public class TableSorter extends TableRowSorter<TableModel> {
                     Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE, ".*" + Pattern.quote(value) + ".*", columnNo);
         }
         setRowFilter(RowFilter.andFilter(Arrays.asList(filterList)));
-    }
-
-    @Override
-    public Comparator<?> getComparator(int column) {
-        return new TableComparator(table.getColumnType(column));
     }
 
     private RowFilter<TableModel, Integer>[] createEmptyFilter() {

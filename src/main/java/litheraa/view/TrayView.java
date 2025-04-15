@@ -45,7 +45,7 @@ public class TrayView {
 			MenuItem refresh = new MenuItem("Обновить");
 			MenuItem exit = new MenuItem("Выход");
 
-			toFull.addActionListener(e -> controller.getViewController().getMainFrame().setVisible(true));
+			toFull.addActionListener(e -> controller.getViewController().getFrame().setVisible(true));
 			refresh.addActionListener(e -> controller.setTrayIcon(true));
 			exit.addActionListener(e -> {
 				controller.fullSave();

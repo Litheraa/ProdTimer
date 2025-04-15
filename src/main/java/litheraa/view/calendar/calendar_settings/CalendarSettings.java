@@ -1,10 +1,11 @@
 package litheraa.view.calendar.calendar_settings;
 
+import litheraa.controller.CalendarController;
 import litheraa.controller.SettingsController;
-import litheraa.controller.ViewController;
+import litheraa.controller.ViewControllerInterface;
 import litheraa.util.CalendarWrapper;
+import litheraa.util.ViewType;
 import litheraa.view.DateChooseDialog;
-import litheraa.view.calendar.CalendarControllerInterface;
 import org.apache.commons.math3.util.Pair;
 import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.calendar.DateSelectionModel;
@@ -46,7 +47,7 @@ public class CalendarSettings extends JDialog {
 		selection.setFont(new Font("Aerial", Font.BOLD, 20));
 	}
 
-	public CalendarSettings(CalendarControllerInterface controller, String setting, String[] textNames) {
+	public CalendarSettings(ViewControllerInterface controller, String setting, String[] textNames) {
 		setSize(480, 350);
 		setTitle("Выберите режим отображения");
 		setResizable(false);
@@ -110,22 +111,6 @@ public class CalendarSettings extends JDialog {
 		textJComboBox = new JComboBox<>(textNames);
 		textJComboBox.insertItemAt("Все тексты", 0);
 		textJComboBox.setSelectedIndex(0);
-		textJComboBox.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				e.getItem();
-//				controller.
-			}
-		});
-		textJComboBox.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-
-//					menu.setVisible(false);
-				}
-			}
-		});
 
 		JTabbedPane pane = new JTabbedPane();
 		pane.addChangeListener(e -> {
@@ -144,7 +129,7 @@ public class CalendarSettings extends JDialog {
 			String period = selection.getText();
 			SettingsController.setPeriod(getPeriod(period).getFirst());
 			controller.setTextId(textJComboBox.getSelectedItem().toString());
-			controller.setView(getPeriod(period).getSecond());
+			controller.concreteView(getPeriod(period).getSecond());
 			setVisible(false);
 		});
 
@@ -174,10 +159,10 @@ public class CalendarSettings extends JDialog {
 		add(cansel);
 	}
 
-	private Pair<LocalDate, ViewController.CalendarType> getPeriod(String text) {
-		ViewController.CalendarType type = ViewController.CalendarType.of(text);
+	private Pair<LocalDate, ViewType> getPeriod(String text) {
+		ViewType type = ViewType.of(text);
 		String[] strings = text.split(" ");
-		Pair<LocalDate, ViewController.CalendarType> result;
+		Pair<LocalDate, ViewType> result;
 		switch (type) {
 			case WEEKLY -> {
 				int year = Integer.parseInt(strings[3]);

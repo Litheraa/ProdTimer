@@ -1,6 +1,5 @@
 package litheraa.view.message;
 
-import litheraa.view.MainFrame;
 import org.jdesktop.swingx.JXLabel;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +13,7 @@ import java.net.URISyntaxException;
 public class About extends JDialog {
 	private static About aboutDialog;
 
-	public About(MainFrame mainFrame) {
+	public About(Component parent) {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
@@ -24,7 +23,7 @@ public class About extends JDialog {
 		setResizable(false);
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setSize(350, 230);
-		setLocationRelativeTo(mainFrame);
+		setLocationRelativeTo(parent);
 
 		String text = MessageUtil.getAbout();
 		String startingText = text.substring(0, text.indexOf("<html>"));
@@ -95,9 +94,9 @@ public class About extends JDialog {
 		return hyperLinkLabel;
 	}
 
-	public static void showAbout(MainFrame mainFrame) {
+	public static void showAbout(Component parent) {
 		if (aboutDialog == null) {
-			aboutDialog = new About(mainFrame);
+			aboutDialog = new About(parent);
 		} else {
 			aboutDialog.setVisible(true);
 		}

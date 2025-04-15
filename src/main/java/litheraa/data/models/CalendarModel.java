@@ -4,7 +4,6 @@ import litheraa.controller.SettingsController;
 import litheraa.data.entities.Prod;
 import litheraa.data.entities.Text;
 import litheraa.data.entities.Time;
-import lombok.Getter;
 import org.apache.commons.math3.util.Pair;
 
 import java.time.LocalDate;
@@ -12,14 +11,14 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Getter
 public class CalendarModel {
 	private final Map<LocalDate, Node> nodes;
-	private long textId = Long.decode(SettingsController.getText());
+	private long textId;
 	private final Map<Long, Text> texts;
 	private final Map<String, Long> textIdMap;
 
-	public CalendarModel(Pair<List<Time>, List<Text>> dataPair) {
+	public CalendarModel(Pair<List<Time>, List<Text>> dataPair, long textId) {
+		this.textId = textId;
 		texts = dataPair.getSecond()
 				.stream()
 				.collect(Collectors.toMap(Text::getId, Function.identity()));
@@ -33,8 +32,12 @@ public class CalendarModel {
 				.collect(Collectors.toMap(Time::getModified, Node::new));
 	}
 
+	public List<LocalDate> getValidDates() {
+		return nodes.keySet().stream().sorted(LocalDate::compareTo).toList();
+	}
+
 	public int getGoal(LocalDate id) {
-		return nodes.getOrDefault(id, new Node(id)).getGoal();
+		return nodes.getOrDefault(id, new Node(id)).goal;
 	}
 
 	public int getWritten(LocalDate id) {
@@ -49,12 +52,7 @@ public class CalendarModel {
 	}
 
 	public String getTextName() {
-		Text t = texts.get(textId);
-		if (t != null) {
-			return t.getName();
-		} else {
-			return "все тексты";
-		}
+		return texts.getOrDefault(textId, new Text("Все тексты")).getName();
 	}
 
 	public void setTextId(String text) {
@@ -67,7 +65,6 @@ public class CalendarModel {
 	protected class Node {
 		private final LocalDate id;
 		private int written;
-		@Getter
 		private int goal;
 		private List<Prod> prods;
 

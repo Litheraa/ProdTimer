@@ -1,12 +1,28 @@
 package litheraa.util;
 
-public enum ViewType {
-	TEXTS,
-	ROUTINE,
-	CALENDAR,
-	SMALL_WINDOW;
+import lombok.Getter;
 
-	public static String[] getNamesArray() {
-		return new String[]{"По текстам", "По дням", "Календарный вид", "Компактное окно"};
+@Getter
+public enum ViewType {
+	TEXTS("По текстам"),
+	TIME("По дням"),
+	MONTHLY("Один месяц"),
+	WEEKLY("Недельный вид"),
+	DAILY("Компактный");
+
+	private final String locale;
+
+	ViewType(String locale) {
+		this.locale = locale;
+	}
+
+	public static ViewType of(String period) {
+		switch (period.charAt(2)) {
+			case 'н': if (period.charAt(3) == 'е') {
+				return WEEKLY;
+			} else return MONTHLY;
+			case ' ': return DAILY;
+			default: return MONTHLY;
+		}
 	}
 }

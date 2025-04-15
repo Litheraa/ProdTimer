@@ -14,13 +14,13 @@ public class DimensionFactory {
 	private static volatile DimensionFactory instance;
 	private final Map<String, Map<SizeStepAdapter.Step, Dimension>> MAP = new HashMap<>();
 
-	public Dimension getDimension(String iUClassID, SizeStepAdapter.Step step, int sizeStep) {
+	public Dimension getDimension(String iUClassID, SizeStepAdapter.Step step, int incrementSize) {
 		if (!MAP.containsKey(iUClassID)) {
 			Map<SizeStepAdapter.Step, Dimension> dimensionMap = new EnumMap<>(SizeStepAdapter.Step.class);
-			int size = sizeStep + ((sizeStep / 10) * 10) + 1;
+			int size = incrementSize + ((incrementSize / 10) * 10) + 1;
 			for (SizeStepAdapter.Step step1 : SizeStepAdapter.Step.values()) {
 				dimensionMap.put(step1, new Dimension(size, size));
-				size += sizeStep;
+				size += incrementSize;
 			}
 			MAP.put(iUClassID, dimensionMap);
 		}

@@ -36,6 +36,12 @@ public class Text implements Serializable {
 		this.name = path.toFile().getName();
 	}
 
+	public Text(String name) {
+		this.created = null;
+		this.path = null;
+		this.name = name;
+	}
+
 	public Prod getProd() {
 		if (prods == null || prods.isEmpty()) {
 			return null;

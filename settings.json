@@ -1,0 +1,12 @@
+{
+  "textIds" : [ ],
+  "period" : {
+    "periodType" : null,
+    "from" : "2025-05-15",
+    "to" : "2025-05-15"
+  },
+  "updateInterval" : 5,
+  "deadline" : "00:00:00",
+  "length" : 20,
+  "unit" : "CHAR"
+}

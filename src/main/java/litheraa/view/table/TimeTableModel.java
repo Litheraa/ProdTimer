@@ -1,21 +1,24 @@
 package litheraa.view.table;
 
-import litheraa.data.ColumnDataTypeEnum;
-import litheraa.data.RoutineEnum;
 import litheraa.data.models.CalendarModel;
-import litheraa.util.ViewType;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import javax.swing.table.AbstractTableModel;
 import java.time.LocalDate;
+import java.util.Arrays;
 
 @NoArgsConstructor
-public class TimeTableModel extends AbstractTableModel implements ColumnType {
+public class TimeTableModel extends AbstractTableModel {
 	private CalendarModel calendarModel;
 
 	public TimeTableModel(CalendarModel calendarModel) {
 		this.calendarModel = calendarModel;
+	}
+
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		return Header.of(columnIndex).clazz;
 	}
 
 	@Override
@@ -39,7 +42,7 @@ public class TimeTableModel extends AbstractTableModel implements ColumnType {
 			case WRITTEN -> calendarModel.getWritten(id);
 			case GOAL -> calendarModel.getGoal(id);
 			case TOGO -> calendarModel.getGoal(id) - calendarModel.getWritten(id);
-			case PRODS -> calendarModel.getTextNames();
+			case PRODS -> calendarModel.getTexts().stream().map(sT -> sT.getText().getName()).toArray();
 		};
 	}
 
@@ -48,27 +51,19 @@ public class TimeTableModel extends AbstractTableModel implements ColumnType {
 		return Header.values()[column].locale;
 	}
 
-	@Override
-	public ColumnDataTypeEnum getColumnType(int column) {
-		return RoutineEnum.getFieldType(column);
-	}
-
-	@Override
-	public int getExactModelType() {
-		return ViewType.TIME.ordinal();
-	}
-
 	public enum Header {
-		MODIFIED("Дата"),
-		WRITTEN("Написано"),
-		GOAL("Цель"),
-		TOGO("Осталось"),
-		PRODS("Проды");
+		MODIFIED("Дата", LocalDate.class),
+		WRITTEN("Написано", Integer.class),
+		GOAL("Цель", Integer.class),
+		TOGO("Осталось", Integer.class),
+		PRODS("Проды", Arrays.class);
 
 		private final String locale;
+		private final Class<?> clazz;
 
-		Header(String locale) {
+		Header(String locale, Class<?> clazz) {
 			this.locale = locale;
+			this.clazz = clazz;
 		}
 
 		public static Header of(int ordinal) {

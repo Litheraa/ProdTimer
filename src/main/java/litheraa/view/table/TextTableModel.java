@@ -1,14 +1,13 @@
 package litheraa.view.table;
 
-import litheraa.data.ColumnDataTypeEnum;
-import litheraa.data.TextEnum;
+import litheraa.data.entities.Prod;
 import litheraa.data.models.TextModel;
-import litheraa.util.ViewType;
 import lombok.SneakyThrows;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
-public class TextTableModel extends TimeTableModel implements ColumnType {
+public class TextTableModel extends TimeTableModel{
 	private final TextModel model;
 
 	public TextTableModel(TextModel model) {
@@ -18,16 +17,6 @@ public class TextTableModel extends TimeTableModel implements ColumnType {
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		return Header.of(columnIndex).clazz;
-	}
-
-	@Override
-	public ColumnDataTypeEnum getColumnType(int column) {
-		return TextEnum.getFieldType(column);
-	}
-
-	@Override
-	public int getExactModelType() {
-		return ViewType.TEXTS.ordinal();
 	}
 
 	@Override
@@ -54,13 +43,13 @@ public class TextTableModel extends TimeTableModel implements ColumnType {
 			case GOAL -> node.getGoal();
 			case TOGO -> node.getGoal() - node.getWritten();
 			case PATH -> node.getPath();
-			case PRODS -> node.getProds();
+			case PRODS -> node.getProds().stream().map(Prod::getName).toArray();
 		};
 	}
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == TextEnum.CHARS_TOTAL.ordinal() || columnIndex == TextEnum.TEXT_NAME.ordinal();
+		return columnIndex == Header.GOAL.ordinal() || columnIndex == Header.NAME.ordinal();
 	}
 
 	@Override
@@ -100,13 +89,13 @@ public class TextTableModel extends TimeTableModel implements ColumnType {
 
 	public enum Header {
 		NAME("Название", String.class),
-		CREATED("Дата создания", String.class),
+		CREATED("Дата создания", LocalDate.class),
 		MODIFIED("Дата изменения", LocalDate.class),
 		WRITTEN("Написано", Integer.class),
 		GOAL("Цель", Integer.class),
 		TOGO("Осталось", Integer.class),
 		PATH("Путь", String.class),
-		PRODS("Проды", Object.class);
+		PRODS("Проды", Arrays.class);
 
 		private final String locale;
 		private final Class<?> clazz;

@@ -1,29 +1,29 @@
 package litheraa.data.models;
 
 import litheraa.data.entities.Prod;
+import litheraa.data.entities.SelectableText;
 import litheraa.data.entities.Text;
 import litheraa.data.entities.Time;
 import lombok.Getter;
 import org.apache.commons.math3.util.Pair;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class TextModel {
-	private long textId;
 	private List<Node> nodes;
 	private List<Text> texts;
 	private Map<Long, Time> times;
 
-	public TextModel (Pair<List<Time>, List<Text>> dataPair, long textId) {
-		this.textId = textId;
-
+	public TextModel (Pair<List<Time>, ArrayList<SelectableText>> dataPair) {
 		nodes = dataPair
 				.getSecond()
 				.stream()
+				.map(SelectableText::getText)
 				.sorted(new TextComparator())
 				.map(Node::new)
 				.toList();

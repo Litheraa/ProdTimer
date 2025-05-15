@@ -1,7 +1,7 @@
 package litheraa.view.table.renderers;
 
 import litheraa.controller.SettingsController;
-import litheraa.util.MeasureUnit;
+import litheraa.util.MeasureUnitConverter;
 import litheraa.util.NumberDeclensionRu;
 
 import javax.swing.*;
@@ -21,7 +21,7 @@ public class ProgressRenderer extends DefaultTableCellRenderer {
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		int actualValue = MeasureUnit.toChars(value);
+		int actualValue = MeasureUnitConverter.toChars(value);
 
 		JLabel label = new JLabel("Написано: " + actualValue + " Осталось: " + (prodVolume - actualValue));
 		label.setForeground(new Color(99, 130, 207));

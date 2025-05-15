@@ -1,16 +1,13 @@
 package litheraa.controller;
 
-import litheraa.data_base.HSQLDBWorker;
 import litheraa.util.ViewType;
 import litheraa.view.util.ColumnKeysRecord;
 import litheraa.util.KeysRecord;
 import litheraa.util.SettingsUtil;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
@@ -59,10 +56,6 @@ public class SettingsController extends SettingsUtil {
 		return Integer.parseInt(prodVolume);
 	}
 
-	public static void setProdNameLength(String prodNameLength) {
-		SettingsUtil.set(KEYS.prodNameLength(), prodNameLength);
-	}
-
 	public static int getProdNameLength() {
 		String nameLength = SettingsUtil.get(KEYS.prodNameLength());
 		if (!nameLength.matches("^[0-9]+$") && Integer.parseInt(nameLength) > 50) {
@@ -103,14 +96,6 @@ public class SettingsController extends SettingsUtil {
 		};
 	}
 
-	public static void setCharsTotal(double charsTotal, Path textPath) {
-		HSQLDBWorker.updateTextsCharsTotal(charsTotal, textPath);
-	}
-
-	public static void setTextName(String textName, Path textPath) {
-		HSQLDBWorker.updateTextName(textName, textPath);
-	}
-
 	public static boolean isChars() {
 		return Integer.parseInt(SettingsUtil.get(KEYS.measureUnit())) == 1;
 	}
@@ -137,10 +122,6 @@ public class SettingsController extends SettingsUtil {
 
 	public static void switchAutoStart() {
 		SettingsUtil.set(KEYS.autoRun(), isAutoStart() ? "0" : "1");
-	}
-
-	public static void setCutDate(String date) {
-		SettingsUtil.set(KEYS.cutDate(), date);
 	}
 
 	public static String getCutDate() {
@@ -211,18 +192,6 @@ public class SettingsController extends SettingsUtil {
 		SettingsUtil.set(KEYS.onTop(), isOnTop() ? "0" : "1");
 	}
 
-	public static int getUpdateInterval() {
-		String updateInterval = SettingsUtil.get(KEYS.updateInterval());
-		if (!updateInterval.matches("^[0-9]{1,3}$")) {
-			updateInterval = SettingsUtil.loadDefault(KEYS.updateInterval());
-		}
-		return Integer.parseInt(updateInterval);
-	}
-
-	public static void setUpdateInterval(String interval) {
-		SettingsUtil.set(KEYS.updateInterval(), interval);
-	}
-
 	public static int getThemeNo() {
 		String themeNo = SettingsUtil.get(KEYS.theme());
 		if (!themeNo.matches("^[0-3]$")) {
@@ -233,66 +202,5 @@ public class SettingsController extends SettingsUtil {
 
 	public static void setTheme(int theme) {
 		SettingsUtil.set(KEYS.theme(), String.valueOf(theme));
-	}
-
-	public static Point getLocation() {
-		String[] string = SettingsUtil.get(KEYS.location()).split("/");
-		if (!string[0].matches("^[0-9]+$") || !string[1].matches("^[0-9]+$")) {
-			return new Point(0, 0);
-		}
-		return new Point(Integer.parseInt(string[0]), Integer.parseInt(string[1]));
-	}
-
-	public static void setLocation(int x, int y) {
-		SettingsUtil.set(KEYS.location(), x + "/" + y);
-	}
-
-	public static Dimension getSize(int viewNo) {
-		String[] string = SettingsUtil.get(KEYS.size() + viewNo).split("/");
-		if (string.length != 2) {
-			string = SettingsUtil.loadDefault(KEYS.size() + viewNo).split("/");
-			return new Dimension(Integer.parseInt(string[0]), Integer.parseInt(string[1]));
-		}
-		return new Dimension(Integer.parseInt(string[0]), Integer.parseInt(string[1]));
-	}
-
-	public static void setSize(int viewNo, int width, int height) {
-		SettingsUtil.set(KEYS.size() + viewNo, width + "/" + height);
-	}
-
-	public static void setMonth(String month) {
-		SettingsUtil.set(KEYS.month(), month);
-	}
-
-	public static int getMonth() {
-		String month = SettingsUtil
-				.get(KEYS.month());
-		if (!month.matches("^[0-9]$")) {
-			month = SettingsUtil.loadDefault(KEYS.month());
-		}
-		if (month.startsWith("0")) {
-			month.replace("0", "");
-		}
-		return Integer.parseInt(month);
-	}
-
-	public static void setText(String text) {
-		SettingsUtil.set(KEYS.text(), text);
-	}
-
-	public static String getText() {
-		return SettingsUtil.get(KEYS.text());
-	}
-
-	public static void setPeriod(LocalDate date) {
-		SettingsUtil.set(KEYS.period(), date.toString());
-	}
-
-	public static LocalDate getPeriod() {
-		String period = SettingsUtil.get(KEYS.period());
-		if (period == null || !period.matches("^[0-9]{4}-[0-9]{2}-[0-9]{2}$")) {
-			return LocalDate.now();
-		}
-		return LocalDate.parse(period);
 	}
 }

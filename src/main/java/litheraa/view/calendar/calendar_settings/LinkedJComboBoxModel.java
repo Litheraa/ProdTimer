@@ -5,10 +5,10 @@ import lombok.Setter;
 import javax.swing.*;
 
 @Setter
-public class LinkedJComboBoxModel<E> extends DefaultComboBoxModel<E> {
+class LinkedJComboBoxModel<E> extends DefaultComboBoxModel<E> {
 	private Runnable runner;
 
-	public LinkedJComboBoxModel(E[] array) {
+	LinkedJComboBoxModel(E[] array) {
 		super(array);
 	}
 

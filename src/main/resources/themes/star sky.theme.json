@@ -1,0 +1,62 @@
+{
+  "name": "Star sky",
+  "dark": true,
+  "colors": {
+    "foreground": "#c3c7c5",
+    "background": "#1E1E1E",
+
+    "selectionBackground": "#000000",
+    "selectionForeground": "#FFFFFF",
+
+    "header": "#252850",
+    "headerForeground": "#c5c9c7",
+
+    "windowTitleBackground": "#1E1F22",
+    "windowTitleForeground": "#c0c0c0"
+  },
+  "ui": {
+    "TitlePane": {
+      "background": "@windowTitleBackground",
+      "foreground": "@windowTitleForeground"
+    },
+    "SubTitle": {
+      "background": "@selectionBackground",
+      "foreground": "@headerForeground"
+    },
+    "Menu": {
+      "background": "@windowTitleBackground",
+      "foreground": "@windowTitleForeground",
+      "selectionBackground": "@background",
+      "selectionForeground": "@selectionForeground"
+    },
+    "Label": {
+      "foreground": "@foreground"
+    },
+    "Button": {
+      "background": "@header",
+      "foreground": "@headerForeground"
+    },
+    "TextField": {
+      "background": "@background",
+      "foreground": "@foreground"
+    },
+    "ProgressBar": {
+      "background": "@background",
+      "foreground": "@header",
+      "from": "@header",
+      "to": "@selectionBackground"
+    },
+    "Table": {
+      "background": "@background",
+      "foreground": "@foreground",
+      "selectionBackground": "@selectionBackground",
+      "selectionForeground": "@selectionForeground",
+      "selectionInactiveBackground": "@header",
+      "selectionInactiveForeground": "@headerForeground"
+    },
+    "Panel": {
+      "background": "@background",
+      "foreground": "@foreground"
+    }
+  }
+}

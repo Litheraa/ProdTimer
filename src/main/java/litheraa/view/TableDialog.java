@@ -1,9 +1,12 @@
 package litheraa.view;
 
+import litheraa.controller.ProdTimerController;
 import litheraa.controller.SettingsController;
+import litheraa.settings.DBSettings;
 import litheraa.util.CalendarWrapper;
 import litheraa.view.util.IntegerFilter;
 import lombok.SneakyThrows;
+import org.jdesktop.swingx.JXDialog;
 
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
@@ -14,12 +17,15 @@ import java.util.function.BiConsumer;
 public class TableDialog extends JDialog {
 	private final Container container = getContentPane();
 
-	public TableDialog(Point location) {
+	public TableDialog(JComponent component, Point location) {
+//		super(component);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setResizable(false);
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 2, 2, 2));
 		setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 		setLocation(location);
+		setAlwaysOnTop(true);
+		setBackground(Color.YELLOW);
 	}
 
 	public void createDayChooserDialog(String title, String dialogString, SettingsController controller, BiConsumer<SettingsController, String> biConsumer) {
@@ -68,15 +74,16 @@ public class TableDialog extends JDialog {
 		};
 
 		addIntegerFilterField(action, field);
-		addSaveButton(action);
-		setSingleFrame();
+//		addSaveButton(action);
+//		setSingleFrame();
 		pack();
 		setVisible(true);
 	}
 
-	public void createUpdateIntervalDialog() {
+	public void createUpdateIntervalDialog(ProdTimerController controller) {
+		DBSettings settings = controller.getDbSettings();;
 		setTitle("Обновлять данные каждые (минут)");
-		JTextField field = new JTextField(String.valueOf(SettingsController.getUpdateInterval()));
+		JTextField field = new JTextField(String.valueOf(settings.getUpdateInterval()));
 
 		Action action = new AbstractAction() {
 			@SneakyThrows
@@ -87,7 +94,7 @@ public class TableDialog extends JDialog {
 					Toolkit.getDefaultToolkit().beep();
 					JOptionPane.showMessageDialog(TableDialog.this, "Не меньше 5 минут");
 				}
-				SettingsController.setUpdateInterval(field.getText());
+				settings.setUpdateInterval(Short.parseShort(field.getText()));
 				setVisible(false);
 			}
 		};
@@ -99,9 +106,10 @@ public class TableDialog extends JDialog {
 		setVisible(true);
 	}
 
-	public void createProdNameLengthDialog() {
+	public void createProdNameLengthDialog(ProdTimerController controller) {
+		DBSettings settings = controller.getDbSettings();
 		setTitle("Знаков в названии проды");
-		JTextField field = new JTextField(String.valueOf(SettingsController.getProdNameLength()));
+		JTextField field = new JTextField(String.valueOf(settings.getLength()));
 
 		Action action = new AbstractAction() {
 			@SneakyThrows
@@ -111,7 +119,7 @@ public class TableDialog extends JDialog {
 					Toolkit.getDefaultToolkit().beep();
 					JOptionPane.showMessageDialog(TableDialog.this, "Не больше 50 знаков");
 				} else {
-					SettingsController.setProdNameLength(field.getText());
+					settings.setLength(Short.parseShort(field.getText()));
 					setVisible(false);
 				}
 			}

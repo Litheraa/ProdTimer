@@ -42,8 +42,8 @@ public class DailyCalendarPanel extends CalendarPanel {
 	protected AdjustablePanel createSubHeader() {
 		JLabel label = new JLabel(date.getDayOfWeek().getDisplayName(TextStyle.FULL_STANDALONE, Locale.of("ru")));
 		label.setOpaque(true);
-		label.setForeground(colors.getBackgroundDark());
-		label.setBackground(colors.getForeground());
+//		label.setForeground(colors.getBackgroundDark());
+//		label.setBackground(colors.getForeground());
 		label.setHorizontalAlignment(JLabel.CENTER);
 
 		//		panel.add(label, BorderLayout.CENTER);

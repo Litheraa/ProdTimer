@@ -1,7 +1,7 @@
 package litheraa.view;
 
 import litheraa.controller.ProdTimerController;
-import litheraa.util.MeasureUnit;
+import litheraa.util.MeasureUnitConverter;
 import litheraa.util.ProjectFolderUtil;
 import lombok.AccessLevel;
 
@@ -23,9 +23,9 @@ public class TrayView {
 	}
 
 	public TrayView setValue(double value) {
-		todayChars = MeasureUnit.inChars(value);
+		todayChars = MeasureUnitConverter.inChars(value);
 		Graphics graphics = bI.createGraphics();
-		String s = MeasureUnit.inChars(value);
+		String s = MeasureUnitConverter.inChars(value);
 		int fontSize = switch (s.length()) {
 			case 1 -> 125;
 			case 2 -> 96;
@@ -34,7 +34,7 @@ public class TrayView {
 		};
 		graphics.setFont(new Font("Arial", Font.BOLD, fontSize));
 		graphics.setColor(Color.BLACK);
-		graphics.drawString(MeasureUnit.getShortUnit(value), 0, 100);
+		graphics.drawString(MeasureUnitConverter.getShortUnit(value), 0, 100);
 		graphics.dispose();
 		return this;
 	}

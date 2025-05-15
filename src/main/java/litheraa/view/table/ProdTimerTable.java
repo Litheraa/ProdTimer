@@ -1,12 +1,9 @@
 package litheraa.view.table;
 
-import litheraa.data.RoutineEnum;
 import litheraa.view.MainFrame;
-import litheraa.data.TextEnum;
 import litheraa.view.table.renderers.HeaderRenderer;
 import litheraa.view.table.renderers.LayeredRenderer;
-import litheraa.view.table.renderers.ProgressRenderer;
-import litheraa.view.table.renderers.TextAreaRenderer;
+import litheraa.view.table.renderers.LocalDateRenderer;
 import litheraa.view.util.DoubleFilter;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,8 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.text.AbstractDocument;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.stream.IntStream;
 
@@ -32,7 +31,9 @@ public class ProdTimerTable extends JTable {
 
 	public ProdTimerTable(MainFrame mainFrame, TimeTableModel model) {
 		this.mainFrame = mainFrame;
+		this.
 		setModel(model);
+		setFocusable(false);
 		sorter = new TableSorter(model, this);
 		sorter.setComparator(1, Comparator.naturalOrder());
 
@@ -44,6 +45,7 @@ public class ProdTimerTable extends JTable {
 			setDoubleFilterToColumn(column);
 			column.setHeaderRenderer(new HeaderRenderer());
 		});
+		applyLocalDateRenderers();
 		setRowSorter(sorter);
 
 		HeaderPopup popup = new HeaderPopup(this);
@@ -64,16 +66,16 @@ public class ProdTimerTable extends JTable {
 		});
 	}
 
-	public void setTextArea() {
-		getColumnModel().getColumn(convertColumnIndexToView(RoutineEnum.NAMES.ordinal())).setCellRenderer(new TextAreaRenderer());
+	private void applyLocalDateRenderers() {
+		TableModel model = getModel();
+		IntStream.range(0, model.getColumnCount())
+				.filter(i -> model.getColumnClass(i).equals(LocalDate.class))
+				.forEach(i -> getColumnModel().getColumn(i).setCellRenderer(new LocalDateRenderer()));
 	}
 
-	public void setProgressBar() {
-		getColumnModel().getColumn(convertColumnIndexToView(RoutineEnum.PROD_CHARS.ordinal())).setCellRenderer(new ProgressRenderer());
-	}
 
-	public void setProgress() {
-		getColumnModel().getColumn(convertColumnIndexToView(TextEnum.CHARS_TOTAL.ordinal())).setCellRenderer(new LayeredRenderer());
+	public void setProgress(int columnOrdinal) {
+		getColumnModel().getColumn(convertColumnIndexToView(columnOrdinal)).setCellRenderer(new LayeredRenderer());
 	}
 
 	@Override
@@ -87,7 +89,7 @@ public class ProdTimerTable extends JTable {
 	}
 
 	private void setDoubleFilterToColumn(TableColumn column) {
-		if (column.getModelIndex() == TextEnum.CHARS_TOTAL.ordinal()) {
+		if (column.getModelIndex() == TextTableModel.Header.GOAL.ordinal()) {
 			JTextField charsTotalValue = new JTextField();
 			AbstractDocument document = (AbstractDocument) charsTotalValue.getDocument();
 			document.setDocumentFilter(new DoubleFilter());

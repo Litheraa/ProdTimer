@@ -3,9 +3,9 @@ package litheraa.view.calendar;
 import litheraa.view.util.AspectRatioAdapter;
 import litheraa.view.util.IntegerFilter;
 import litheraa.view.util.SizeStepAdapter;
-import litheraa.view.util.fabric.ConstraintFactory;
-import litheraa.view.util.fabric.FontFactory;
-import litheraa.view.util.fabric.IconFactory;
+import litheraa.view.util.factory.ConstraintFactory;
+import litheraa.view.util.factory.FontFactory;
+import litheraa.view.util.factory.IconFactory;
 import org.jdesktop.swingx.VerticalLayout;
 
 import javax.swing.*;
@@ -32,6 +32,7 @@ public class LabelGroup extends JPanel implements AdjustableComponentInterface {
 		add(writtenLabel);
 		add(toGoLabel);
 
+		setOpaque(false);
 		setGoalPopUp();
 		setLayout(new VerticalLayout(2));
 	}

@@ -2,7 +2,7 @@ package litheraa.data.models;
 
 import litheraa.controller.SettingsController;
 import litheraa.data.entities.Prod;
-import litheraa.data.entities.Text;
+import litheraa.data.entities.SelectableText;
 import litheraa.data.entities.Time;
 import org.apache.commons.math3.util.Pair;
 
@@ -13,23 +13,20 @@ import java.util.stream.Collectors;
 
 public class CalendarModel {
 	private final Map<LocalDate, Node> nodes;
-	private long textId;
-	private final Map<Long, Text> texts;
-	private final Map<String, Long> textIdMap;
+	private final Map<Long, SelectableText> texts;
 
-	public CalendarModel(Pair<List<Time>, List<Text>> dataPair, long textId) {
-		this.textId = textId;
+	public CalendarModel(Pair<List<Time>, ArrayList<SelectableText>> dataPair) {
 		texts = dataPair.getSecond()
 				.stream()
-				.collect(Collectors.toMap(Text::getId, Function.identity()));
-
-		textIdMap = dataPair.getSecond()
-				.stream()
-				.collect(Collectors.toMap(Text::getName, Text::getId));
+				.collect(Collectors.toMap(sT -> sT.getText().getId(), Function.identity()));
 
 		nodes = dataPair.getFirst()
 				.stream()
 				.collect(Collectors.toMap(Time::getModified, Node::new));
+	}
+
+	public List<SelectableText> getTexts() {
+		return texts.values().stream().toList();
 	}
 
 	public List<LocalDate> getValidDates() {
@@ -42,24 +39,6 @@ public class CalendarModel {
 
 	public int getWritten(LocalDate id) {
 		return nodes.getOrDefault(id, new Node(id)).getWritten();
-	}
-
-	public String[] getTextNames() {
-		return texts.values()
-				.stream()
-				.map(Text::getName)
-				.toArray(String[]::new);
-	}
-
-	public String getTextName() {
-		return texts.getOrDefault(textId, new Text("Все тексты")).getName();
-	}
-
-	public void setTextId(String text) {
-		long l = textIdMap.getOrDefault(text, 0L);
-		if (textId != l) {
-			SettingsController.setText(String.valueOf(l));
-		}
 	}
 
 	protected class Node {
@@ -83,13 +62,14 @@ public class CalendarModel {
 		}
 
 		private int getWritten() {
-			if (textId != 0) {
-				return getProds().orElse(Collections.emptyList())
-						.stream()
-						.filter(p -> p.getTextId() == textId)
-						.reduce(0, (subtotal, p2) -> subtotal + p2.getWritten(), Integer::sum);
-			}
-			return written;
+			return getProds().orElse(Collections.emptyList())
+					.stream()
+					.filter(p -> texts
+							.values()
+							.stream()
+							.filter(SelectableText::isSelected)
+							.anyMatch(sT -> Objects.equals(sT.getText().getId(), p.getTextId())))
+					.reduce(0, (subtotal, p2) -> subtotal + p2.getWritten(), Integer::sum);
 		}
 
 		private Optional<List<Prod>> getProds() {

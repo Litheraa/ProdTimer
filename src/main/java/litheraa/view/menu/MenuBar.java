@@ -1,6 +1,5 @@
 package litheraa.view.menu;
 
-import com.github.weisj.darklaf.LafManager;
 import litheraa.controller.ProdTimerController;
 import litheraa.controller.SettingsController;
 import litheraa.util.ViewType;
@@ -8,7 +7,6 @@ import litheraa.view.TableDialog;
 import litheraa.view.message.About;
 import litheraa.view.message.Tip;
 import litheraa.view.time_spinner.TimeSpinner;
-import litheraa.view.util.ThemeSupplier;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
@@ -17,14 +15,16 @@ import java.awt.event.*;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-public class TableMenuBar extends JMenuBar {
+public class MenuBar extends JMenuBar {
 
 	private final ProdTimerController controller;
 	private Point point;
 	private JMenu viewMenu;
 
-	public TableMenuBar(ProdTimerController controller) {
+	public MenuBar(ProdTimerController controller) {
 		this.controller = controller;
+		setLayout(new MultiRowLayout());
+
 		add(createFileMenu());
 		add(createViewMenu());
 		add(createBehaviourMenu());
@@ -35,9 +35,9 @@ public class TableMenuBar extends JMenuBar {
 ///		Spaces after menu names are added to make the gap between right edges of menu item and its containers
 		JMenu fileMenu = new JMenu("Файл ");
 
-		JMenuItem newProdMenuItem = new JMenuItem("Добавить проду  ");
-		JMenuItem refresh = new JMenuItem("Обновить  ");
-		JMenuItem exitMenuItem = new JMenuItem("Выход  ");
+		JMenuItem newProdMenuItem = new ColorfulMenuItem("Добавить проду  ");
+		JMenuItem refresh = new ColorfulMenuItem("Обновить  ");
+		JMenuItem exitMenuItem = new ColorfulMenuItem("Выход  ");
 
 		fileMenu.add(newProdMenuItem);
 		fileMenu.add(refresh);
@@ -57,9 +57,7 @@ public class TableMenuBar extends JMenuBar {
 		RadioButtonsMenu viewMenu = new RadioButtonsMenu("Переключиться",
 				Arrays.stream(ViewType.values()).map(ViewType::getLocale).toArray(String[]::new),
 				SettingsController.getViewType().ordinal());
-		int bound = viewMenu.getButtonAmount();
-		IntStream.range(0, bound).forEachOrdered(i -> viewMenu.getButton(i).addActionListener(e -> {
-			controller.saveWindowSize();
+		IntStream.range(0, ViewType.values().length).forEachOrdered(i -> viewMenu.getButton(i).addActionListener(e -> {
 			controller.setView(ViewType.values()[i]);
 			controller.refresh();
 			viewMenu.setPopupMenuVisible(false);
@@ -72,15 +70,14 @@ public class TableMenuBar extends JMenuBar {
 			}
 		});
 
-		RadioButtonsMenu colorThemeMenu = new RadioButtonsMenu("Цветовая тема",
-				ThemeSupplier.getThemeNames(),
-				SettingsController.getThemeNo());
-		int bound1 = ThemeSupplier.getThemesLength();
-		IntStream.range(0, bound1).forEachOrdered(i -> colorThemeMenu.getButton(i).addActionListener(e -> {
-			SettingsController.setTheme(i);
-			LafManager.installTheme(ThemeSupplier.getTheme(i));
-			controller.refresh();
-		}));
+//		RadioButtonsMenu colorThemeMenu = new RadioButtonsMenu("Цветовая тема",
+//				ThemeSupplier.getThemeNames(),
+//				SettingsController.getThemeNo());
+//		IntStream.range(0, ThemeSupplier.getThemesLength()).forEachOrdered(i -> colorThemeMenu.getButton(i).addActionListener(e -> {
+//			SettingsController.setTheme(i);
+//			LafManager.installTheme(ThemeSupplier.getTheme(i));
+//			controller.refresh();
+//		}));
 
 		RadioButtonsMenu measureUnitMenu = new RadioButtonsMenu("Единица измерения",
 				new String[] {"Знаки", "Алки"},
@@ -95,7 +92,7 @@ public class TableMenuBar extends JMenuBar {
 		}
 
 		this.viewMenu.add(viewMenu);
-		this.viewMenu.add(colorThemeMenu);
+//		this.viewMenu.add(colorThemeMenu);
 		this.viewMenu.addSeparator();
 		this.viewMenu.add(measureUnitMenu);
 
@@ -115,27 +112,26 @@ public class TableMenuBar extends JMenuBar {
 
 		JMenu startConditionsMenu = new JMenu("Настройки запуска");
 
-		JCheckBoxMenuItem autoStartCheckbox = new JCheckBoxMenuItem("Автозапуск", SettingsController.isAutoStart());
-		JCheckBoxMenuItem trayCheckBox = new JCheckBoxMenuItem("Иконка в трее", SettingsController.isTrayEnabled());
+		JCheckBoxMenuItem autoStartCheckbox = new ColorfulCheckBoxMenuItem("Автозапуск", SettingsController.isAutoStart());
+		JCheckBoxMenuItem trayCheckBox = new ColorfulCheckBoxMenuItem("Иконка в трее", SettingsController.isTrayEnabled());
 		trayCheckBox.setEnabled(!SettingsController.isTrayExit());
-		JCheckBoxMenuItem exitInTrayCheckBox = new JCheckBoxMenuItem("При выходе сворачивать в трей", SettingsController.isTrayExit());
-		JCheckBoxMenuItem showOnTop = new JCheckBoxMenuItem("Поверх остальных окон", SettingsController.isOnTop());
+		JCheckBoxMenuItem exitInTrayCheckBox = new ColorfulCheckBoxMenuItem("При выходе сворачивать в трей", SettingsController.isTrayExit());
+		JCheckBoxMenuItem showOnTop = new ColorfulCheckBoxMenuItem("Поверх остальных окон", SettingsController.isOnTop());
 
 		startConditionsMenu.add(autoStartCheckbox);
 		startConditionsMenu.add(trayCheckBox);
 		startConditionsMenu.add(exitInTrayCheckBox);
 		startConditionsMenu.add(showOnTop);
+		/// подгоняем поведение под ColorfulMenuItem
+//		startConditionsMenu.setOpaque(true);
 
-		JMenuItem cutDate = new JMenuItem("Не показывать тексты до");
-		JMenuItem prodNameLengthMenuItem = new JMenuItem("Длина названия проды");
-		JMenuItem prodVolumeMenuItem = new JMenuItem("Дневная норма знаков");
-		JMenuItem prodDeadlineMenuItem = new JMenuItem("Сбрасывать таймер в");
-		JMenuItem updateIntervalMenuItem = new JMenuItem("Автообновление");
-		JMenuItem resetMenuItem = new JMenuItem("Сбросить настройки");
-
+		JMenuItem prodNameLengthMenuItem = new ColorfulMenuItem("Длина названия проды");
+		JMenuItem prodVolumeMenuItem = new ColorfulMenuItem("Дневная норма знаков");
+		JMenuItem prodDeadlineMenuItem = new ColorfulMenuItem("Сбрасывать таймер в");
+		JMenuItem updateIntervalMenuItem = new ColorfulMenuItem("Автообновление");
+		JMenuItem resetMenuItem = new ColorfulMenuItem("Сбросить настройки");
 
 		behaviorMenu.add(startConditionsMenu);
-		behaviorMenu.add(cutDate);
 		behaviorMenu.add(prodNameLengthMenuItem);
 		behaviorMenu.add(prodVolumeMenuItem);
 		behaviorMenu.add(prodDeadlineMenuItem);
@@ -155,28 +151,20 @@ public class TableMenuBar extends JMenuBar {
 		});
 		showOnTop.addActionListener(e -> SettingsController.switchOnTop());
 
-		cutDate.addActionListener(e -> {
-			TableDialog dayChooser = new TableDialog(point);
-			dayChooser.createDayChooserDialog("Не показывать тексты до",
-					SettingsController.getCutDate(),
-					new SettingsController(),
-					(sC, string) -> SettingsController.setCutDate(string));
-		});
-
 		prodNameLengthMenuItem.addActionListener(e -> {
-			TableDialog dialog = new TableDialog(point);
-			dialog.createProdNameLengthDialog();
+			TableDialog dialog = new TableDialog(prodNameLengthMenuItem, point);
+			dialog.createProdNameLengthDialog(controller);
 		});
 
 		prodVolumeMenuItem.addActionListener(e -> {
-			TableDialog dialog = new TableDialog(point);
+			TableDialog dialog = new TableDialog(prodVolumeMenuItem, point);
 			dialog.createProdVolumeDialog();
 		});
 		prodDeadlineMenuItem.addActionListener(e -> TimeSpinner.createDialog(TimeSpinner.getInstance(), point));
 
 		updateIntervalMenuItem.addActionListener(e -> {
-			TableDialog update = new TableDialog(point);
-			update.createUpdateIntervalDialog();
+			TableDialog update = new TableDialog(updateIntervalMenuItem, point);
+			update.createUpdateIntervalDialog(controller);
 		});
 
 		resetMenuItem.addActionListener(e -> controller.reset());
@@ -187,9 +175,9 @@ public class TableMenuBar extends JMenuBar {
 	private JMenu createHelpMenu() {
 		JMenu helpMenu = new JMenu("Помощь");
 
-		JMenuItem showTip = new JMenuItem("Показать подсказку");
-		JCheckBoxMenuItem showTips = new JCheckBoxMenuItem("Показывать подсказки", SettingsController.isTipsShow());
-		JMenuItem about = new JMenuItem("О программе");
+		JMenuItem showTip = new ColorfulMenuItem("Показать подсказку");
+		JCheckBoxMenuItem showTips = new ColorfulCheckBoxMenuItem("Показывать подсказки", SettingsController.isTipsShow());
+		JMenuItem about = new ColorfulMenuItem("О программе");
 
 		helpMenu.add(showTip);
 		helpMenu.add(showTips);
@@ -199,5 +187,12 @@ public class TableMenuBar extends JMenuBar {
 		showTips.addActionListener(e -> SettingsController.switchTipShow());
 		about.addActionListener(e -> About.showAbout(controller.getFrame()));
 		return helpMenu;
+	}
+
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.setColor(UIManager.getColor("Menu.background"));
+		g.fillRect(0, 0, getWidth(), getHeight());
 	}
 }

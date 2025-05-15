@@ -1,8 +1,9 @@
-package litheraa.view.util.fabric;
+package litheraa.view.util.factory;
 
 import litheraa.view.util.AspectRatioAdapter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.util.EnumMap;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Component
 public class ConstraintFactory {
 	private static volatile ConstraintFactory instance;
 	private final Map<String, Map<AspectRatioAdapter.AspectRatio, GridBagConstraints>> MAP = new HashMap<>();

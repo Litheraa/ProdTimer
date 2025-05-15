@@ -2,9 +2,9 @@ package litheraa.view.calendar;
 
 import litheraa.view.util.AspectRatioAdapter;
 import litheraa.view.util.SizeStepAdapter;
-import litheraa.view.util.fabric.ConstraintFactory;
-import litheraa.view.util.fabric.DimensionFactory;
-import litheraa.view.util.fabric.FontFactory;
+import litheraa.view.util.factory.ConstraintFactory;
+import litheraa.view.util.factory.DimensionFactory;
+import litheraa.view.util.factory.FontFactory;
 import lombok.Getter;
 
 import javax.swing.*;

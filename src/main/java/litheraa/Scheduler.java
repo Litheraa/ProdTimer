@@ -2,15 +2,16 @@ package litheraa;
 
 import litheraa.controller.ProdTimerController;
 import litheraa.controller.SettingsController;
+import litheraa.settings.DBSettings;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
-public class DataSaver implements Job {
+public class Scheduler implements Job {
 
 	private static ProdTimerController controller;
 
 	public static void setController(ProdTimerController controller) {
-		DataSaver.controller = controller;
+		Scheduler.controller = controller;
 	}
 
 	@Override
@@ -19,11 +20,11 @@ public class DataSaver implements Job {
 	}
 
 	public static void saveData() {
+		DBSettings settings = controller.getDbSettings();
 		String[] time = SettingsController.getDeadLineTime().split(":");
-		int updateInterval = SettingsController.getUpdateInterval();
 
-		JobDetail dayJob = JobBuilder.newJob(DataSaver.class).withIdentity("myJob", "group1").build();
-		JobDetail routineJob = JobBuilder.newJob(DataSaver.class).withIdentity("Job", "group1").build();
+		JobDetail dayJob = JobBuilder.newJob(Scheduler.class).withIdentity("myJob", "group1").build();
+		JobDetail routineJob = JobBuilder.newJob(Scheduler.class).withIdentity("Job", "group1").build();
 
 		CronTrigger everyDayTrigger = TriggerBuilder.newTrigger().withIdentity("dayTrigger", "group1")
 				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(Integer.parseInt(time[0]), Integer.parseInt(time[1]))
@@ -31,20 +32,18 @@ public class DataSaver implements Job {
 				.build();
 		Trigger routineTrigger = TriggerBuilder.newTrigger().withIdentity("routineTrigger", "group1")
 				.startNow()
-						.withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(updateInterval))
+						.withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(settings.getUpdateInterval()))
 				.build();
 		SchedulerFactory factory = new StdSchedulerFactory();
+
 		try {
-			Scheduler scheduler = factory.getScheduler();
-			scheduler.start();
-			scheduler.scheduleJob(dayJob, routineTrigger);
-		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
-		}
-		try {
-			Scheduler scheduler = factory.getScheduler();
-			scheduler.start();
-			scheduler.scheduleJob(routineJob, everyDayTrigger);
+			org.quartz.Scheduler scheduler1 = factory.getScheduler();
+			scheduler1.start();
+			scheduler1.scheduleJob(dayJob, routineTrigger);
+			scheduler1.scheduleJob(routineJob, everyDayTrigger);
+
+//			org.quartz.Scheduler scheduler2 = factory.getScheduler();
+//			scheduler2.start();
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}

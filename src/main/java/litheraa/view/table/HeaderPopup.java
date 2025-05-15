@@ -1,14 +1,12 @@
 package litheraa.view.table;
 
-import com.github.weisj.darklaf.listener.PopupMenuAdapter;
-import litheraa.data.ColumnDataTypeEnum;
 import litheraa.view.DateChooseDialog;
-import litheraa.view.util.ThemeSupplier;
 import lombok.Getter;
 import org.jdesktop.swingx.JXLabel;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.time.LocalDate;
@@ -49,33 +47,33 @@ public class HeaderPopup extends JPopupMenu {
 		panel.add(filterField);
 		panel.add(dateChooseDialog);
 
-		addPopupMenuListener(new PopupMenuAdapter() {
-			@Override
-			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-				columnNo = table.getActiveColumn();
-				int filterStorageNo = table.convertColumnIndexToView(columnNo);
-				changePopupLocation();
-				if (table.getColumnClass(columnNo) == LocalDate.class) {
-					setPopupSize(460, 240);
-					dateChooseDialog.setColors(ThemeSupplier.getTheme());
-					dateChooseDialog.setText(table.getFilterStorage(filterStorageNo));
-					dateChooseDialog.setVisible(true);
-					filterField.setFocusable(false);
-				} else {
-					dateChooseDialog.setVisible(false);
-					filterField.setColumns(8);
-					filterField.setFocusable(true);
-					filterField.setText(table.getFilterStorage(filterStorageNo));
-				}
-				table.setFilter(true);
-			}
-
-			@Override
-			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-				setPopupSize(100, 54);
-				table.setFilter(!filterField.getText().isEmpty());
-			}
-		});
+//		addPopupMenuListener(new PopupMenuAdapter() {
+//			@Override
+//			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+//				columnNo = table.getActiveColumn();
+//				int filterStorageNo = table.convertColumnIndexToView(columnNo);
+//				changePopupLocation();
+//				if (table.getColumnClass(columnNo) == LocalDate.class) {
+//					setPopupSize(460, 240);
+//					dateChooseDialog.setColors(ThemeSupplier.getTheme());
+//					dateChooseDialog.setText(table.getFilterStorage(filterStorageNo));
+//					dateChooseDialog.setVisible(true);
+//					filterField.setFocusable(false);
+//				} else {
+//					dateChooseDialog.setVisible(false);
+//					filterField.setColumns(8);
+//					filterField.setFocusable(true);
+//					filterField.setText(table.getFilterStorage(filterStorageNo));
+//				}
+//				table.setFilter(true);
+//			}
+//
+//			@Override
+//			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+//				setPopupSize(100, 54);
+//				table.setFilter(!filterField.getText().isEmpty());
+//			}
+//		});
 	}
 
 	private void changePopupLocation() {

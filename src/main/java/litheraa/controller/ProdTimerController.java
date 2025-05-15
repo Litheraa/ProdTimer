@@ -1,23 +1,24 @@
 package litheraa.controller;
 
+import com.formdev.flatlaf.FlatLaf;
 import litheraa.*;
 import litheraa.data.TextFinder;
-import litheraa.data.TextOld;
+import litheraa.data.entities.SelectableText;
 import litheraa.data.entities.Text;
 import litheraa.data.entities.Time;
 import litheraa.data_base.HSQLDBWorker;
-import litheraa.data.RoutineOld;
-import litheraa.util.SpringContextReaders;
+import litheraa.settings.DBSettings;
+import litheraa.settings.SettingsManager;
 import litheraa.util.ViewType;
 import litheraa.util.readers.ReaderFactory;
 import litheraa.view.*;
 import litheraa.view.message.Tip;
+import litheraa.view.themes.ThemeUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
 import org.jdesktop.swingx.JXLabel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 
 import javax.swing.*;
@@ -25,21 +26,30 @@ import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
-@Controller
 @Getter
+@Controller
 public class ProdTimerController implements ProdTimerControllerInterface {
 	private ViewControllerInterface viewController;
+	private final ReaderFactory readerFactory;
 	private final RepositoryController repositoryController;
 	private final MainFrame frame;
+	private final DBSettings dbSettings;
 
 	@Autowired
-	public ProdTimerController(RepositoryController repositoryController) {
+	public ProdTimerController(RepositoryController repositoryController, ReaderFactory readerFactory) {
+		FlatLaf.setUseNativeWindowDecorations(true);
+		ThemeUtil.applyTheme("star sky");
+		UIManager.put("TitlePane.menuBarEmbedded", false);
+
+
 		this.repositoryController = repositoryController;
+		this.readerFactory = readerFactory;
+		this.dbSettings = SettingsManager.loadDBSettings();
 		frame = new MainFrame(this);
-		new AnnotationConfigApplicationContext(SpringContextReaders.class).getBean(ReaderFactory.class);
-		createDB();
+
 		createView(SettingsController.getViewType());
 		saveData();
 		saveDataByTimer();
@@ -51,8 +61,13 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	}
 
 	public void exit() {
-		saveWindowPosition();
-		saveWindowSize();
+		dbSettings.setTextIds(viewController.getSelectableTexts().stream()
+				.filter(sT -> !sT.isSelected())
+				.map(sT -> sT.getText().getId())
+				.collect(Collectors.toSet()));
+
+		SettingsManager.saveSettings(SettingsController.getViewType(), frame, dbSettings);
+
 		if (SettingsController.isTrayExit()) {
 			frame.setVisible(false);
 		} else {
@@ -65,14 +80,6 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 		frame.repaint();
 	}
 
-	public void saveWindowPosition() {
-		SettingsController.setLocation((int) frame.getLocationOnScreen().getX(), (int) frame.getLocationOnScreen().getY());
-	}
-
-	public void saveWindowSize() {
-		SettingsController.setSize(SettingsController.getViewType().ordinal(), frame.getWidth(), frame.getHeight());
-	}
-
 	public void createView(ViewType type) {
 		switch (type) {
 			case TEXTS, TIME -> viewController = new TableController(this, frame, type);
@@ -83,12 +90,6 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	public void setView(ViewType type) {
 		SettingsController.setViewType(type);
 		createView(type);
-	}
-
-	@Override
-	public void createDB() {
-		HSQLDBWorker.createTexts();
-		HSQLDBWorker.createRoutine();
 	}
 
 	@Override
@@ -112,24 +113,18 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 			try {
 				RepositoryController.collectData(TextFinder.findProd(SettingsController.collectTextPath()));
 			} catch (NullPointerException e) {
-				log.error("e: ", e);
+				log.error("Ошибка сохранения данных: ", e);
 				noFilesFound();
 			}
 		}
 	}
 
-	@Override
-	public ArrayList<TextOld> getTextsData() {
-		return HSQLDBWorker.selectTexts();
-	}
+	public Pair<List<Time>, ArrayList<SelectableText>> getData() {
+		Pair<List<Time>, List<Text>> data = RepositoryController.getData();
 
-	@Override
-	public ArrayList<RoutineOld> getRoutineData() {
-		return HSQLDBWorker.selectRoutine();
-	}
-
-	public Pair<List<Time>, List<Text>> getData() {
-		return RepositoryController.getData();
+		return new Pair<>(data.getFirst(), data.getSecond().stream()
+				.map(text -> new SelectableText(text, !dbSettings.getTextIds().contains(text.getId())))
+				.collect(Collectors.toCollection(ArrayList::new)));
 	}
 
 	public void setGoal(int goal, Long... dayId) {
@@ -142,8 +137,8 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 
 	@Override
 	public void saveDataByTimer() {
-		DataSaver.setController(this);
-		DataSaver.saveData();
+		Scheduler.setController(this);
+		Scheduler.saveData();
 	}
 
 	public void noFilesFound() {
@@ -183,9 +178,10 @@ public class ProdTimerController implements ProdTimerControllerInterface {
 	}
 
 	public void setTrayIcon(boolean isForced) {
+		frame.setTray(!isForced);
 		try {
 			TrayView tray = new TrayView();
-			if (SettingsController.isTrayEnabled() || isForced) {
+			if (!isForced) {
 				tray.setValue(HSQLDBWorker.selectTodayChars()).build(this);
 			} else {
 				tray.disable();

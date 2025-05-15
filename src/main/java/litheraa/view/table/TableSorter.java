@@ -1,8 +1,6 @@
 package litheraa.view.table;
 
-import litheraa.data.RoutineEnum;
 import litheraa.controller.SettingsController;
-import litheraa.util.ViewType;
 import org.jdesktop.swingx.sort.RowFilters;
 
 import javax.swing.*;
@@ -30,10 +28,6 @@ public class TableSorter extends TableRowSorter<TableModel> {
             SettingsController.setSortedColumn(sortKey.getColumn());
             SettingsController.setSortOrder(sortKey.getSortOrder());
         });
-        if (((TimeTableModel) model).getExactModelType() == ViewType.TIME.ordinal()) {
-	        setSortable(RoutineEnum.PROD_CHARS.ordinal(), false);
-            setSortable(RoutineEnum.NAMES.ordinal(), false);
-        }
         sortKeys = new ArrayList<>();
         sortKeys.add(new RowSorter.SortKey(SettingsController.getSortedColumn(), SettingsController.getSortOrder()));
         setSortKeys(sortKeys);

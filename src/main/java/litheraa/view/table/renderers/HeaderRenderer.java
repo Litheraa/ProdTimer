@@ -22,7 +22,8 @@ public class HeaderRenderer implements TableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		//All images are part of <uicons> icons pack, downloaded from www.flaticon.com
 		JPanel panel = new JPanel(new HorizontalLayout(5));
-		panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED),
+				BorderFactory.createEmptyBorder(3, 8, 3, 8)));
 		JLabel header = new JLabel(table.getColumnName(column), SwingUtilities.CENTER);
 		JLabel filterIcon = new JLabel();
 		JLabel sortIcon = new JLabel();
@@ -40,6 +41,8 @@ public class HeaderRenderer implements TableCellRenderer {
 		panel.add(header);
 		panel.add(filterIcon);
 		panel.add(sortIcon);
+		panel.setBackground(UIManager.getColor("SubTitle.background"));
+		header.setForeground(UIManager.getColor("SubTitle.foreground"));
 		return panel;
 	}
 }

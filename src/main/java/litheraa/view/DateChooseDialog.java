@@ -1,10 +1,7 @@
 package litheraa.view;
 
-import com.github.weisj.darklaf.theme.Theme;
 import litheraa.util.CalendarWrapper;
 import litheraa.view.table.FilterTextField;
-import litheraa.view.themes.ThemeColors;
-import litheraa.view.util.ThemeSupplier;
 import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.calendar.DateSelectionModel;
 
@@ -34,7 +31,7 @@ public class DateChooseDialog extends JXMonthView {
 	private static final ImageIcon calendarCancel = new ImageIcon(Objects.requireNonNull(loader.getResource("calendar-cancel.png")));
 
 	public DateChooseDialog() {
-		setColors(ThemeSupplier.getTheme());
+//		setColors(ThemeSupplier.getTheme());
 		calendar.add(Calendar.MONTH, -2);
 		setFirstDisplayedDay(calendar.getTime());
 		setSelectionMode(DateSelectionModel.SelectionMode.SINGLE_INTERVAL_SELECTION);
@@ -169,21 +166,21 @@ public class DateChooseDialog extends JXMonthView {
 		return dateField.getText();
 	}
 
-	public void setColors(Theme theme) {
-		try {ThemeColors themeColors = (ThemeColors) theme;
-			setDayForeground(1, themeColors.getAccentBackground());
-			setDayForeground(7, themeColors.getAccentBackground());
-			setMonthStringForeground(themeColors.getForeground());
-			setDaysOfTheWeekForeground(themeColors.getForeground());
-			setForeground(themeColors.getForeground());
-			setMonthStringBackground(themeColors.getBackgroundLight());
-			setBackground(themeColors.getBackgroundDark());
-			setSelectionBackground(themeColors.getSelectionBackground());
-			setSelectionForeground(themeColors.getSelectionForeground());
-		} catch (ClassCastException e) {
-			System.out.println("Тема " + theme.getName() + " не реализует интерфейс ThemeColors");
-		}
-	}
+//	public void setColors(Theme theme) {
+//		try {ThemeColors themeColors = (ThemeColors) theme;
+//			setDayForeground(1, themeColors.getAccentBackground());
+//			setDayForeground(7, themeColors.getAccentBackground());
+//			setMonthStringForeground(themeColors.getForeground());
+//			setDaysOfTheWeekForeground(themeColors.getForeground());
+//			setForeground(themeColors.getForeground());
+//			setMonthStringBackground(themeColors.getBackgroundLight());
+//			setBackground(themeColors.getBackgroundDark());
+//			setSelectionBackground(themeColors.getSelectionBackground());
+//			setSelectionForeground(themeColors.getSelectionForeground());
+//		} catch (ClassCastException e) {
+//			System.out.println("Тема " + theme.getName() + " не реализует интерфейс ThemeColors");
+//		}
+//	}
 
 	public class FilterAction extends AbstractAction {
 

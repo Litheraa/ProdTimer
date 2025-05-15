@@ -1,17 +1,22 @@
 package litheraa.controller;
 
+import litheraa.data.entities.SelectableText;
 import litheraa.data.entities.Text;
 import litheraa.data.entities.Time;
+import litheraa.settings.DBSettings;
 import litheraa.util.ViewType;
 import org.apache.commons.math3.util.Pair;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ViewControllerInterface {
 
-	void concreteView(ViewType type);
+	void concreteView(ViewType type, LocalDate period);
 
-	void setTextId(String textId);
+	void setTextId(List<SelectableText> textId);
+
+	List<SelectableText> getSelectableTexts();
 
 	Pair<List<Time>, List<Text>> getModel();
 
@@ -24,4 +29,6 @@ public interface ViewControllerInterface {
 	void reset();
 
 	litheraa.view.MainFrame getFrame();
+
+	DBSettings getSettings();
 }

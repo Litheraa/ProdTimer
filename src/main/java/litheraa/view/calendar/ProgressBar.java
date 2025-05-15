@@ -1,8 +1,10 @@
 package litheraa.view.calendar;
 
+import com.formdev.flatlaf.ui.FlatProgressBarUI;
 import litheraa.view.util.AspectRatioAdapter;
 import litheraa.view.util.SizeStepAdapter;
-import litheraa.view.util.fabric.ConstraintFactory;
+import litheraa.view.util.factory.ConstraintFactory;
+import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,24 +12,25 @@ import java.awt.*;
 public class ProgressBar extends JProgressBar implements AdjustableComponentInterface{
 	private final ConstraintFactory constraintFactory = ConstraintFactory.getInstance();
 	private Container PARENT = getParent();
+	@Getter
+	private boolean isFulfilled;
 
 	public ProgressBar(int written, int goal) {
-
+		isFulfilled = written > goal;
+		setUI(new CustomProgressBarUI());
+		setBorder(BorderFactory.createLineBorder(UIManager.getColor("SubTitle.background"), 1));
 		setMaximum(goal);
 		setStringPainted(true);
-		if (written <= goal) {
-			setValue(written);
+		if (isFulfilled) {
+			setValue(goal);
+			setString("!!! " + calculateOverFulfilling(written, goal) + "% !!!");
 		} else {
-			setString(calculatePercentageDifference(written, goal) + "%");
+			setValue(written);
 		}
 	}
 
-	private int calculatePercentageDifference(int v1, int v2) {
-		double average = (v1 + v2) / 2.0;
-		if (average == 0) {
-			throw new IllegalArgumentException("The average of V1 and V2 cannot be zero.");
-		}
-		return (int) (Math.abs((v1 - v2) / average) * 100);
+	private int calculateOverFulfilling(int written, int goal) {
+		return (int) Math.round(((double) written / goal) * 100);
 	}
 
 	@Override
@@ -47,5 +50,41 @@ public class ProgressBar extends JProgressBar implements AdjustableComponentInte
 	public ProgressBar setParent(JComponent parent) {
 		PARENT = parent;
 		return this;
+	}
+
+	public static class CustomProgressBarUI extends FlatProgressBarUI {
+
+		@Override
+		public void paint(Graphics g, JComponent c) {
+			Graphics2D g2 = (Graphics2D) g.create();
+
+			Insets insets = progressBar.getInsets();
+			int barWidth = progressBar.getWidth() - insets.left - insets.right;
+			int barHeight = progressBar.getHeight() - insets.top - insets.bottom;
+
+			int amountFull = ((ProgressBar)progressBar).isFulfilled() ? barWidth : getAmountFull(insets, barWidth, barHeight);
+			int percent = (int) (progressBar.getPercentComplete() * 100);
+
+			Color colorFrom = UIManager.getColor("ProgressBar.from");
+			Color colorTo = UIManager.getColor("ProgressBar.to");
+
+			int red = interpolate(colorFrom.getRed(), colorTo.getRed(), percent);
+			int green = interpolate(colorFrom.getGreen(), colorTo.getGreen(), percent);
+			int blue = interpolate(colorFrom.getBlue(), colorTo.getBlue(), percent);
+
+			g2.setColor(new Color(red, green, blue));
+			g2.fillRect(insets.left, insets.top, amountFull, barHeight);
+
+			if (progressBar.isStringPainted()) {
+				paintString(g2, insets.left, insets.top, barWidth, barHeight, amountFull, insets);
+			}
+
+			g2.dispose();
+		}
+
+		private int interpolate(int start, int end, int percent) {
+			return start + (end - start) * percent / 100;
+		}
+
 	}
 }

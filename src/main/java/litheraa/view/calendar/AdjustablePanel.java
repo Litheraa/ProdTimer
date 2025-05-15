@@ -19,14 +19,17 @@ public class AdjustablePanel extends JPanel implements AdjustableComponentInterf
 
 	private AdjustablePanel(LocalDate id, List<AdjustableComponentInterface> components) {
 		this.id = id;
+		setBackground(UIManager.getColor("Panel.background"));
+		setBorder(BorderFactory.createLineBorder(getBackground().darker().darker(), 1));
+		setOpaque(true);
 		setLayout(new GridBagLayout());
-		setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		COMPONENTS = components;
 		COMPONENTS.forEach(c -> add(c.setParent(this)));
 	}
 
 	private AdjustablePanel(LocalDate id, List<Pair<AdjustableComponentInterface, Object>> components, LayoutManager layout) {
 		this.id = id;
+		setBackground(UIManager.getColor("Button.background"));
 		setLayout(layout);
 		COMPONENTS = new LinkedList<>();
 		components.stream()
@@ -36,6 +39,9 @@ public class AdjustablePanel extends JPanel implements AdjustableComponentInterf
 				.ifPresentOrElse(e ->
 						add(pair.getFirst().setParent(this), pair.getSecond()),
 				() -> add(pair.getFirst().setParent(getThis()))));
+		for (Component component: getComponents()) {
+			component.setForeground(UIManager.getColor("Button.foreground"));
+		}
 	}
 
 	private AdjustablePanel getThis() {

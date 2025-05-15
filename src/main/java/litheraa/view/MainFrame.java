@@ -6,20 +6,23 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import litheraa.controller.ProdTimerController;
-import litheraa.view.menu.TableMenuBar;
-import org.jdesktop.swingx.HorizontalLayout;
+import litheraa.view.menu.MenuBar;
+import lombok.Getter;
+import lombok.Setter;
+import org.jdesktop.swingx.JXFrame;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JXFrame {
+	@Setter
+	@Getter
+	private boolean isTray;
 	private final JPanel contentPane = new JPanel(new GridBagLayout());
 
 	public MainFrame(ProdTimerController controller) {
-		super("ProdMaster");
-		JPanel menuPane = new JPanel();
-		menuPane.setLayout(new HorizontalLayout());
-		menuPane.add(new TableMenuBar(controller));
-
-		add(menuPane, BorderLayout.NORTH);
-		add(contentPane);
+		super("  ProdMaster");
+		setBackground(UIManager.getColor("TitlePane.background"));
+		setIconImage(new ImageIcon("src/main/resources/Pilcrow.png").getImage());
+		add(contentPane, BorderLayout.CENTER);
+		add(new MenuBar(controller), BorderLayout.NORTH);
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -27,8 +30,6 @@ public class MainFrame extends JFrame {
 				controller.exit();
 			}
 		});
-		setLocationRelativeTo(null);
-		getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 2, 2, 2));
 	}
 
 	public void setHeader(JComponent header) {

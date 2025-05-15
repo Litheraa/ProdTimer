@@ -7,10 +7,10 @@ import javax.swing.*;
 
 @Setter
 @NoArgsConstructor
-public class LinkedJComboBox<E> extends JComboBox<E> {
+class LinkedJComboBox<E> extends JComboBox<E> {
 	private MutableText text;
 
-	public LinkedJComboBox(DefaultComboBoxModel<E> model) {
+	LinkedJComboBox(DefaultComboBoxModel<E> model) {
 		super(model);
 	}
 

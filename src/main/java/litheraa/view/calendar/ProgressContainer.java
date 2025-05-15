@@ -3,7 +3,7 @@ package litheraa.view.calendar;
 import litheraa.controller.CalendarController;
 import litheraa.controller.SettingsController;
 import litheraa.data.models.CalendarModel;
-import litheraa.util.MeasureUnit;
+import litheraa.util.MeasureUnitConverter;
 import litheraa.util.NumberDeclensionRu;
 import litheraa.view.util.IntegerFilter;
 import org.jdesktop.swingx.JXLabel;
@@ -33,7 +33,7 @@ public class ProgressContainer extends JPanel {
 	private CalendarModel calendarModel;
 
 	public ProgressContainer(double value, int maxValue) {
-		measuredValue = MeasureUnit.toChars(value);
+		measuredValue = MeasureUnitConverter.toChars(value);
 		this.value = value;
 		this.maxValue = maxValue;
 	}
@@ -127,7 +127,7 @@ public class ProgressContainer extends JPanel {
 	}
 
 	public void setMeasuredValue(double value) {
-		measuredValue = MeasureUnit.toChars(value);
+		measuredValue = MeasureUnitConverter.toChars(value);
 	}
 
 	private void setGoalPopUp(CalendarController controller) {

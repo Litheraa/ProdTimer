@@ -1,35 +1,36 @@
 package litheraa.view.calendar.calendar_settings;
 
-import litheraa.controller.CalendarController;
 import litheraa.controller.SettingsController;
 import litheraa.controller.ViewControllerInterface;
+import litheraa.data.entities.SelectableText;
+import litheraa.settings.DBSettings;
 import litheraa.util.CalendarWrapper;
 import litheraa.util.ViewType;
 import litheraa.view.DateChooseDialog;
+import litheraa.view.selection_table.SelectionTable;
 import org.apache.commons.math3.util.Pair;
 import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.calendar.DateSelectionModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class CalendarSettings extends JDialog {
-	private final JComboBox<String> textJComboBox;
+	private final SelectionTable table;
 	private final JLabel selection = new JLabel();
 	private final LinkedJComboBoxModel<Year> yearModel;
 	private final LinkedJComboBoxModel<String> monthModel;
 	private final RunnableJComboBox weekJComboBox;
+
+	private DBSettings.Period period;
 
 	{
 		yearModel = new LinkedJComboBoxModel<>(Stream
@@ -47,12 +48,13 @@ public class CalendarSettings extends JDialog {
 		selection.setFont(new Font("Aerial", Font.BOLD, 20));
 	}
 
-	public CalendarSettings(ViewControllerInterface controller, String setting, String[] textNames) {
-		setSize(480, 350);
+	public CalendarSettings(ViewControllerInterface controller, String setting, ArrayList<SelectableText> texts) {
 		setTitle("Выберите режим отображения");
-		setResizable(false);
+		setResizable(true);
+		period = controller.getSettings().getPeriod();
 
 		selection.setText(setting);
+		selection.setHorizontalAlignment(JLabel.CENTER);
 
 		LinkedJComboBox<Year> yearJComboBox1 = new LinkedJComboBox<>(yearModel);
 		LinkedJComboBox<String> monthJComboBox1 = new LinkedJComboBox<>(monthModel);
@@ -87,12 +89,15 @@ public class CalendarSettings extends JDialog {
 		monthJComboBox2.setText(text2);
 		weekJComboBox.setText(text2);
 
+		LocalDate lD = controller.getSettings().getPeriod().getFrom();
 
 		yearModel.setRunner(weekJComboBox);
-		yearModel.setSelectedItem(Year.of(SettingsController.getPeriod().getYear()));
+//		yearModel.setSelectedItem(Year.of(lD.getYear()));
+		yearModel.setSelectedItem(Year.of(period.getFrom().getYear()));
 
 		monthModel.setRunner(weekJComboBox);
-		monthModel.setSelectedItem(CalendarWrapper.localeRu(SettingsController.getPeriod().getMonth()));
+//		monthModel.setSelectedItem(CalendarWrapper.localeRu(lD.getMonth()));
+		monthModel.setSelectedItem(CalendarWrapper.localeRu(period.getFrom().getMonth()));
 
 		JPanel weekPanel = new JPanel();
 		weekPanel.add(yearJComboBox2);
@@ -108,60 +113,74 @@ public class CalendarSettings extends JDialog {
 			selection.setText(CalendarWrapper.localeRu(((JXMonthView) e.getSource()).getSelectionDate()));
 		});
 
-		textJComboBox = new JComboBox<>(textNames);
-		textJComboBox.insertItemAt("Все тексты", 0);
-		textJComboBox.setSelectedIndex(0);
-
 		JTabbedPane pane = new JTabbedPane();
 		pane.addChangeListener(e -> {
 			switch (((JTabbedPane) e.getSource()).getSelectedIndex()) {
-				case 0 -> text1.mutate();
-				case 1 -> text2.mutate();
-				default -> text1.mutate();
+				case 0 -> {
+					period.setPeriodType(ViewType.MONTHLY);
+					text1.mutate();
+				}
+				case 1 -> {
+					period.setPeriodType(ViewType.WEEKLY);
+					text2.mutate();
+				}
+				default -> {
+					period.setPeriodType(ViewType.DAILY);
+					text1.mutate();
+				}
 			}
 		});
 		pane.addTab("По месяцам", monthPanel);
 		pane.addTab("По неделям", weekPanel);
 		pane.addTab("Один день", dayPanel);
 
+		table = new SelectionTable(texts);
+
 		JButton ok = new JButton("Ок");
 		ok.addActionListener(e -> {
 			String period = selection.getText();
-			SettingsController.setPeriod(getPeriod(period).getFirst());
-			controller.setTextId(textJComboBox.getSelectedItem().toString());
-			controller.concreteView(getPeriod(period).getSecond());
+			LocalDate date = getPeriod(period).getFirst();
+			controller.getSettings().setPeriod(new DBSettings.Period(date));
+			controller.setTextId(table.getSelectableTexts());
+			controller.concreteView(getPeriod(period).getSecond(), date);
 			setVisible(false);
 		});
 
-		JButton cansel = new JButton("Отмена");
-		cansel.addActionListener(e ->
+		JButton cancel = new JButton("Отмена");
+		cancel.addActionListener(e ->
 				setVisible(false)
 		);
 
-		SpringLayout layout = new SpringLayout();
-		layout.putConstraint(SpringLayout.NORTH, selection, 0, SpringLayout.NORTH, this);
-		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, selection, 0, SpringLayout.HORIZONTAL_CENTER, pane);
-		layout.putConstraint(SpringLayout.SOUTH, selection, 35, SpringLayout.NORTH, this);
-		layout.putConstraint(SpringLayout.NORTH, pane, 0, SpringLayout.SOUTH, selection);
-		layout.putConstraint(SpringLayout.NORTH, textJComboBox, 0, SpringLayout.SOUTH, pane);
-		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, textJComboBox, 0, SpringLayout.HORIZONTAL_CENTER, pane);
-		layout.putConstraint(SpringLayout.NORTH, ok, 0, SpringLayout.SOUTH, textJComboBox);
-		layout.putConstraint(SpringLayout.NORTH, cansel, 0, SpringLayout.SOUTH, textJComboBox);
-		layout.putConstraint(SpringLayout.EAST, ok, -5, SpringLayout.HORIZONTAL_CENTER, pane);
-		layout.putConstraint(SpringLayout.WEST, cansel, 5, SpringLayout.HORIZONTAL_CENTER, pane);
+		setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.insets = new Insets(5, 5, 5, 5);
+		add(selection, gbc);
 
-		setLayout(layout);
+		gbc.gridy = 1;
+		add(pane, gbc);
 
-		add(selection);
-		add(pane);
-		add(textJComboBox);
-		add(ok);
-		add(cansel);
+		gbc.gridy = 2;
+		gbc.weighty = 1.0;
+		add(table, gbc);
+
+		JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		buttonsPanel.add(ok);
+		buttonsPanel.add(cancel);
+
+		gbc.gridy = 3;
+		gbc.weighty = 0;
+		add(buttonsPanel, gbc);
+
+		pack();
 	}
 
-	private Pair<LocalDate, ViewType> getPeriod(String text) {
-		ViewType type = ViewType.of(text);
-		String[] strings = text.split(" ");
+	private Pair<LocalDate, ViewType> getPeriod(String period) {
+		ViewType type = ViewType.of(period);
+		String[] strings = period.split(" ");
 		Pair<LocalDate, ViewType> result;
 		switch (type) {
 			case WEEKLY -> {

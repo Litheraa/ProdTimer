@@ -1,4 +1,4 @@
-package litheraa.view.util.fabric;
+package litheraa.view.util.factory;
 
 import litheraa.view.util.SizeStepAdapter;
 import lombok.AccessLevel;

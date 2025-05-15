@@ -1,0 +1,13 @@
+{
+  "x" : 963,
+  "y" : 329,
+  "width" : 700,
+  "height" : 600,
+  "minSize" : {
+    "width" : 500.0,
+    "height" : 600.0
+  },
+  "resizable" : true,
+  "tray" : true,
+  "onTop" : true
+}

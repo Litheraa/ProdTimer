@@ -1,0 +1,62 @@
+{
+  "name": "Bright shade",
+  "dark": true,
+  "colors": {
+    "foreground": "#ECEBEB",
+    "background": "#696969",
+
+    "selectionBackground": "#D6AE01",
+    "selectionForeground": "#FFFFFF",
+
+    "header": "#FFDB8B",
+    "headerForeground": "#2C2C2C",
+
+    "windowTitleBackground": "#474A51",
+    "windowTitleForeground": "#c0c0c0"
+  },
+  "ui": {
+    "TitlePane": {
+      "background": "@windowTitleBackground",
+      "foreground": "@windowTitleForeground"
+    },
+    "SubTitle": {
+      "background": "@selectionBackground",
+      "foreground": "@headerForeground"
+    },
+    "Menu": {
+      "background": "@windowTitleBackground",
+      "foreground": "@windowTitleForeground",
+      "selectionBackground": "@background",
+      "selectionForeground": "@selectionForeground"
+    },
+    "Label": {
+      "foreground": "@foreground"
+    },
+    "Button": {
+      "background": "@header",
+      "foreground": "@headerForeground"
+    },
+    "TextField": {
+      "background": "@background",
+      "foreground": "@foreground"
+    },
+    "ProgressBar": {
+      "background": "@background",
+      "foreground": "@header",
+      "from": "@header",
+      "to": "@selectionBackground"
+    },
+    "Table": {
+      "background": "@background",
+      "foreground": "@foreground",
+      "selectionBackground": "@selectionBackground",
+      "selectionForeground": "@selectionForeground",
+      "selectionInactiveBackground": "@header",
+      "selectionInactiveForeground": "@headerForeground"
+    },
+    "Panel": {
+      "background": "@background",
+      "foreground": "@foreground"
+    }
+  }
+}

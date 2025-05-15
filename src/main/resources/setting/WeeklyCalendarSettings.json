@@ -1,0 +1,11 @@
+{
+  "minSize": {
+    "width": 500,
+    "height": 215
+  },
+  "width": 500,
+  "height": 215,
+  "onTop": true,
+  "resizable": true,
+  "tray": false
+}
